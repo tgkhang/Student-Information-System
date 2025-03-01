@@ -6,6 +6,8 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { MailerService } from './mailer/mailer.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UserSchema } from '../schemas/user.schema';
 
 @Module({
   imports: [
@@ -14,6 +16,7 @@ import { MailerService } from './mailer/mailer.service';
       secret: 'abc123',
       signOptions: { expiresIn: '1h' },
     }),
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, MailerService],

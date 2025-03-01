@@ -13,9 +13,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: any) {
-    console.log('Inside JWT Strategy Validate');
+    console.log('Inside JWT Strategy Validate:', payload);
     console.log(payload);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return payload;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (!payload || !payload.id) {
+      throw new Error('Invalid JWT payload');
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    return { id: payload.id, username: payload.username };
   }
 }
