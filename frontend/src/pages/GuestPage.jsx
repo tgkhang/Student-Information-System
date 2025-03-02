@@ -3,9 +3,9 @@ import Page from '../components/Page';
 
 // ----------------------------------------------------------------------
 
-export default function AboutUs() {
+export default function GuestPage() {
     return (
-        <Page title="About us">
+        <Page title="InfoStudia">
             
         </Page>
     );

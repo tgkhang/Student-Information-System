@@ -38,6 +38,7 @@ export default function Router() {
         { path: "500", element: <Page500 /> },
         { path: "404", element: <Page404 /> },
         { path: "*", element: <Navigate to="/404" replace /> },
+        { path: "faqs", element: <FAQs/>},
       ],
     },
   ]);
@@ -61,3 +62,4 @@ const Page404 = Loadable(lazy(() => import("../pages/Page404")));
 const AboutUs = Loadable(lazy(() => import("../pages/AboutUs")));
 const ComingSoon = Loadable(lazy(() => import("../pages/ComingSoon")));
 const Maintenance = Loadable(lazy(() => import("../pages/Maintenance")));
+const FAQs = Loadable(lazy(() => import("../pages/Faqs")));

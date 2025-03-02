@@ -34,4 +34,3 @@ export default function getColorName(hex) {
   
     return color;
   }
-  

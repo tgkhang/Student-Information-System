@@ -63,4 +63,3 @@ export const PROVINCE = [
     { label: 'Bạc Liêu', value: '95', cap: 'Tỉnh' },
     { label: 'Cà Mau', value: '96', cap: 'Tỉnh' },
   ];
-  

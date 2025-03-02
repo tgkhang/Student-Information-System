@@ -1,7 +1,7 @@
-import axios from 'axios';
-import { PATH_AUTH } from '../routes/paths';
+import axios from "axios";
+import { PATH_AUTH, PATH_PAGE } from "../routes/paths";
 // config
-import { HOST_API } from '../config';
+import { HOST_API } from "../config";
 
 // ----------------------------------------------------------------------
 
@@ -13,10 +13,10 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     config.headers = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -37,17 +37,22 @@ axiosInstance.interceptors.response.use(
       // The request was made and the server responded with a status code
       const { status } = error.response;
       if (status === 403) {
-        console.log('Access forbidden');
+        console.log("Access forbidden");
       } else if (status === 401) {
         // Redirect to the login page
         window.location.href = PATH_AUTH.login;
+      } else if (status === 404) {
+        window.location.href = PATH_PAGE.page404;
+      } else if (status === 500) {
+        window.location.href = PATH_PAGE.page500;
+      } else if (status === 503) {
+        window.location.href = PATH_PAGE.maintenance;
       } else {
-        const errorMessage = error.response.data.message || 'An error occurred';
+        const errorMessage = error.response.data.message || "An error occurred";
         console.log(errorMessage);
       }
     } else if (error.request) {
-      // The request was made but no response was received
-      console.log('No response received from the server');
+      window.location.href = PATH_PAGE.page500;
     } else {
       // Something happened in setting up the request that triggered an error
       console.log(`Error: ${error.message}`);
