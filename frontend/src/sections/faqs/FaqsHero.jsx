@@ -1,13 +1,17 @@
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import { styled } from "@mui/material/styles";
-import { Container, Stack, Typography, InputAdornment, TextField } from "@mui/material";
+import {
+  Container,
+  Stack,
+  Typography,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
 import Iconify from "../../components/Iconify";
 
 // ----------------------------------------------------------------------
 
 const RootStyle = styled("div")(({ theme }) => ({
-  backgroundSize: "cover",
-  backgroundPosition: "center",
   padding: theme.spacing(10, 2),
   display: "flex",
   alignItems: "center",
@@ -18,52 +22,65 @@ const RootStyle = styled("div")(({ theme }) => ({
     padding: 0,
   },
 }));
-
-const ContentStyle = styled(Stack)(() => ({
-  textAlign: "center",
-  alignItems: "center",
-  maxWidth: 600,
-  margin: "auto",
-}));
-
 // Animation Variants
-const fadeVariant = {
-  hidden: { opacity: 0, y: -20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+const letterVariant = {
+  hidden: { opacity: 0, x: -20 },
+  visible: (i) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: i * 0.05, duration: 0.4 },
+  }),
 };
 
-const bounceVariant = {
-  hidden: { opacity: 0, y: 0 },
-  visible: {
-    opacity: 1,
-    y: [0, -5, 0],
-    transition: { repeat: Infinity, duration: 1.5, ease: "easeInOut" },
-  },
-};
+const fadeUpVariant = (delay) => ({
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay } },
+});
 
 // ----------------------------------------------------------------------
 
 export default function FaqsHero() {
+  const title = "How can we help you?";
+
   return (
     <RootStyle>
       <Container sx={{ position: "relative" }}>
-        <ContentStyle spacing={4}>
-          {/* Animated Heading */}
-          <m.div variants={fadeVariant} initial="hidden" animate="visible">
-            <Typography variant="h3" color="primary">
-              How can we help you?
+        <Stack
+          spacing={3}
+          component={motion.div}
+          initial="hidden"
+          animate="visible"
+        >
+          {/* Animated Heading (Letter by Letter) */}
+          <motion.div style={{ display: "flex", justifyContent: "center",  }}>
+            <Typography
+              variant="h1"
+              color="primary"
+              component="div"
+              sx={{ display: "flex" }}
+            >
+              {title.split("").map((char, i) => (
+                <motion.span
+                  key={i}
+                  custom={i}
+                  variants={letterVariant}
+                  style={{ marginRight: char === " " ? "8px" : "2px" }}
+                >
+                  {char}
+                </motion.span>
+              ))}
             </Typography>
-          </m.div>
+          </motion.div>
 
           {/* Floating Subtext */}
-          <m.div variants={bounceVariant} initial="hidden" animate="visible">
-            <Typography variant="h6" color="textSecondary">
+          <motion.div variants={fadeUpVariant(0.3)} >
+            <Typography variant="h3" sx={{ mt: 10 }}>
               Search for answers to common questions
             </Typography>
-          </m.div>
+          </motion.div>
 
           {/* Search Input */}
-          <m.div variants={fadeVariant} initial="hidden" animate="visible">
+          <motion.div variants={fadeUpVariant(0.6)}>
             <TextField
               fullWidth
               placeholder="Search support"
@@ -71,7 +88,10 @@ export default function FaqsHero() {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Iconify icon={"eva:search-fill"} sx={{ color: "text.disabled", width: 20, height: 20 }} />
+                    <Iconify
+                      icon={"eva:search-fill"}
+                      sx={{ color: "text.disabled", width: 20, height: 20 }}
+                    />
                   </InputAdornment>
                 ),
               }}
@@ -82,8 +102,8 @@ export default function FaqsHero() {
                 },
               }}
             />
-          </m.div>
-        </ContentStyle>
+          </motion.div>
+        </Stack>
       </Container>
     </RootStyle>
   );

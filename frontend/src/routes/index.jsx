@@ -1,13 +1,12 @@
 import { Suspense, lazy } from "react";
-import { Navigate, useRoutes, useLocation } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 // components
 import LoadingScreen from "../components/LoadingScreen";
 
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) => (props) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { pathname } = useLocation();
+  // const { pathname } = useLocation();
 
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -19,7 +18,7 @@ const Loadable = (Component) => (props) => {
 export default function Router() {
   return useRoutes([
     {
-      path: "authentication",
+      path: "auth",
       children: [
         { path: "login", element: <Login /> },
         { path: "register", element: <Register /> },
