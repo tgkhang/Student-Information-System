@@ -21,9 +21,9 @@ export default function Router() {
       path: "auth",
       children: [
         { path: "login", element: <Login /> },
-        { path: "register", element: <Register /> },
+        // { path: "register", element: <Register /> },
         { path: "forgot-password", element: <ForgotPassword /> },
-        { path: "verify", element: <VerifyCode /> },
+        // { path: "verify", element: <VerifyCode /> },
       ],
     },
     // Main Routes
@@ -45,15 +45,15 @@ export default function Router() {
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import("../pages/authentication/Login")));
-const Register = Loadable(
-  lazy(() => import("../pages/authentication/Register"))
-);
+// const Register = Loadable(
+//   lazy(() => import("../pages/authentication/Register"))
+// );
 const ForgotPassword = Loadable(
   lazy(() => import("../pages/authentication/ForgotPassword"))
 );
-const VerifyCode = Loadable(
-  lazy(() => import("../pages/authentication/VerifyCode"))
-);
+// const VerifyCode = Loadable(
+//   lazy(() => import("../pages/authentication/VerifyCode"))
+// );
 
 // MAIN
 const Page500 = Loadable(lazy(() => import("../pages/Page500")));

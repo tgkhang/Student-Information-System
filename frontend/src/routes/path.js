@@ -9,8 +9,8 @@ const ROOTS_AUTH = "/auth";
 export const PATH_AUTH = {
   root: ROOTS_AUTH,
   login: path(ROOTS_AUTH, "/login"),
-  register: path(ROOTS_AUTH, "/register"),
-  verify: path(ROOTS_AUTH, "/verify"),
+  // register: path(ROOTS_AUTH, "/register"),
+  // verify: path(ROOTS_AUTH, "/verify"),
   fotgotPassword: path(ROOTS_AUTH, "/forgot-password"),
 };
 
