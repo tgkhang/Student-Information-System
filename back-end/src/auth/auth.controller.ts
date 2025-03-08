@@ -15,6 +15,13 @@ import { LocalGuard } from './guards/local.guard';
 import { JWTAuthGuard } from './guards/jwt.guard';
 import { Request, Response } from 'express';
 
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -30,6 +37,7 @@ export class AuthController {
     @Body() body: { username: string; password: string },
     @Res() res: Response,
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const user = await this.authService.validateUser(
       body.username,
       body.password,
@@ -57,6 +65,7 @@ export class AuthController {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const user = this.authService.verifyRefreshToken(refreshToken);
       const { accessToken } = await this.authService.generateTokens(user, res);
+
       return res.json({ accessToken });
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -128,13 +137,20 @@ export class AuthController {
    */
   @Post('register')
   async register(
-    @Body() body: { username: string; email: string; password: string },
+    @Body()
+    body: {
+      username: string;
+      email: string;
+      password: string;
+      role: string;
+    },
   ) {
     try {
       return await this.authService.register(
         body.username,
         body.email,
         body.password,
+        body.role,
       );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -171,13 +187,16 @@ export class AuthController {
   @UseGuards(JWTAuthGuard)
   @Patch('change-password')
   async changePassword(
-    @Req() req: Request,
+    @Req() req: Request & { user: User },
     @Body() body: { currentPassword: string; newPassword: string },
   ) {
     try {
+      if (!req.user) {
+        throw new UnauthorizedException('Người dùng không hợp lệ');
+      }
+
       console.log(req.user);
       const result = await this.authService.changePassword(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         req.user.id,
         body.currentPassword,
         body.newPassword,

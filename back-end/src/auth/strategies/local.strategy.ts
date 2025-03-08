@@ -10,14 +10,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string) {
-    console.log('Inside LocalStrategy - Validating User');
     const user = await this.authService.validateUser(username, password);
 
     if (!user) {
       throw new UnauthorizedException('Invalid username or password');
     }
-
-    // Thay đổi user.id thành user._id
-    return { userId: user._id, username: user.username };
+    return { id: user._id, username: user.username };
   }
 }
