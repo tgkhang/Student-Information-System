@@ -17,12 +17,13 @@ const RootStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Faqs() {
+
   return (
     <Page title="Faqs">
       <RootStyle>
         <FaqsHero />
 
-        <Container sx={{ mt: 15, mb: 10, position: 'relative' }}>
+        <Container sx={{ mb: 10, position: 'relative' }}>
 
           <Typography variant="h3" sx={{ mb: 5 }}>
             Frequently asked questions

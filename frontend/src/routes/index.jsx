@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { Navigate, useRoutes, useLocation } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 // components
 import LoadingScreen from "../components/LoadingScreen";
 import StudentClassesAndAssignmentsPage from "../pages/Student/StudentClassesAndAssignmentsPage";
@@ -18,6 +18,7 @@ const Loadable = (Component) => {
   
   WrappedComponent.displayName = `Loadable(${Component.name || "Component"})`;
 
+
   return WrappedComponent;
 };
 
@@ -25,12 +26,12 @@ const Loadable = (Component) => {
 export default function Router() {
   return useRoutes([
     {
-      path: "authentication",
+      path: "auth",
       children: [
         { path: "login", element: <Login /> },
-        { path: "register", element: <Register /> },
+        // { path: "register", element: <Register /> },
         { path: "forgot-password", element: <ForgotPassword /> },
-        { path: "verify", element: <VerifyCode /> },
+        // { path: "verify", element: <VerifyCode /> },
       ],
     },
     // Main Routes
@@ -55,15 +56,15 @@ export default function Router() {
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import("../pages/authentication/Login")));
-const Register = Loadable(
-  lazy(() => import("../pages/authentication/Register"))
-);
+// const Register = Loadable(
+//   lazy(() => import("../pages/authentication/Register"))
+// );
 const ForgotPassword = Loadable(
   lazy(() => import("../pages/authentication/ForgotPassword"))
 );
-const VerifyCode = Loadable(
-  lazy(() => import("../pages/authentication/VerifyCode"))
-);
+// const VerifyCode = Loadable(
+//   lazy(() => import("../pages/authentication/VerifyCode"))
+// );
 
 // MAIN
 const Page500 = Loadable(lazy(() => import("../pages/Page500")));
