@@ -2,18 +2,26 @@ import { Suspense, lazy } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 // components
 import LoadingScreen from "../components/LoadingScreen";
+import StudentClassesAndAssignmentsPage from "../pages/Student/StudentClassesAndAssignmentsPage";
 
 // ----------------------------------------------------------------------
 
-const Loadable = (Component) => (props) => {
-  // const { pathname } = useLocation();
+const Loadable = (Component) => {
+  const WrappedComponent = (props) => {
+    //const { pathname } = useLocation();
+    return (
+      <Suspense fallback={<LoadingScreen />}>
+        <Component {...props} />
+      </Suspense>
+    );
+  };
+  
+  WrappedComponent.displayName = `Loadable(${Component.name || "Component"})`;
 
-  return (
-    <Suspense fallback={<LoadingScreen />}>
-      <Component {...props} />
-    </Suspense>
-  );
+
+  return WrappedComponent;
 };
+
 
 export default function Router() {
   return useRoutes([
@@ -38,6 +46,9 @@ export default function Router() {
         { path: "404", element: <Page404 /> },
         { path: "*", element: <Navigate to="/404" replace /> },
         { path: "faqs", element: <FAQs/>},
+        { path: "test", element: <TestPage/>},
+        { path: "studentClassRegistration", element: <StudentClassRegistrationPage/>},
+        { path: "studentClassAndAssignment", element: <StudentClassesAndAssignmentsPage/>},
       ],
     },
   ]);
@@ -62,3 +73,7 @@ const AboutUs = Loadable(lazy(() => import("../pages/AboutUs")));
 const ComingSoon = Loadable(lazy(() => import("../pages/ComingSoon")));
 const Maintenance = Loadable(lazy(() => import("../pages/Maintenance")));
 const FAQs = Loadable(lazy(() => import("../pages/Faqs")));
+
+const TestPage = Loadable(lazy(() => import("../pages/TestPage")));
+const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistration")));
+const StudentClassAndAssignmentPage=  Loadable(lazy(() => import("../pages/Student/StudentClassesAndAssignmentsPage")));
