@@ -2,7 +2,6 @@ import { Suspense, lazy } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 // components
 import LoadingScreen from "../components/LoadingScreen";
-import StudentClassesAndAssignmentsPage from "../pages/Student/StudentClassesAndAssignmentsPage";
 
 // ----------------------------------------------------------------------
 
@@ -47,8 +46,20 @@ export default function Router() {
         { path: "*", element: <Navigate to="/404" replace /> },
         { path: "faqs", element: <FAQs/>},
         { path: "test", element: <TestPage/>},
+      ],
+    },
+    {
+      path: "student",
+      children: [
         { path: "studentClassRegistration", element: <StudentClassRegistrationPage/>},
-        { path: "studentClassAndAssignment", element: <StudentClassesAndAssignmentsPage/>},
+        { path: "studentClassAndAssignment", element: <StudentClassAndAssignmentPage/>},
+      ],
+    },
+    {
+      path: "ministry",
+      children: [
+        { path: "studentList", element: <StudentListPage /> },
+        { path: "lecturerList", element: <LecturerListPage /> },
       ],
     },
   ]);
@@ -75,5 +86,11 @@ const Maintenance = Loadable(lazy(() => import("../pages/Maintenance")));
 const FAQs = Loadable(lazy(() => import("../pages/Faqs")));
 
 const TestPage = Loadable(lazy(() => import("../pages/TestPage")));
+
+// STUDENT
 const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistration")));
-const StudentClassAndAssignmentPage=  Loadable(lazy(() => import("../pages/Student/StudentClassesAndAssignmentsPage")));
+const StudentClassAndAssignmentPage =  Loadable(lazy(() => import("../pages/Student/StudentClassesAndAssignmentsPage")));
+
+// MINISTRY
+const StudentListPage = Loadable(lazy(() => import("../pages/ministry/StudentListPage")));
+const LecturerListPage = Loadable(lazy(() => import("../pages/ministry/LecturerListPage")));

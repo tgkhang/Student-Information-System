@@ -1,21 +1,12 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import { 
+  Box, Tabs, Tab, Typography, Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, Paper, InputLabel, 
+  MenuItem, FormControl, Select 
+} from '@mui/material';
 import Header from '../../components/Header';
 import NavigationDrawer from '../../components/NavigationDrawer';
+
 
 
 const drawerWidth = 240;
