@@ -20,13 +20,13 @@ export class SinhVien {
   @Prop()
   DiaChi: string;
 
-  @Prop({ unique: true })
+  @Prop()
   SoDienThoai: string;
 
   @Prop()
   Khoa: string;
 
-  @Prop({ unique: true })
+  @Prop()
   CCCD: string;
 
   @Prop()

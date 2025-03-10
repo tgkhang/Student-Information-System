@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SinhVien, SinhVienDocument } from '../schemas/SinhVien.schema';
@@ -35,9 +39,26 @@ export class SinhVienService {
       throw new NotFoundException('Sinh viên không tồn tại');
     }
 
+    if (updateSinhVienDto.CCCD) {
+      const existingCCCD = await this.sinhVienModel.findOne({
+        CCCD: updateSinhVienDto.CCCD,
+      });
+      if (existingCCCD && existingCCCD.mssv !== mssv) {
+        throw new BadRequestException('CCCD đã tồn tại');
+      }
+    }
+
+    if (updateSinhVienDto.SoDienThoai) {
+      const existingSDT = await this.sinhVienModel.findOne({
+        SoDienThoai: updateSinhVienDto.SoDienThoai,
+      });
+      if (existingSDT && existingSDT.mssv !== mssv) {
+        throw new BadRequestException('Số điện thoại đã tồn tại');
+      }
+    }
+
     delete updateSinhVienDto['mssv'];
     delete updateSinhVienDto['HoTen'];
-
     Object.assign(student, updateSinhVienDto, { ThoiGianCapNhat: new Date() });
     return student.save();
   }

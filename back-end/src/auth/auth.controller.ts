@@ -9,6 +9,7 @@ import {
   Delete,
   Res,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
@@ -25,6 +26,15 @@ interface User {
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get('get-account-by-token')
+  async getAccountByToken(@Query('accessToken') accessToken: string) {
+    if (!accessToken) {
+      throw new UnauthorizedException('Vui lòng cung cấp access token');
+    }
+
+    return this.authService.getAccountByToken(accessToken);
+  }
 
   /**
    * API đăng nhập

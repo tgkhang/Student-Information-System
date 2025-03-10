@@ -19,6 +19,30 @@ export class AuthService {
     @InjectModel('User') private readonly userModel: Model<User>,
   ) {}
 
+  async getAccountByToken(accessToken: string): Promise<User> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const decoded = this.jwtService.verify(accessToken, {
+        secret: this.accessSecret,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (decoded.exp * 1000 < Date.now()) {
+        throw new UnauthorizedException('Token đã hết hạn');
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const user = await this.userModel.findOne({ username: decoded.username });
+
+      if (!user) {
+        throw new UnauthorizedException('Không tìm thấy tài khoản');
+      }
+
+      return user;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new UnauthorizedException('Token không hợp lệ');
+    }
+  }
+
   async register(
     username: string,
     email: string,
