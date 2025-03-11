@@ -24,9 +24,18 @@ export class JWTAuthGuard extends AuthGuard('jwt') {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const token = authHeader.split(' ')[1];
+    console.log(token);
     try {
+      console.log(1);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
       const payload = this.jwtService.verify(token, { secret: 'abc123' });
+      console.log(payload);
+      const currentTime = Math.floor(Date.now() / 1000);
+      console.log("current time: ",currentTime);
+      console.log(payload.exp);
+      if (payload.exp && payload.exp < currentTime) {
+        throw new UnauthorizedException('Token đã hết hạn');
+      }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       request.user = payload;
       return true;

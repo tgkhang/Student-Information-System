@@ -88,6 +88,7 @@ export class AuthController {
    * Xóa refreshToken khỏi hệ thống
    */
   @Delete('logout')
+  @UseGuards(JWTAuthGuard)
   async logout(@Req() req: Request, @Res() res: Response) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access

@@ -48,6 +48,7 @@ export class AuthService {
     email: string,
     password: string,
     role: string,
+    requesterRole?: string,
   ) {
     const existingUser = await this.userModel.findOne({
       $or: [{ username }, { email }],
@@ -88,7 +89,7 @@ export class AuthService {
   async generateTokens(user: any, res: Response) {
     const accessToken = this.jwtService.sign(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      { id: user._id, username: user.username },
+      { id: user._id, username: user.username, role: user.role },
       {
         secret: this.accessSecret,
         expiresIn: '15m',
@@ -96,7 +97,7 @@ export class AuthService {
     );
     const refreshToken = this.jwtService.sign(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      { id: user._id, username: user.username },
+      { id: user._id, username: user.username, role: user.role },
       {
         secret: this.refreshSecret,
         expiresIn: '7d',

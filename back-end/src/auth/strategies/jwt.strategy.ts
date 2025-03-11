@@ -20,6 +20,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     console.log('payload: ', payload);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    return { id: payload.id, username: payload.username };
+    return { id: payload.id, username: payload.username, role: payload.role };
   }
 }

@@ -51,3 +51,4 @@ export class SinhVienController {
     return this.sinhVienService.updateStudent(mssv, updateSinhVienDto);
   }
 }
+
