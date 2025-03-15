@@ -14,13 +14,11 @@ const Loadable = (Component) => {
       </Suspense>
     );
   };
-  
-  WrappedComponent.displayName = `Loadable(${Component.name || "Component"})`;
 
+  WrappedComponent.displayName = `Loadable(${Component.name || "Component"})`;
 
   return WrappedComponent;
 };
-
 
 export default function Router() {
   return useRoutes([
@@ -36,25 +34,74 @@ export default function Router() {
     // Main Routes
     {
       path: "*",
-    //   element: <LogoOnlyLayout />,
+      //   element: <LogoOnlyLayout />,
       children: [
         { path: "coming-soon", element: <ComingSoon /> },
         { path: "maintenance", element: <Maintenance /> },
-        { path: "about-us", element: <AboutUs/>},
+        { path: "about-us", element: <AboutUs /> },
         { path: "500", element: <Page500 /> },
         { path: "404", element: <Page404 /> },
         { path: "*", element: <Navigate to="/404" replace /> },
-        { path: "faqs", element: <FAQs/>},
-        { path: "test", element: <TestPage/>},
+        { path: "faqs", element: <FAQs /> },
+        { path: "test", element: <TestPage /> },
+        {
+          path: "studentClassRegistration",
+          element: <StudentClassRegistrationPage />,
+        },
       ],
     },
+    // Student Routes
     {
       path: "student",
       children: [
-        { path: "studentClassRegistration", element: <StudentClassRegistrationPage/>},
-        { path: "studentClassAndAssignment", element: <StudentClassAndAssignmentPage/>},
+        { path: "dashboard", element: <StudentDashboardPage /> },
+        {
+          path: "classRegistration",
+          element: <StudentClassRegistrationPage />,
+        },
+        {
+          path: "classAndAssignment",
+          element: <StudentClassesAndAssignmentsPage />,
+        },
       ],
     },
+
+    // Admin Routes (placeholder for future)
+    {
+      path: "admin",
+      children: [
+        // Admin routes will go here
+      ],
+    },
+
+    // Teacher Routes (placeholder for future)
+    {
+      path: "teacher",
+      children: [
+        // Teacher routes will go here
+      ],
+    },
+    // // Course Routes
+    // {
+    //   path: "courses",
+    //   children: [
+    //     { path: "my-courses", element: <MyCoursesPage /> },
+    //     { path: "available", element: <AvailableCoursesPage /> },
+    //     { path: "catalog", element: <CourseCatalogPage /> },
+    //   ],
+    // },
+
+    // // Schedule Routes
+    // {
+    //   path: "schedule",
+    //   children: [
+    //     {
+    //       path: "",
+    //       element: <Navigate to="/student/classAndAssignment" replace />,
+    //     },
+    //     { path: "timetable", element: <TimetablePage /> },
+    //   ],
+    // },
     {
       path: "ministry",
       children: [
@@ -88,9 +135,18 @@ const FAQs = Loadable(lazy(() => import("../pages/Faqs")));
 const TestPage = Loadable(lazy(() => import("../pages/TestPage")));
 
 // STUDENT
-const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistration")));
-const StudentClassAndAssignmentPage =  Loadable(lazy(() => import("../pages/Student/StudentClassesAndAssignmentsPage")));
+const StudentDashboardPage = Loadable(lazy(() => import("../pages/Student/StudentDashboard")))
+const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistration")))
+const StudentClassesAndAssignmentsPage = Loadable(
+  lazy(() => import("../pages/Student/StudentClassesAndAssignmentsPage")),
+)
+
+
 
 // MINISTRY
-const StudentListPage = Loadable(lazy(() => import("../pages/ministry/StudentListPage")));
-const LecturerListPage = Loadable(lazy(() => import("../pages/ministry/LecturerListPage")));
+const StudentListPage = Loadable(
+  lazy(() => import("../pages/ministry/StudentListPage"))
+);
+const LecturerListPage = Loadable(
+  lazy(() => import("../pages/ministry/LecturerListPage"))
+);
