@@ -6,6 +6,9 @@ export type GiangVienDocument = GiangVien & Document;
 @Schema()
 export class GiangVien {
 
+    @Prop({ required: true})
+    MaGV: string;
+    
     @Prop({ required: true })
     HoTen: string;
 
@@ -33,7 +36,7 @@ export class GiangVien {
     @Prop()
     TrinhDo: string;
 
-    @Prop({ type: Date })
+    @Prop({ type: Date, default: Date.now })
     NgayVaoLam: Date;
 
     @Prop({ type: Date, default: Date.now })
