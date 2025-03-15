@@ -101,6 +101,11 @@ export default function NavigationDrawer({ isDrawerOpen, toggleDrawer }) {
       text: "Courses",
       icon: <SchoolIcon />,
       path: "/courses",
+      subItems: [
+        { text: "My Courses", path: "/courses/my-courses" },
+        { text: "Available Courses", path: "/courses/available" },
+        { text: "Course Catalog", path: "/courses/catalog" },
+      ],
     },
     {
       text: "Schedule",
@@ -113,6 +118,7 @@ export default function NavigationDrawer({ isDrawerOpen, toggleDrawer }) {
           path: "/student/classAndAssignment?tab=1",
           badge: pendingAssignmentsCount,
         },
+        { text: "Timetable", path: "/schedule/timetable" },
       ],
     },
     {
@@ -129,8 +135,8 @@ export default function NavigationDrawer({ isDrawerOpen, toggleDrawer }) {
   ]
 
   const bottomMenuItems = [
-    { text: "Settings", icon: <SettingsIcon />, path: "/settings" },
-    { text: "Help Center", icon: <HelpIcon />, path: "/help" },
+    { text: "Settings", icon: <SettingsIcon fontSize="small" />, path: "/settings" },
+    { text: "Help Center", icon: <HelpIcon fontSize="small" />, path: "/help" },
   ]
 
   // Handle submenu toggle
@@ -263,20 +269,31 @@ export default function NavigationDrawer({ isDrawerOpen, toggleDrawer }) {
 
         {/* Bottom Section */}
         <Box>
-          <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 1 }} />
           <List sx={{ px: 1 }}>
             {bottomMenuItems.map((item) => (
               <StyledListItem
                 key={item.text}
                 active={isActive(item.path) ? 1 : 0}
                 onClick={() => handleNavigation(item.path)}
+                sx={{
+                  py: 0.5,
+                  minHeight: "40px",
+                  "& .MuiListItemIcon-root": {
+                    minWidth: 32,
+                    fontSize: "small",
+                  },
+                  "& .MuiListItemText-primary": {
+                    fontSize: "0.85rem",
+                  },
+                }}
               >
-                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ fontSize: "small" }}>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />
               </StyledListItem>
             ))}
           </List>
-          <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 1 }} />
 
           {/* User Profile Section */}
           <Box sx={{ px: 2 }}>

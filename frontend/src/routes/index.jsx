@@ -43,11 +43,7 @@ export default function Router() {
         { path: "404", element: <Page404 /> },
         { path: "*", element: <Navigate to="/404" replace /> },
         { path: "faqs", element: <FAQs /> },
-        { path: "test", element: <TestPage /> },
-        {
-          path: "studentClassRegistration",
-          element: <StudentClassRegistrationPage />,
-        },
+        { path: "test", element: <StudentDashboardPage /> },
       ],
     },
     // Student Routes

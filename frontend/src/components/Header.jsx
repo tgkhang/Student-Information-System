@@ -14,16 +14,16 @@ export default function Header({ toggleDrawer }) {
         width: "100%",
         zIndex: (theme) => theme.zIndex.drawer + 1,
         backgroundColor: "white",
-        color: "black",
+        color: "primary.main",
         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.08)",
       }}
     >
       <Toolbar>
-        <IconButton size="large" edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer} sx={{ mr: 2 }}>
+        <IconButton size="small" edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer} sx={{ mr: 2 }}>
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: "bold" }}>
-          Student Portal
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: "bold", color: "primary.main" }}>
+          InfoStudia
         </Typography>
         <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
           {/* Add user profile or other actions here */}
