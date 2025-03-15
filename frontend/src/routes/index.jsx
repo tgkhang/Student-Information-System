@@ -131,8 +131,8 @@ const FAQs = Loadable(lazy(() => import("../pages/Faqs")));
 const TestPage = Loadable(lazy(() => import("../pages/TestPage")));
 
 // STUDENT
-const StudentDashboardPage = Loadable(lazy(() => import("../pages/Student/StudentDashboard")))
-const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistration")))
+const StudentDashboardPage = Loadable(lazy(() => import("../pages/Student/StudentDashboardPage")))
+const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistrationPage")))
 const StudentClassesAndAssignmentsPage = Loadable(
   lazy(() => import("../pages/Student/StudentClassesAndAssignmentsPage")),
 )
@@ -146,3 +146,4 @@ const StudentListPage = Loadable(
 const LecturerListPage = Loadable(
   lazy(() => import("../pages/ministry/LecturerListPage"))
 );
+

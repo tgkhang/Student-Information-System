@@ -118,7 +118,6 @@ export default function NavigationDrawer({ isDrawerOpen, toggleDrawer }) {
           path: "/student/classAndAssignment?tab=1",
           badge: pendingAssignmentsCount,
         },
-        { text: "Timetable", path: "/schedule/timetable" },
       ],
     },
     {
