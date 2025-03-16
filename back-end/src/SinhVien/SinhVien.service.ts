@@ -27,6 +27,7 @@ export class SinhVienService {
       Anh: null,
       TrangThai: 'Studying',
     });
+
     return newStudent.save();
   }
 
@@ -61,5 +62,24 @@ export class SinhVienService {
     delete updateSinhVienDto['HoTen'];
     Object.assign(student, updateSinhVienDto, { ThoiGianCapNhat: new Date() });
     return student.save();
+  }
+
+  async getStudentByMSSV(mssv: string): Promise<SinhVien> {
+    const student = await this.sinhVienModel.findOne({ mssv });
+    if (!student) {
+      throw new NotFoundException('Sinh viên không tồn tại');
+    }
+    return student;
+  }
+
+  async deleteStudentByMSSV(mssv: string): Promise<SinhVien> {
+    const student = await this.sinhVienModel.findOne({ mssv });
+
+    if (!student) {
+      throw new NotFoundException(`Không tìm thấy sinh viên có MSSV: ${mssv}`);
+    }
+    await this.sinhVienModel.deleteOne({ mssv });
+
+    return student;
   }
 }

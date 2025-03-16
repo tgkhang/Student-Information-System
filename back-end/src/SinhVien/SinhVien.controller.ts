@@ -1,8 +1,20 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  UnauthorizedException,
+  UseGuards,
+  Request,
+  Get,
+  Delete,
+} from '@nestjs/common';
 import { SinhVienService } from './SinhVien.service';
 import { CreateSinhVienDto } from './dto/create-sinhvien.dto';
 import { UpdateSinhVienDto } from './dto/update-sinhvien.dto';
 import { AuthService } from '../auth/auth.service';
+import { JWTAuthGuard } from '../auth/guards/jwt.guard';
 
 @Controller('sinhvien')
 export class SinhVienController {
@@ -12,42 +24,58 @@ export class SinhVienController {
   ) {}
 
   @Post('add-student')
-  async addStudent(@Body() createSinhVienDto: CreateSinhVienDto) {
+  @UseGuards(JWTAuthGuard)
+  async addStudent(
+    @Body() createSinhVienDto: CreateSinhVienDto,
+    @Request() req: any,
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (req.user.role !== 'admin') {
+      throw new UnauthorizedException('Không có quyền thêm sinh viên');
+    }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { mssv, HoTen } = createSinhVienDto;
-
     const username = mssv;
     const email = `${mssv}@student.hcmus.edu.vn`;
     const password = mssv;
     const role = 'Student';
 
-    // eslint-disable-next-line no-useless-catch
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const registrationResult = await this.authService.register(
-        username,
-        email,
-        password,
-        role,
-      );
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const newStudent =
-        await this.sinhVienService.addStudent(createSinhVienDto);
-
-      return {
-        message: 'Sinh viên đã được tạo thành công và đăng ký tài khoản.',
-      };
-    } catch (error) {
-      throw error;
-    }
+    await this.authService.register(username, email, password, role);
+    return this.sinhVienService.addStudent(createSinhVienDto);
   }
 
   @Patch('update-student/:mssv')
+  @UseGuards(JWTAuthGuard)
   async updateStudent(
     @Param('mssv') mssv: string,
     @Body() updateSinhVienDto: UpdateSinhVienDto,
   ) {
     return this.sinhVienService.updateStudent(mssv, updateSinhVienDto);
+  }
+
+  @Get('get-student/:mssv')
+  @UseGuards(JWTAuthGuard)
+  getStudent(@Param('mssv') mssv: string, @Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (req.user.role !== 'admin' && req.user.username !== mssv) {
+      throw new UnauthorizedException(
+        'Không có quyền xem thông tin sinh viên này',
+      );
+    }
+    return this.sinhVienService.getStudentByMSSV(mssv);
+  }
+
+  @Delete('delete-student/:mssv')
+  @UseGuards(JWTAuthGuard)
+  async deleteStudent(@Param('mssv') mssv: string, @Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (req.user.role !== 'admin') {
+      throw new UnauthorizedException(
+        'Không có quyền truy cập thông tin sinh viên này',
+      );
+    }
+    await this.authService.deleteAccountByUsername(mssv);
+
+    return this.sinhVienService.deleteStudentByMSSV(mssv);
   }
 }

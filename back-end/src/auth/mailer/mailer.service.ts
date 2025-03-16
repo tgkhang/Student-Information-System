@@ -14,8 +14,8 @@ export class MailerService {
 
   /**
    * Gửi email yêu cầu đặt lại mật khẩu.
-   * @param to Địa chỉ email người nhận
-   * @param resetLink Liên kết reset mật khẩu
+   * @param to
+   * @param resetLink
    */
   async sendResetPasswordEmail(to: string, resetLink: string): Promise<void> {
     const mailOptions = {

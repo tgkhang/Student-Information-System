@@ -10,6 +10,7 @@ import {
   Res,
   Patch,
   Query,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
@@ -88,6 +89,7 @@ export class AuthController {
    * Xóa refreshToken khỏi hệ thống
    */
   @Delete('logout')
+  @UseGuards(JWTAuthGuard)
   async logout(@Req() req: Request, @Res() res: Response) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
@@ -219,5 +221,15 @@ export class AuthController {
         'Đổi mật khẩu thất bại, kiểm tra lại mật khẩu hiện tại',
       );
     }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Delete('delete-account/:username')
+  async deleteAccount(@Param('username') username: string) {
+    if (!username) {
+      throw new UnauthorizedException('Vui lòng cung cấp username hợp lệ');
+    }
+
+    return this.authService.deleteAccountByUsername(username);
   }
 }

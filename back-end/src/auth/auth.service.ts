@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -88,7 +92,7 @@ export class AuthService {
   async generateTokens(user: any, res: Response) {
     const accessToken = this.jwtService.sign(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      { id: user._id, username: user.username },
+      { id: user._id, username: user.username, role: user.role },
       {
         secret: this.accessSecret,
         expiresIn: '15m',
@@ -96,7 +100,7 @@ export class AuthService {
     );
     const refreshToken = this.jwtService.sign(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      { id: user._id, username: user.username },
+      { id: user._id, username: user.username, role: user.role },
       {
         secret: this.refreshSecret,
         expiresIn: '7d',
@@ -252,5 +256,23 @@ export class AuthService {
       password: hashedNewPassword,
     });
     return { message: 'Đổi mật khẩu thành công' };
+  }
+
+  async deleteAccountByUsername(
+    username: string,
+  ): Promise<{ message: string }> {
+    const user = await this.userModel.findOne({ username });
+
+    if (!user) {
+      throw new NotFoundException(
+        `Không tìm thấy tài khoản với username: ${username}`,
+      );
+    }
+
+    await this.userModel.deleteOne({ username });
+
+    return {
+      message: `Tài khoản với username ${username} đã bị xóa thành công`,
+    };
   }
 }

@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { SinhVienModule } from './SinhVien/SinhVien.module';
-
+import { GiangVienModule } from './GiangVien/GiangVien.module';
+import { KyLuatModule } from './KyLuat/KyLuat.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
@@ -10,6 +11,8 @@ import { SinhVienModule } from './SinhVien/SinhVien.module';
     ),
     AuthModule,
     SinhVienModule,
+    GiangVienModule,
+    KyLuatModule,
   ],
 })
 export class AppModule {}
