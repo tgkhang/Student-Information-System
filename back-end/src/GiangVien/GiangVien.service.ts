@@ -18,7 +18,11 @@ export class GiangVienService {
         return await this.giangVienModel.find().exec();
     }
 
-
+    async getTeacher(MaGV: string){
+        const giangVien = await this.giangVienModel.findOne({MaGV}).exec();
+        return giangVien;
+    }
+    
     async getTeacherList(query: GetTeacherListDto) {
         const { pageSize, pageNumber, sortBy, sortOrder } = query;
     

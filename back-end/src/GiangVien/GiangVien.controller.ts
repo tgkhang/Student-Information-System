@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { GiangVienService } from './GiangVien.service';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { AuthService } from 'src/auth/auth.service';
@@ -29,6 +29,15 @@ export class GiangVienController {
         }
     }
 
+    @Get('getTeacher/:MaGV')
+    @UseGuards(JWTAuthGuard)
+    async getTeacher(@Param('MaGV') MaGV: string){
+        console.log('Giao vien: ',MaGV);
+        const giangVien = await this.GiangVienService.getTeacher(MaGV);
+        if (!giangVien)
+            throw new NotFoundException('Giảng viên không tồn tại.');
+        return giangVien;
+    }
     
     @Get('getListTeacher')
     @UseGuards(JWTAuthGuard)
