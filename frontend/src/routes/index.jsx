@@ -103,6 +103,8 @@ export default function Router() {
       children: [
         { path: "studentList", element: <StudentListPage /> },
         { path: "lecturerList", element: <LecturerListPage /> },
+        { path: "lecturerProfile/:id", element: <LecturerProfile /> },
+        { path: "studentProfile/:id", element: <StudentProfile /> },
       ],
     },
   ]);
@@ -146,4 +148,9 @@ const StudentListPage = Loadable(
 const LecturerListPage = Loadable(
   lazy(() => import("../pages/ministry/LecturerListPage"))
 );
-
+const LecturerProfile = Loadable(
+  lazy(() => import("../pages/ministry/LecturerProfileEditPage"))
+);
+const StudentProfile = Loadable(
+  lazy(() => import("../pages/ministry/StudentProfileEditPage"))
+);
