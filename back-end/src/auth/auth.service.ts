@@ -92,7 +92,7 @@ export class AuthService {
       { id: user._id, username: user.username, role: user.role },
       {
         secret: this.accessSecret,
-        expiresIn: '15m',
+        expiresIn: '55m',
       },
     );
     const refreshToken = this.jwtService.sign(

@@ -14,7 +14,6 @@ export class GiangVienController {
         private readonly AuthService: AuthService,
     ){}
 
-
     @Get('searchTeacher')
     @UseGuards(JWTAuthGuard)
     async searchTeacher(@Query('query') query: string)

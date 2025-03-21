@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { SinhVienModule } from './SinhVien/SinhVien.module';
 import { GiangVienModule } from './GiangVien/GiangVien.module';
 import { JWTAuthGuard } from './auth/guards/jwt.guard';
+import { KhoaHocModule } from './KhoaHoc/KhoaHoc.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { JWTAuthGuard } from './auth/guards/jwt.guard';
     AuthModule,
     SinhVienModule,
     GiangVienModule,
+    KhoaHocModule,
   ],
 })
 export class AppModule {}
