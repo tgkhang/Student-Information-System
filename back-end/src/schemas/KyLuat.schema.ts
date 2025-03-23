@@ -11,7 +11,7 @@ export class KyLuat {
   @Prop({ required: true })
   NoiDung: string;
 
-  @Prop({ type: Date })
+  @Prop({ type: Date, default: Date.now() })
   NgayLap: Date;
 
   @Prop({ enum: ['Processing', 'Processed'], default: 'Processing' })

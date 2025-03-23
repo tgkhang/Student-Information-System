@@ -9,12 +9,15 @@ import {
   Request,
   Get,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SinhVienService } from './SinhVien.service';
 import { CreateSinhVienDto } from './dto/create-sinhvien.dto';
 import { UpdateSinhVienDto } from './dto/update-sinhvien.dto';
 import { AuthService } from '../auth/auth.service';
 import { JWTAuthGuard } from '../auth/guards/jwt.guard';
+import { SinhVien } from 'src/schemas/SinhVien.schema';
+import { GetListStudentDto } from './dto/getList-sinhvien.dto';
 
 @Controller('sinhvien')
 export class SinhVienController {
@@ -34,11 +37,10 @@ export class SinhVienController {
       throw new UnauthorizedException('Không có quyền thêm sinh viên');
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { mssv, HoTen } = createSinhVienDto;
+    const { mssv, HoTen, role } = createSinhVienDto;
     const username = mssv;
     const email = `${mssv}@student.hcmus.edu.vn`;
     const password = mssv;
-    const role = 'Student';
 
     await this.authService.register(username, email, password, role);
     return this.sinhVienService.addStudent(createSinhVienDto);
@@ -65,6 +67,18 @@ export class SinhVienController {
     return this.sinhVienService.getStudentByMSSV(mssv);
   }
 
+  @Get('getList-Student')
+  @UseGuards(JWTAuthGuard)
+  getListStudent(@Query() query: GetListStudentDto) {
+    return this.sinhVienService.getListStudent(query);
+  }
+
+  @Get('search-student')
+  @UseGuards(JWTAuthGuard)
+  async searchSinhVien(@Query('query') query: string): Promise<SinhVien[]> {
+    return this.sinhVienService.searchSinhVien(query);
+  }
+
   @Delete('delete-student/:mssv')
   @UseGuards(JWTAuthGuard)
   async deleteStudent(@Param('mssv') mssv: string, @Request() req: any) {
@@ -75,7 +89,6 @@ export class SinhVienController {
       );
     }
     await this.authService.deleteAccountByUsername(mssv);
-
     return this.sinhVienService.deleteStudentByMSSV(mssv);
   }
 }

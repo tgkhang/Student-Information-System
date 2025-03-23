@@ -1,28 +1,51 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { KyLuat, KyLuatDocument } from '../schemas/KyLuat.schema';
 import { SinhVien, SinhVienDocument } from '../schemas/SinhVien.schema';
-import { CreateDisciplineDto } from './dto/create-discipline.dto';
+import { CreateDisciplineDto } from './dto/C&U-discipline.dto';
+import { PhuHuynh, PhuHuynhDocument } from './../schemas/PhuHuynh.schema';
 
 @Injectable()
 export class KyLuatService {
   constructor(
     @InjectModel(KyLuat.name) private kyLuatModel: Model<KyLuatDocument>,
     @InjectModel(SinhVien.name) private sinhVienModel: Model<SinhVienDocument>,
+    @InjectModel(PhuHuynh.name) private phuHuynhModel: Model<PhuHuynhDocument>,
   ) {}
 
   async getDisciplineByMSSV(mssv: string) {
+    const sinhVien = await this.sinhVienModel.findOne({ mssv });
+    if (!sinhVien) {
+      throw new NotFoundException('Sinh viên không tồn tại');
+    }
     const disciplines = await this.kyLuatModel
-      .find({ SinhVienID: mssv })
+      .find({ SinhVienID: (sinhVien._id as Types.ObjectId).toString() })
       .populate('SinhVienID')
       .exec();
+
     return disciplines;
   }
 
   async addDiscipline(createDisciplineDto: CreateDisciplineDto) {
     const newDiscipline = new this.kyLuatModel(createDisciplineDto);
-    return newDiscipline.save();
+    const savedDiscipline = await newDiscipline.save();
+
+    const sinhVienID = savedDiscipline.SinhVienID;
+
+    const phuHuynh = await this.phuHuynhModel.findOne({
+      SinhVienID: sinhVienID,
+    });
+    if (phuHuynh) {
+      phuHuynh.ThongBao.push({
+        KyLuatID: savedDiscipline._id as Types.ObjectId,
+        PhuongThucGui: 'email',
+      });
+
+      await phuHuynh.save();
+    }
+
+    return savedDiscipline;
   }
 
   async updateDiscipline(
@@ -45,10 +68,25 @@ export class KyLuatService {
   }
 
   async getDisciplineById(_id: string): Promise<KyLuat> {
-    const discipline = await this.kyLuatModel.findById(_id).exec();
+    const discipline = await this.kyLuatModel
+      .findById(_id as unknown as Types.ObjectId)
+      .exec();
     if (!discipline) {
       throw new NotFoundException('Kỷ luật không tồn tại');
     }
     return discipline;
+  }
+
+  async deleteDisciplineByMSSV(mssv: string): Promise<any> {
+    const sinhVien = await this.sinhVienModel.findOne({ mssv });
+
+    if (!sinhVien) {
+      throw new NotFoundException(`Không tìm thấy sinh viên có MSSV: ${mssv}`);
+    }
+
+    const result = await this.kyLuatModel
+      .deleteMany({ SinhVienID: (sinhVien._id as Types.ObjectId).toString() })
+      .exec();
+    return result;
   }
 }

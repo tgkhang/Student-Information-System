@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { SinhVienModule } from './SinhVien/SinhVien.module';
 import { GiangVienModule } from './GiangVien/GiangVien.module';
 import { KyLuatModule } from './KyLuat/KyLuat.module';
+import { PhuHuynhModule } from './PhuHuynh/PhuHuynh.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
@@ -13,6 +14,7 @@ import { KyLuatModule } from './KyLuat/KyLuat.module';
     SinhVienModule,
     GiangVienModule,
     KyLuatModule,
+    PhuHuynhModule,
   ],
 })
 export class AppModule {}

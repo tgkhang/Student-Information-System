@@ -106,7 +106,6 @@ export class AuthService {
         expiresIn: '7d',
       },
     );
-
     await this.userModel.findByIdAndUpdate(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       user._id,
@@ -164,8 +163,14 @@ export class AuthService {
       const decoded = this.jwtService.verify(refreshToken, {
         secret: this.refreshSecret,
       });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      return { userId: decoded.id, username: decoded.username };
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        userId: decoded.id,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        username: decoded.username,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        role: decoded.role,
+      };
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new UnauthorizedException('Invalid or expired refresh token');

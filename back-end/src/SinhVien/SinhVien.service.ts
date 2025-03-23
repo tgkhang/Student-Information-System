@@ -8,6 +8,7 @@ import { Model } from 'mongoose';
 import { SinhVien, SinhVienDocument } from '../schemas/SinhVien.schema';
 import { CreateSinhVienDto } from './dto/create-sinhvien.dto';
 import { UpdateSinhVienDto } from './dto/update-sinhvien.dto';
+import { GetListStudentDto } from './dto/getList-sinhvien.dto';
 
 @Injectable()
 export class SinhVienService {
@@ -16,8 +17,10 @@ export class SinhVienService {
   ) {}
 
   async addStudent(createSinhVienDto: CreateSinhVienDto): Promise<SinhVien> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { role, ...sinhVienData } = createSinhVienDto;
     const newStudent = new this.sinhVienModel({
-      ...createSinhVienDto,
+      ...sinhVienData,
       NgaySinh: null,
       GioiTinh: null,
       DiaChi: null,
@@ -81,5 +84,46 @@ export class SinhVienService {
     await this.sinhVienModel.deleteOne({ mssv });
 
     return student;
+  }
+
+  async searchSinhVien(query: string) {
+    const sinhVien = await this.sinhVienModel.find({
+      $or: [
+        { HoTen: { $regex: query, $options: 'i' } },
+        { mssv: { $regex: query, $options: 'i' } },
+      ],
+    });
+    if (sinhVien.length === 0) {
+      throw new NotFoundException('Không tìm thấy sinh viên.');
+    }
+
+    return sinhVien;
+  }
+
+  async getListStudent(query: GetListStudentDto) {
+    const { pageSize, pageNumber, sortBy, sortOrder } = query;
+
+    if (!pageSize || !pageNumber || !sortBy || !sortOrder) {
+      throw new BadRequestException('Thiếu các trường cần thiết');
+    }
+
+    const skip = (pageNumber - 1) * pageSize;
+    const limit = pageSize;
+
+    const sort = {};
+    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const sinhViens = await this.sinhVienModel
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .sort(sort);
+
+    return {
+      pageSize,
+      pageNumber,
+      total: await this.sinhVienModel.countDocuments(),
+      data: sinhViens,
+    };
   }
 }
