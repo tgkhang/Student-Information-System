@@ -1,16 +1,17 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { KhoaHoc, KhoaHocDocument } from 'src/schemas/KhoaHoc.schema';
 import { AddCourseDto } from './dto/add-KhoaHoc.dto';
 import { GetCourseListDto } from './dto/getListCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
+import { SinhVienService } from 'src/SinhVien/SinhVien.service';
 
 @Injectable()
 export class KhoaHocService {
     constructor(
         @InjectModel(KhoaHoc.name) private readonly khoaHocModel: Model<KhoaHocDocument>,
-
+        private readonly sinhVienService: SinhVienService,
     ){}
 
 
@@ -19,10 +20,20 @@ export class KhoaHocService {
 
         const TenKhoaHoc = KhoaHocdto.TenKhoaHoc;
         const MaKhoaHoc = await this.generateCoursename(TenKhoaHoc);
+
+        const existingName = await this.khoaHocModel.findOne({TenKhoaHoc});
+        if (existingName && existingName.MaKhoaHoc !== MaKhoaHoc) {
+            throw new BadRequestException('Tên khóa học đã tồn tại');
+        }
+        
         const SoTinChi = KhoaHocdto.SoTinChi;
         const MoTa = KhoaHocdto.MoTa;
         const GiangVienID = KhoaHocdto.GiangVienID;
         const TroGiangID = KhoaHocdto.TroGiangID;
+        const SoLuongToiDa = KhoaHocdto.SoLuongToiDa;
+        const HanDangKy = KhoaHocdto.HanDangKy;
+        const NgayBatDau = KhoaHocdto.NgayBatDau;
+        const NgayKetThuc = KhoaHocdto.NgayKetThuc;
         console.log('validate: ',MaKhoaHoc);
         const khoaHoc = new this.khoaHocModel({
             MaKhoaHoc,
@@ -31,7 +42,12 @@ export class KhoaHocService {
             TroGiangID,
             SoTinChi,
             MoTa,      
-            NgayCapNhat: Date.now()
+            NgayCapNhat: Date.now(),
+            SoLuongToiDa,
+            SoLuongSinhVienDangKy: 0,
+            HanDangKy,
+            NgayBatDau,
+            NgayKetThuc
         });
         return khoaHoc.save();
     }
@@ -52,7 +68,15 @@ export class KhoaHocService {
     async getCourse(MaKhoaHoc: string)
     {
         console.log('Mã khóa học',MaKhoaHoc);
-        const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc}).populate('GiangVienID', 'HoTen').populate('TroGiangID', 'HoTen').exec();
+        const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc}).populate('GiangVienID', 'HoTen')
+                                                                    .populate('TroGiangID', 'HoTen')
+                                                                    .exec();
+        // const khoaHoc = await this.khoaHocModel
+        // .findOne({ MaKhoaHoc })
+        // .populate({
+        //     path: 'SinhVienDangKy', // Populate SinhVienDangKy
+        //     select: 'HoTen' // Select only the HoTen field of SinhVien
+        // });
         return khoaHoc;
     }
 
@@ -92,12 +116,12 @@ export class KhoaHocService {
             throw new NotFoundException('Khóa học không tồn tại');
         }
 
-        if (updateCourseDto.TenKhoaHoc) {
-            const existingName = await this.khoaHocModel.findOne({TenKhoaHoc: updateCourseDto.TenKhoaHoc});
-            if (existingName && existingName.MaKhoaHoc !== MaKhoaHoc) {
-                throw new BadRequestException('Tên khóa học đã tồn tại');
-            }
-        }
+        // if (updateCourseDto.TenKhoaHoc) {
+        //     const existingName = await this.khoaHocModel.findOne({TenKhoaHoc: updateCourseDto.TenKhoaHoc});
+        //     if (existingName && existingName.MaKhoaHoc !== MaKhoaHoc) {
+        //         throw new BadRequestException('Tên khóa học đã tồn tại');
+        //     }
+        // }
     
         const updatedKhoaHoc = await this.khoaHocModel.findOneAndUpdate(
         { MaKhoaHoc },
@@ -135,5 +159,75 @@ export class KhoaHocService {
             throw new NotFoundException('Không tìm thấy khóa học.');
 
         return khoaHoc;
+    }
+
+    async registerStudentToCourse(MaKhoaHoc: string, username: string) {
+        // console.log('Mã khóa học: ', studentId);
+        const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
+        if (!khoaHoc) {
+            throw new NotFoundException('Khóa học không tồn tại');
+        }
+    
+        if (khoaHoc.SoLuongSinhVienDangKy >= khoaHoc.SoLuongToiDa) {
+            throw new BadRequestException('Khóa học đã đầy.');
+        }
+        const currentDate = new Date();
+        if (currentDate > new Date(khoaHoc.HanDangKy) ) {
+            throw new BadRequestException('Đã hết thời gian đăng ký.');
+        }
+        
+        const sinhVien = await this.sinhVienService.getStudentByMSSV(username);
+        const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
+        console.log(sinhVienId);
+        if (!khoaHoc.SinhVienDangKy.includes(sinhVienId)) {
+            khoaHoc.SinhVienDangKy.push(sinhVienId);
+            khoaHoc.SoLuongSinhVienDangKy += 1;
+            await khoaHoc.save();
+            return { message: 'Đăng ký khóa học thành công!' };
+        } else {
+            throw new BadRequestException('Sinh viên đã đăng ký khóa học này.');
+        }
+    }
+            // const studentObjectId = new Types.ObjectId(studentId);
+
+    async addStudentToCourseByAdmin(MaKhoaHoc: string, studentId: string) {
+        const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc });
+        if (!khoaHoc) {
+            throw new NotFoundException('Khóa học không tồn tại');
+        }
+        const sinhVien = await this.sinhVienService.getStudentByMSSV(studentId);
+        const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
+        console.log(sinhVienId);
+
+        if (!khoaHoc.SinhVienDangKy.includes(sinhVienId)) {
+            khoaHoc.SinhVienDangKy.push(sinhVienId);
+            khoaHoc.SoLuongSinhVienDangKy += 1;
+            if (khoaHoc.SoLuongToiDa < khoaHoc.SoLuongSinhVienDangKy)
+                khoaHoc.SoLuongToiDa += 1;
+            await khoaHoc.save();
+            return { message: 'Sinh viên đã được thêm vào khóa học!' };
+        } else {
+            throw new BadRequestException('Sinh viên đã có trong danh sách khóa học này.');
+        }
+    }
+    
+    async removeStudentFromCourseByAdmin(MaKhoaHoc: string, studentId: string) {
+        const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc });
+        if (!khoaHoc) {
+            throw new NotFoundException('Khóa học không tồn tại');
+        }
+        const sinhVien = await this.sinhVienService.getStudentByMSSV(studentId);
+        const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
+        console.log(sinhVienId);
+
+        const index = khoaHoc.SinhVienDangKy.indexOf(sinhVienId);
+        if (index !== -1) {
+            khoaHoc.SinhVienDangKy.splice(index, 1);
+            khoaHoc.SoLuongSinhVienDangKy -= 1;
+            await khoaHoc.save();
+            return { message: 'Sinh viên đã được xóa khỏi khóa học.' };
+        } else {
+            throw new BadRequestException('Sinh viên không có trong danh sách khóa học này.');
+        }
     }
 }

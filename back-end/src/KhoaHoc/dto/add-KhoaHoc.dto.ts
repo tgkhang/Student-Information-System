@@ -1,11 +1,12 @@
-import { IsString, IsInt, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsInt, IsOptional, IsArray, IsNotEmpty } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class AddCourseDto {
-     
+    @IsNotEmpty()
     @IsString()
     TenKhoaHoc: string;
 
+    @IsNotEmpty()
     @IsString()
     GiangVienID: Types.ObjectId;
 
@@ -13,6 +14,7 @@ export class AddCourseDto {
     @IsString()
     TroGiangID?: Types.ObjectId;
 
+    @IsNotEmpty()
     @IsInt()
     SoTinChi: number;
 
@@ -20,6 +22,18 @@ export class AddCourseDto {
     @IsString()
     MoTa?: string;
 
+    @IsInt()
+    @IsNotEmpty()
+    SoLuongToiDa: number;
+
+    @IsNotEmpty()
+    HanDangKy: Date;
+
+    @IsNotEmpty()
+    NgayBatDau: Date;
+
+    @IsNotEmpty()
+    NgayKetThuc: Date;
     // @IsArray()
     // SinhVienDangKy: Types.ObjectId[];
 

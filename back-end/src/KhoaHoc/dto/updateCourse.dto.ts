@@ -2,9 +2,9 @@ import { IsString, IsInt, IsOptional, IsArray } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class UpdateCourseDto {
-    @IsOptional()
-    @IsString()
-    TenKhoaHoc?: string;
+    // @IsOptional()
+    // @IsString()
+    // TenKhoaHoc?: string;
 
     @IsOptional()
     @IsString()
@@ -21,6 +21,19 @@ export class UpdateCourseDto {
     @IsOptional()
     @IsString()
     MoTa?: string;
+
+    @IsOptional()
+    HanDangKy: Date;
+
+    @IsInt()
+    @IsOptional()
+    SoLuongToiDa: number;
+
+    @IsOptional()
+    NgayBatDau: Date;
+
+    @IsOptional()
+    NgayKetThuc: Date;
 
     // @IsOptional()
     // @IsArray()

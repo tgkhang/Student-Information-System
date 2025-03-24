@@ -1,10 +1,11 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { KhoaHocService } from './KhoaHoc.service';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { AddCourseDto } from 'src/KhoaHoc/dto/add-KhoaHoc.dto'
 import { query } from 'express';
 import { GetCourseListDto } from './dto/getListCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
+import { Types } from 'mongoose';
 
 @Controller('KhoaHoc')
 export class KhoaHocController {
@@ -31,6 +32,7 @@ export class KhoaHocController {
 
     @Get('getListCourse')
     @UseGuards(JWTAuthGuard)
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
     async getListCourse(@Query() query: GetCourseListDto)
     {
         try{
@@ -45,6 +47,7 @@ export class KhoaHocController {
 
     @Post('addCourse')
     @UseGuards(JWTAuthGuard)
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     async addCourse(@Req() req: any,@Body() body: AddCourseDto){
         try{
             if (req.user.role !== "Admin")
@@ -59,6 +62,7 @@ export class KhoaHocController {
     
     @Put('updateCourse/:MaKhoaHoc')
     @UseGuards(JWTAuthGuard)
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     async updateCourse(@Req() req: any, @Param('MaKhoaHoc') MaKhoaHoc: string, @Body() updateKhoaHocDto: UpdateCourseDto){
         try{
             if (req.user.role !== "Admin")
@@ -95,5 +99,34 @@ export class KhoaHocController {
         {
             return error;
         }
+    }
+
+
+
+    @Post('registerStudent/:MaKHoaHoc')
+    @UseGuards(JWTAuthGuard)
+    async registerStudent(@Param('MaKHoaHoc') MaKHoaHoc: string, @Req() req: any) {
+        const username = req.user.username;
+        // console.log(studentId);
+        // const studentId = new Types.ObjectId(req.user.userId); // lấy ID sinh viên từ token
+
+        return this.khoaHocService.registerStudentToCourse(MaKHoaHoc, username);
+    }
+
+    @Post('addStudentByAdmin/:MaKHoaHoc')
+    @UseGuards(JWTAuthGuard)
+    async addStudentByAdmin(@Param('MaKHoaHoc') MaKHoaHoc: string, @Body() body: { studentId: string }, @Req() req: any) {
+        if (req.user.role !== 'Admin')
+            throw new UnauthorizedException('Bạn không có quyền xóa khóa học.');
+        console.log(MaKHoaHoc, body.studentId);
+        return this.khoaHocService.addStudentToCourseByAdmin(MaKHoaHoc, body.studentId);
+    }
+
+    @Delete('removeStudentByAdmin/:MaKHoaHoc')
+    @UseGuards(JWTAuthGuard)
+    async removeStudentByAdmin(@Param('MaKHoaHoc') MaKHoaHoc: string, @Body() body: {studentId: string}, @Req() req: any) {
+        if (req.user.role !== 'Admin')
+            throw new UnauthorizedException('Bạn không có quyền xóa sinh viên khỏi khóa học.');
+        return this.khoaHocService.removeStudentFromCourseByAdmin(MaKHoaHoc, body.studentId);
     }
 }

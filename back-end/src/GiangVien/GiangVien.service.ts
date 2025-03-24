@@ -48,6 +48,7 @@ export class GiangVienService {
           data: giangViens,
         };
     }
+    
     async addTeacher(MaGV:string, HoTen: string, ChucVu: string): Promise<GiangVien>{
         const newTeacher = new this.giangVienModel({
             MaGV,
@@ -85,7 +86,7 @@ export class GiangVienService {
                 throw new NotFoundException('Giảng viên không tồn tại.');
             }
             console.log(giangVien);
-            const user = await this.authService.deleteUser(MaGV);
+            const user = await this.authService.deleteAccountByUsername(MaGV);
             await this.giangVienModel.findByIdAndDelete(giangVien._id);
         }
         catch(error)

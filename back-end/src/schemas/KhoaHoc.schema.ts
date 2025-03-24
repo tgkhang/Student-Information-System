@@ -40,6 +40,21 @@ export class KhoaHoc {
 
   @Prop({ type: Date, default: Date.now })
   NgayCapNhat: Date;
+
+  @Prop({ required: true })
+  SoLuongToiDa: number;
+
+  @Prop({ default: 0 })
+  SoLuongSinhVienDangKy: number;
+
+  @Prop({ required: true})
+  HanDangKy: Date;
+
+  @Prop({required: true})
+  NgayBatDau: Date;
+
+  @Prop({required: true})
+  NgayKetThuc: Date;
 }
 
 export const KhoaHocSchema = SchemaFactory.createForClass(KhoaHoc);
