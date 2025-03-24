@@ -10,6 +10,7 @@ import {
   Res,
   Patch,
   Query,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
@@ -222,4 +223,13 @@ export class AuthController {
     }
   }
 
+  @UseGuards(JWTAuthGuard)
+  @Delete('delete-account/:username')
+  async deleteAccount(@Param('username') username: string) {
+    if (!username) {
+      throw new UnauthorizedException('Vui lòng cung cấp username hợp lệ');
+    }
+
+    return this.authService.deleteAccountByUsername(username);
+  }
 }

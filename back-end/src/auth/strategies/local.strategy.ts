@@ -10,11 +10,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const user = await this.authService.validateUser(username, password);
 
     if (!user) {
       throw new UnauthorizedException('Invalid username or password');
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     return { id: user._id, username: user.username };
   }
 }

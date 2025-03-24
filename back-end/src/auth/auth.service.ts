@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException , NotFoundException} from '@nestjs/common';
+
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -103,7 +104,6 @@ export class AuthService {
         expiresIn: '7d',
       },
     );
-
     await this.userModel.findByIdAndUpdate(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       user._id,
@@ -161,8 +161,14 @@ export class AuthService {
       const decoded = this.jwtService.verify(refreshToken, {
         secret: this.refreshSecret,
       });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      return { userId: decoded.id, username: decoded.username };
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        userId: decoded.id,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        username: decoded.username,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        role: decoded.role,
+      };
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new UnauthorizedException('Invalid or expired refresh token');
@@ -255,10 +261,21 @@ export class AuthService {
     return { message: 'Đổi mật khẩu thành công' };
   }
 
-  async deleteUser(username: string) {
-    const user = this.userModel.findOne({username});
-    if (!user)
-      throw new BadRequestException('Không tìm thấy user');
-    return await this.userModel.deleteOne(user);
+  async deleteAccountByUsername(
+    username: string,
+  ): Promise<{ message: string }> {
+    const user = await this.userModel.findOne({ username });
+
+    if (!user) {
+      throw new NotFoundException(
+        `Không tìm thấy tài khoản với username: ${username}`,
+      );
+    }
+
+    await this.userModel.deleteOne({ username });
+
+    return {
+      message: `Tài khoản với username ${username} đã bị xóa thành công`,
+    };
   }
 }

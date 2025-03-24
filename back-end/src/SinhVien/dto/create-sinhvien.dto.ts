@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateSinhVienDto {
   @IsNotEmpty()
@@ -8,4 +8,9 @@ export class CreateSinhVienDto {
   @IsNotEmpty()
   @IsString()
   HoTen: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsIn(['student'])
+  role: string;
 }
