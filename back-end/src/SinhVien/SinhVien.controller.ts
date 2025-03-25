@@ -26,15 +26,14 @@ export class SinhVienController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post('add-student')
+  @Post('add_student')
   @UseGuards(JWTAuthGuard)
   async addStudent(
     @Body() createSinhVienDto: CreateSinhVienDto,
     @Request() req: any,
   ) {
-    console.log(req.user.role);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền thêm sinh viên');
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -56,7 +55,7 @@ export class SinhVienController {
     return this.sinhVienService.updateStudent(mssv, updateSinhVienDto);
   }
 
-  @Get('get-student/:mssv')
+  @Get('get_student/:mssv')
   @UseGuards(JWTAuthGuard)
   getStudent(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -68,19 +67,19 @@ export class SinhVienController {
     return this.sinhVienService.getStudentByMSSV(mssv);
   }
 
-  @Get('getList-Student')
+  @Get('getList_Student')
   @UseGuards(JWTAuthGuard)
   getListStudent(@Query() query: GetListStudentDto) {
     return this.sinhVienService.getListStudent(query);
   }
 
-  @Get('search-student')
+  @Get('search_student')
   @UseGuards(JWTAuthGuard)
   async searchSinhVien(@Query('query') query: string): Promise<SinhVien[]> {
     return this.sinhVienService.searchSinhVien(query);
   }
 
-  @Delete('delete-student/:mssv')
+  @Delete('delete_student/:mssv')
   @UseGuards(JWTAuthGuard)
   async deleteStudent(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -93,4 +92,3 @@ export class SinhVienController {
     return this.sinhVienService.deleteStudentByMSSV(mssv);
   }
 }
-
