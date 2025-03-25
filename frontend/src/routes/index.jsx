@@ -44,6 +44,7 @@ export default function Router() {
         { path: "*", element: <Navigate to="/404" replace /> },
         { path: "faqs", element: <FAQs /> },
         { path: "test", element: <StudentDashboardPage /> },
+        { path: "guest", element: <GuestPage />}
       ],
     },
     // Student Routes
@@ -123,6 +124,7 @@ const ForgotPassword = Loadable(
 // );
 
 // MAIN
+const GuestPage = Loadable(lazy(() => import("../pages/GuestPage")));
 const Page500 = Loadable(lazy(() => import("../pages/Page500")));
 const Page404 = Loadable(lazy(() => import("../pages/Page404")));
 const AboutUs = Loadable(lazy(() => import("../pages/AboutUs")));
