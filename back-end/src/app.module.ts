@@ -8,11 +8,17 @@ import { KhoaHocModule } from './KhoaHoc/KhoaHoc.module';
 
 import { KyLuatModule } from './KyLuat/KyLuat.module';
 import { PhuHuynhModule } from './PhuHuynh/PhuHuynh.module';
+import { ConfigModule } from '@nestjs/config';
+import { config } from 'dotenv';
 @Module({
   imports: [
     MongooseModule.forRoot(
       'mongodb+srv://sis:sis@cluster0.xqphw.mongodb.net/',
     ),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config]
+    }),
     AuthModule,
     SinhVienModule,
     GiangVienModule,
