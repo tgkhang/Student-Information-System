@@ -20,6 +20,7 @@ export class KhoaHocController {
 
         try{
             console.log('Mã khóa học: ', MaKhoaHoc);
+            // const KhoaHoc = await this.khoaHocService.getCourse(MaKhoaHoc);
             const KhoaHoc = await this.khoaHocService.getCourse(MaKhoaHoc);
             if (!KhoaHoc)
                 throw new BadRequestException('Không tìm thấy khóa học.');
@@ -30,6 +31,23 @@ export class KhoaHocController {
         }
     }
 
+    @Get('getRegisteredStudent/:MaKhoaHoc')
+    @UseGuards(JWTAuthGuard)
+    async getRegisteredStudent(@Param('MaKhoaHoc') MaKhoaHoc: string)
+    {
+        try{
+            // console.log('Mã khóa học: ', MaKhoaHoc);
+            // const KhoaHoc = await this.khoaHocService.getCourse(MaKhoaHoc);
+            const details = await this.khoaHocService.getRegisteredStudent(MaKhoaHoc);
+            if (!details)
+                throw new BadRequestException('Không có sinh viên trong khóa học.');
+            return details;
+        }catch(error)
+        {
+            error
+        }
+    }
+    
     @Get('getListCourse')
     @UseGuards(JWTAuthGuard)
     @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

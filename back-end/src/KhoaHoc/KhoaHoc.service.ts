@@ -65,6 +65,31 @@ export class KhoaHocService {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
+    // async getStudentDetail(MaKhoaHoc: string)
+    // {
+    //     const khoaHoc = await this.khoaHocModel.findOne({MaKhoaHoc}).exec();
+    //     if (!khoaHoc)
+    //         throw new BadRequestException('Khóa học không tồn tại.');
+    //     const studentNames = khoaHoc.SinhVienDangKy.map((sinhVien: SinhVien) => sinhVien.HoTen);
+    //     return khoaHoc;
+    // }
+    async getRegisteredStudent(MaKhoaHoc: string) {
+        const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc })
+                                            .populate({
+                                                path: 'SinhVienDangKy',
+                                                select: 'HoTen',
+                                            })
+                                            .exec();
+        if (!khoaHoc) {
+          throw new NotFoundException('Khóa học không tồn tại');
+        }
+        const studentDetails = (khoaHoc.SinhVienDangKy as unknown[] as { _id: string, HoTen: string }[]).map(sinhVien => ({
+            id: sinhVien._id,
+            HoTen: sinhVien.HoTen,
+        }));
+        // const studentNames = (khoaHoc.SinhVienDangKy as unknown[] as { HoTen: string }[]).map(sinhVien => sinhVien.HoTen);
+        return studentDetails;
+    }
     async getCourse(MaKhoaHoc: string)
     {
         console.log('Mã khóa học',MaKhoaHoc);

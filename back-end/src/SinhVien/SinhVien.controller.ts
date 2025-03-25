@@ -32,8 +32,9 @@ export class SinhVienController {
     @Body() createSinhVienDto: CreateSinhVienDto,
     @Request() req: any,
   ) {
+    console.log(req.user.role);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'Admin') {
       throw new UnauthorizedException('Không có quyền thêm sinh viên');
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
