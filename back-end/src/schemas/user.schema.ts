@@ -24,8 +24,8 @@ export class User {
   resetToken: string | null;
 
   @Prop({
-    enum: ['student', 'teacher', 'admin'],
-    default: 'student',
+    enum: ['Student', 'Teacher', 'Admin'],
+    default: 'Student',
   })
   role: string;
 }

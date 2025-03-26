@@ -49,7 +49,7 @@ export class GiangVienService {
         };
     }
     
-    async addTeacher(MaGV:string, HoTen: string, ChucVu: string): Promise<GiangVien>{
+    async addTeacher(MaGV:string, HoTen: string, ChucVu: string, KhoaID: string): Promise<GiangVien>{
         const newTeacher = new this.giangVienModel({
             MaGV,
             HoTen,
@@ -61,6 +61,7 @@ export class GiangVienService {
             Khoa: null,
             CCCD: null,
             TrinhDo: null,
+            KhoaID,
             NgayVaoLam: Date.now(),
         })
         return newTeacher.save();
@@ -96,6 +97,7 @@ export class GiangVienService {
         
     }
 
+    // async getFaculty()
     async updateTeacher(MaGV: string, updateGiangVienDto: UpdateGiangVienDto) {
         const giangVien = await this.giangVienModel.findOne({ MaGV });
         if (!giangVien) {

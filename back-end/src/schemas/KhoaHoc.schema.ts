@@ -56,6 +56,9 @@ export class KhoaHoc {
 
   @Prop({required: true})
   NgayKetThuc: Date;
+
+  @Prop({type:Types.ObjectId, ref:'Khoa', required: true})
+  KhoaID: Types.ObjectId;
 }
 
 export const KhoaHocSchema = SchemaFactory.createForClass(KhoaHoc);

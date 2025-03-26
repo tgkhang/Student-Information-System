@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type SinhVienDocument = SinhVien & Document;
 
@@ -37,6 +37,9 @@ export class SinhVien {
     default: 'Studying',
   })
   TrangThai: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'Khoa' })
+  KhoaID: Types.ObjectId;
 
   @Prop({ type: Date, default: Date.now })
   ThoiGianCapNhat: Date;

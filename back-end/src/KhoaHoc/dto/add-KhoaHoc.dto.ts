@@ -34,6 +34,10 @@ export class AddCourseDto {
 
     @IsNotEmpty()
     NgayKetThuc: Date;
+
+    @IsNotEmpty()
+    @IsString()
+    KhoaID: string;
     // @IsArray()
     // SinhVienDangKy: Types.ObjectId[];
 

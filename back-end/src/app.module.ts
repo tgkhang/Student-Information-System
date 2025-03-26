@@ -10,6 +10,7 @@ import { KyLuatModule } from './KyLuat/KyLuat.module';
 import { PhuHuynhModule } from './PhuHuynh/PhuHuynh.module';
 import { ConfigModule } from '@nestjs/config';
 import { config } from 'dotenv';
+import { KhoaModule } from './khoa/khoa.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
@@ -25,6 +26,7 @@ import { config } from 'dotenv';
     KhoaHocModule,
     KyLuatModule,
     PhuHuynhModule,
+    KhoaModule,
   ],
 })
 export class AppModule {}

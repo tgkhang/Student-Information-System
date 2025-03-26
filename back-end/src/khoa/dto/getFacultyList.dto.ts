@@ -1,7 +1,7 @@
-import { Type } from 'class-transformer';
-import { IsOptional, IsInt, IsString, IsEnum, IsNotEmpty } from 'class-validator';
+import { Type } from "class-transformer";
+import { IsEnum, IsInt, IsNotEmpty, IsString } from "class-validator";
 
-export class GetCourseListDto {
+export class getFacultyListDTO {
     @IsNotEmpty({ message: 'Page size không được thiếu' })
     @IsInt()
     @Type(() => Number)

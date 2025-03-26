@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type GiangVienDocument = GiangVien & Document;
 
@@ -41,6 +41,9 @@ export class GiangVien {
 
     @Prop({ type: Date, default: Date.now })
     NgayCapNhat: Date;
+
+    @Prop({ type: Types.ObjectId, ref: 'Khoa' })
+    KhoaID: Types.ObjectId;
 }
 
 export const GiangVienSchema = SchemaFactory.createForClass(GiangVien);

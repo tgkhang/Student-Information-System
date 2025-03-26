@@ -11,6 +11,10 @@ export class CreateSinhVienDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(['student'])
+  @IsIn(['Student'])
   role: string;
+
+  @IsNotEmpty()
+  @IsString()
+  KhoaID: string;
 }

@@ -17,6 +17,7 @@ import { JwtModule } from '@nestjs/jwt';
         }),
   ],
   providers: [GiangVienService],
-  controllers: [GiangVienController]
+  controllers: [GiangVienController],
+  exports: [MongooseModule],
 })
 export class GiangVienModule {}

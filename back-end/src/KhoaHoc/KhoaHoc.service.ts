@@ -6,12 +6,16 @@ import { AddCourseDto } from './dto/add-KhoaHoc.dto';
 import { GetCourseListDto } from './dto/getListCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { SinhVienService } from 'src/SinhVien/SinhVien.service';
+import { GiangVienService } from 'src/GiangVien/GiangVien.service';
+import { GiangVien, GiangVienDocument } from 'src/schemas/GiangVien.schema';
+import { transcode } from 'buffer';
 
 @Injectable()
 export class KhoaHocService {
     constructor(
         @InjectModel(KhoaHoc.name) private readonly khoaHocModel: Model<KhoaHocDocument>,
         private readonly sinhVienService: SinhVienService,
+        @InjectModel(GiangVien.name) private readonly giangVienModel: Model<GiangVienDocument>,
     ){}
 
 
@@ -26,10 +30,20 @@ export class KhoaHocService {
             throw new BadRequestException('Tên khóa học đã tồn tại');
         }
         
+        const KhoaID = KhoaHocdto.KhoaID;
+        const GiangVienID = KhoaHocdto.GiangVienID;
+
+        const giangVien = await this.giangVienModel.findById(GiangVienID).exec();
+
+        if (giangVien?.KhoaID.toString() !== KhoaID)
+            throw new BadRequestException('Giảng viên không thuộc khoa này.');
+
+        const TroGiangID = KhoaHocdto.TroGiangID;
+        const troGiang = await this.giangVienModel.findById(TroGiangID).exec();
+        if (troGiang?.KhoaID.toString() !== KhoaID)
+            throw new BadRequestException('Trợ giảng không thuộc khoa này.');
         const SoTinChi = KhoaHocdto.SoTinChi;
         const MoTa = KhoaHocdto.MoTa;
-        const GiangVienID = KhoaHocdto.GiangVienID;
-        const TroGiangID = KhoaHocdto.TroGiangID;
         const SoLuongToiDa = KhoaHocdto.SoLuongToiDa;
         const HanDangKy = KhoaHocdto.HanDangKy;
         const NgayBatDau = KhoaHocdto.NgayBatDau;
@@ -47,7 +61,8 @@ export class KhoaHocService {
             SoLuongSinhVienDangKy: 0,
             HanDangKy,
             NgayBatDau,
-            NgayKetThuc
+            NgayKetThuc,
+            KhoaID
         });
         return khoaHoc.save();
     }
@@ -65,14 +80,6 @@ export class KhoaHocService {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    // async getStudentDetail(MaKhoaHoc: string)
-    // {
-    //     const khoaHoc = await this.khoaHocModel.findOne({MaKhoaHoc}).exec();
-    //     if (!khoaHoc)
-    //         throw new BadRequestException('Khóa học không tồn tại.');
-    //     const studentNames = khoaHoc.SinhVienDangKy.map((sinhVien: SinhVien) => sinhVien.HoTen);
-    //     return khoaHoc;
-    // }
     async getRegisteredStudent(MaKhoaHoc: string) {
         const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc })
                                             .populate({
@@ -95,13 +102,8 @@ export class KhoaHocService {
         console.log('Mã khóa học',MaKhoaHoc);
         const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc}).populate('GiangVienID', 'HoTen')
                                                                     .populate('TroGiangID', 'HoTen')
+                                                                    .populate('KhoaID', 'TenKhoa')
                                                                     .exec();
-        // const khoaHoc = await this.khoaHocModel
-        // .findOne({ MaKhoaHoc })
-        // .populate({
-        //     path: 'SinhVienDangKy', // Populate SinhVienDangKy
-        //     select: 'HoTen' // Select only the HoTen field of SinhVien
-        // });
         return khoaHoc;
     }
 
@@ -192,7 +194,10 @@ export class KhoaHocService {
         if (!khoaHoc) {
             throw new NotFoundException('Khóa học không tồn tại');
         }
-    
+        const sinhVien = await this.sinhVienService.getStudentByMSSV(username);
+        if (sinhVien.KhoaID.toString() !== khoaHoc.KhoaID.toString())
+            throw new BadRequestException('Sinh viên không thể đăng kí khóa học này.');
+        
         if (khoaHoc.SoLuongSinhVienDangKy >= khoaHoc.SoLuongToiDa) {
             throw new BadRequestException('Khóa học đã đầy.');
         }
@@ -201,7 +206,7 @@ export class KhoaHocService {
             throw new BadRequestException('Đã hết thời gian đăng ký.');
         }
         
-        const sinhVien = await this.sinhVienService.getStudentByMSSV(username);
+
         const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
         console.log(sinhVienId);
         if (!khoaHoc.SinhVienDangKy.includes(sinhVienId)) {
@@ -215,12 +220,15 @@ export class KhoaHocService {
     }
             // const studentObjectId = new Types.ObjectId(studentId);
 
-    async addStudentToCourseByAdmin(MaKhoaHoc: string, studentId: string) {
+    async addStudentToCourseByAdmin(MaKhoaHoc: string, mssv: string) {
         const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc });
         if (!khoaHoc) {
             throw new NotFoundException('Khóa học không tồn tại');
         }
-        const sinhVien = await this.sinhVienService.getStudentByMSSV(studentId);
+        const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
+        if (sinhVien.KhoaID.toString() !== khoaHoc.KhoaID.toString())
+            throw new BadRequestException('Sinh viên không thể đăng kí khóa học này.');
+        
         const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
         console.log(sinhVienId);
 
@@ -236,12 +244,12 @@ export class KhoaHocService {
         }
     }
     
-    async removeStudentFromCourseByAdmin(MaKhoaHoc: string, studentId: string) {
+    async removeStudentFromCourseByAdmin(MaKhoaHoc: string, mssv: string) {
         const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc });
         if (!khoaHoc) {
             throw new NotFoundException('Khóa học không tồn tại');
         }
-        const sinhVien = await this.sinhVienService.getStudentByMSSV(studentId);
+        const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
         const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
         console.log(sinhVienId);
 

@@ -6,6 +6,9 @@ import { KhoaHoc, KhoaHocSchema } from 'src/schemas/KhoaHoc.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { SinhVienModule } from 'src/SinhVien/SinhVien.module';
 import { SinhVienService } from 'src/SinhVien/SinhVien.service';
+import { GiangVienModule } from 'src/GiangVien/GiangVien.module';
+import { GiangVienService } from 'src/GiangVien/GiangVien.service';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports:[
@@ -15,8 +18,10 @@ import { SinhVienService } from 'src/SinhVien/SinhVien.service';
               signOptions: { expiresIn: '1h' },
             }),
     SinhVienModule,
+    GiangVienModule,
+    AuthModule,
   ],
   providers: [KhoaHocService, SinhVienService],
   controllers: [KhoaHocController]
-})
+})  
 export class KhoaHocModule {}

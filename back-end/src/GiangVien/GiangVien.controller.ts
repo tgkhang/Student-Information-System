@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GiangVienService } from './GiangVien.service';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { AuthService } from 'src/auth/auth.service';
@@ -47,6 +47,7 @@ export class GiangVienController {
 
     @Post('addTeacher')
     @UseGuards(JWTAuthGuard)
+    @UsePipes(new ValidationPipe())
     async addTeacher(@Req() req: any,@Body() body: AddTeacherDto)
     {
         try 
@@ -65,7 +66,7 @@ export class GiangVienController {
                 password,
                 role,
               ); 
-            const newGiaoVien = await this.GiangVienService.addTeacher(username, body.HoTen, body.ChucVu);
+            const newGiaoVien = await this.GiangVienService.addTeacher(username, body.HoTen, body.ChucVu, body.KhoaID);
             return { message: "Giảng viên đã được thêm thành công!", newGiaoVien };
 
         } catch(error)

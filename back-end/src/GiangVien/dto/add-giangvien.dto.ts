@@ -9,4 +9,7 @@ export class AddTeacherDto {
   @IsNotEmpty()
   ChucVu: string;
 
+  @IsString()
+  @IsNotEmpty()
+  KhoaID: string;
 }

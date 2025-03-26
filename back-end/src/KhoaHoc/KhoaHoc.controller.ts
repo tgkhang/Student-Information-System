@@ -27,7 +27,7 @@ export class KhoaHocController {
             return KhoaHoc;
         }catch(error)
         {
-            error
+            return error;
         }
     }
 
@@ -44,7 +44,7 @@ export class KhoaHocController {
             return details;
         }catch(error)
         {
-            error
+            return error;
         }
     }
     
@@ -74,7 +74,7 @@ export class KhoaHocController {
             return {message: 'Khóa học đã được thêm thành công!', KhoaHoc};
 
         }catch(error){
-            return error
+            return error;
         }
     }
     
@@ -88,7 +88,7 @@ export class KhoaHocController {
             console.log('Mã khóa học: ',MaKhoaHoc);
             return this.khoaHocService.updateCourse(MaKhoaHoc, updateKhoaHocDto);
         }catch(error){
-            return error
+            return error;
         }
     }
 
@@ -133,18 +133,18 @@ export class KhoaHocController {
 
     @Post('addStudentByAdmin/:MaKHoaHoc')
     @UseGuards(JWTAuthGuard)
-    async addStudentByAdmin(@Param('MaKHoaHoc') MaKHoaHoc: string, @Body() body: { studentId: string }, @Req() req: any) {
+    async addStudentByAdmin(@Param('MaKHoaHoc') MaKHoaHoc: string, @Body() body: { mssv: string }, @Req() req: any) {
         if (req.user.role !== 'Admin')
             throw new UnauthorizedException('Bạn không có quyền xóa khóa học.');
-        console.log(MaKHoaHoc, body.studentId);
-        return this.khoaHocService.addStudentToCourseByAdmin(MaKHoaHoc, body.studentId);
+        console.log(MaKHoaHoc, body.mssv);
+        return this.khoaHocService.addStudentToCourseByAdmin(MaKHoaHoc, body.mssv);
     }
 
     @Delete('removeStudentByAdmin/:MaKHoaHoc')
     @UseGuards(JWTAuthGuard)
-    async removeStudentByAdmin(@Param('MaKHoaHoc') MaKHoaHoc: string, @Body() body: {studentId: string}, @Req() req: any) {
+    async removeStudentByAdmin(@Param('MaKHoaHoc') MaKHoaHoc: string, @Body() body: {mssv: string}, @Req() req: any) {
         if (req.user.role !== 'Admin')
             throw new UnauthorizedException('Bạn không có quyền xóa sinh viên khỏi khóa học.');
-        return this.khoaHocService.removeStudentFromCourseByAdmin(MaKHoaHoc, body.studentId);
+        return this.khoaHocService.removeStudentFromCourseByAdmin(MaKHoaHoc, body.mssv);
     }
 }
