@@ -38,7 +38,8 @@ export default function Header({}) {
                   fontWeight: 400,
                   mx: 1.5,
                   fontSize: "1rem",
-                  "&:hover": { color: "#407BFF" }, // Change color on hover
+                  "&:hover": { color: "#407BFF" },
+                  "&:active": { color: "#165EFF" },
                 }}
               >
                 {text}
@@ -52,8 +53,8 @@ export default function Header({}) {
               color: "white",
               fontWeight: 700,
               textTransform: "none",
-              px: 3, // Padding left & right
-              py: 1, // Padding top & bottom
+              px: 3,
+              py: 1,
               borderRadius: "8px",
               mx: 1.5,
               fontSize: "1rem",
