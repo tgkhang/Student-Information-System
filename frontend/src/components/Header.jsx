@@ -16,12 +16,11 @@ export default function Header({}) {
         backgroundColor: "#FCFDFF",
         color: "#407BFF",
         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.08)",
-        px: "3em"
+        px: "5em"
       }}
     >
       <Toolbar sx={{}}>
-        <Box alt="Logo" sx={{ width: 40, mr: 2}}>
-          <img src={Logo}/>
+        <Box component="img" src={Logo} alt="Logo" sx={{ width: 40, mr: 2}}>
         </Box>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 800, color: "" }}>
           InfoStudia
@@ -36,7 +35,7 @@ export default function Header({}) {
                   textDecoration: "none",
                   color: "#000",
                   fontWeight: 400,
-                  mx: 1.5,
+                  mx: 2,
                   fontSize: "1rem",
                   "&:hover": { color: "#407BFF" },
                   "&:active": { color: "#165EFF" },
@@ -58,7 +57,8 @@ export default function Header({}) {
               borderRadius: "8px",
               mx: 1.5,
               fontSize: "1rem",
-              "&:hover": { backgroundColor: "#165EFF" }, // Darker blue on hover
+              boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
+              "&:hover": { backgroundColor: "white", color: "#407BFF" }
             }}
           >
             Login
