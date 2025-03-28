@@ -32,30 +32,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import { styled } from "@mui/material/styles";
 const drawerWidth = 10;
 
-// Sample student list for a class
-const studentListData = [
-  {
-    id: "ST12345",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    status: "Active",
-    grade: "A",
-  },
-  {
-    id: "ST67890",
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    status: "Active",
-    grade: "B+",
-  },
-  {
-    id: "ST54321",
-    name: "Mike Johnson",
-    email: "mike.johnson@example.com",
-    status: "Probation",
-    grade: "C",
-  },
-];
 
 // Sample data for the summary cards
 const summaryData = {

@@ -22,7 +22,7 @@ const CourseCard = ({ course }) => {
         }
       }}
     >
-      <CardContent sx={{ p: 2 }}>
+      <CardContent sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {/* Course ID and Name */}
           <Box>
@@ -35,7 +35,7 @@ const CourseCard = ({ course }) => {
             </Typography>
           </Box>
           
-          {/* Course details with icons */}
+          {/*Course details*/}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
             <Chip 
               icon={<AccessTimeIcon fontSize="small" />} 
@@ -84,8 +84,7 @@ const CourseList = ({ courses, searchTerm, semester, year }) => {
        course.id.toLowerCase().includes(searchTerm.toLowerCase())) : 
       true;
     
-    // Filter by semester and year
-    //basic
+    // Filter by semester and year (basic)
     const matchesSemester = semester ? course.semester.includes(semester) : true;
     const matchesYear = year ? course.semester.includes(year.toString()) : true;
     

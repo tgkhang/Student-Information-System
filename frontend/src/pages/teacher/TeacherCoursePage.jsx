@@ -19,58 +19,10 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CourseList from "../../components/CourseList";
+import classesData from "./mockdata/classData";
 //import PropTypes from "prop-types";
 
 const drawerWidth = 10;
-
-// Sample classes data
-const classesData = [
-  {
-    id: "CS101-A1",
-    name: "Introduction to Programming",
-    semester: "S1-2024-2025",
-    students: 45,
-    schedule: "Mon/Wed 10:00-11:30 AM",
-    TA: "Sarah Johnson",
-    credit: 3,
-  },
-  {
-    id: "CS201-B2",
-    name: "Data Structures",
-    semester: "S1-2024-2025",
-    students: 35,
-    schedule: "Tue/Thu 2:00-3:30 PM",
-    TA: "Michael Chen",
-    credit: 4,
-  },
-  {
-    id: "CS301-C3",
-    name: "Advanced Algorithms",
-    semester: "S1-2024-2025",
-    students: 25,
-    schedule: "Fri 1:00-4:00 PM",
-    TA: "David Kim",
-    credit: 3,
-  },
-  {
-    id: "CS220-D4",
-    name: "Database Systems",
-    semester: "S1-2024-2025",
-    students: 40,
-    schedule: "Mon/Wed 2:00-3:30 PM",
-    TA: "Jennifer Wong",
-    credit: 3,
-  },
-  {
-    id: "CS350-E5",
-    name: "Software Engineering",
-    semester: "S1-2024-2025",
-    students: 30,
-    schedule: "Tue/Thu 10:00-11:30 AM",
-    TA: "Robert Garcia",
-    credit: 4,
-  },
-];
 
 // Add PropTypes validation
 // CustomSelect.propTypes = {

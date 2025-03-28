@@ -15,8 +15,6 @@ import Avatar from "@mui/material/Avatar"
 import DashboardIcon from "@mui/icons-material/Dashboard"
 import SchoolIcon from "@mui/icons-material/School"
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"
-import AppRegistrationIcon from "@mui/icons-material/AppRegistration"
-import PaymentIcon from "@mui/icons-material/Payment"
 import GradeIcon from "@mui/icons-material/Grade"
 import SettingsIcon from "@mui/icons-material/Settings"
 import HelpIcon from "@mui/icons-material/Help"
@@ -100,7 +98,7 @@ export default function NavigationDrawer({ isDrawerOpen, toggleDrawer }) {
     {
       text: "Review",
       icon: <CalendarMonthIcon />,
-      path: "/review",
+      path: "/teacher/review",
     },
   ]
 
