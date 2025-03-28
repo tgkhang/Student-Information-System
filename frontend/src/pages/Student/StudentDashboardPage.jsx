@@ -924,6 +924,7 @@ export default function Dashboard() {
                   }}
                 >
                   <Box sx={{ display: "flex", gap: 2 }}>
+                    {/* choose year */}
                     <FormControl sx={{ minWidth: 120 }} size="small">
                       <InputLabel id="year-select-label">
                         Academic Year
@@ -941,6 +942,7 @@ export default function Dashboard() {
                       </Select>
                     </FormControl>
 
+                    {/* Choose semester */}
                     <FormControl sx={{ minWidth: 120 }} size="small">
                       <InputLabel id="semester-select-label">
                         Semester
@@ -957,6 +959,8 @@ export default function Dashboard() {
                       </Select>
                     </FormControl>
 
+
+                    {/* Search */}
                     <TextField
                       placeholder="Search courses..."
                       size="small"
@@ -972,7 +976,7 @@ export default function Dashboard() {
                       }}
                     />
                   </Box>
-
+                  {/* Download Button */}
                   <Button
                     variant="contained"
                     startIcon={<DownloadIcon />}

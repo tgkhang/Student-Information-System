@@ -32,31 +32,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import { styled } from "@mui/material/styles";
 const drawerWidth = 10;
 
-// Sample classes data
-const classesData = [
-  {
-    id: "CS101-A1",
-    name: "Introduction to Programming",
-    semester: "S1-2024-2025",
-    students: 45,
-    schedule: "Mon/Wed 10:00-11:30 AM",
-  },
-  {
-    id: "CS201-B2",
-    name: "Data Structures",
-    semester: "S1-2024-2025",
-    students: 35,
-    schedule: "Tue/Thu 2:00-3:30 PM",
-  },
-  {
-    id: "CS301-C3",
-    name: "Advanced Algorithms",
-    semester: "S1-2024-2025",
-    students: 25,
-    schedule: "Fri 1:00-4:00 PM",
-  },
-];
-
 // Sample student list for a class
 const studentListData = [
   {
