@@ -74,7 +74,15 @@ export default function Router() {
     {
       path: "teacher",
       children: [
-        // Teacher routes will go here
+        { path: "dashboard", element: <TeacherDashboardPage /> },
+        {
+          path: "course",
+          element: <TeacherCoursePage />,
+        },
+        {
+          path: "review",
+          element: <TeacherReviewPage />,
+        },
       ],
     },
     // // Course Routes
@@ -130,7 +138,6 @@ const ComingSoon = Loadable(lazy(() => import("../pages/ComingSoon")));
 const Maintenance = Loadable(lazy(() => import("../pages/Maintenance")));
 const FAQs = Loadable(lazy(() => import("../pages/Faqs")));
 
-const TestPage = Loadable(lazy(() => import("../pages/TestPage")));
 
 // STUDENT
 const StudentDashboardPage = Loadable(lazy(() => import("../pages/Student/StudentDashboardPage")))
@@ -140,6 +147,10 @@ const StudentClassesAndAssignmentsPage = Loadable(
 )
 
 
+//TEACHER
+const TeacherDashboardPage = Loadable(lazy(() => import("../pages/teacher/TeacherDashboardPage")))
+const TeacherCoursePage = Loadable(lazy(() => import("../pages/teacher/TeacherCoursePage")))
+const TeacherReviewPage = Loadable(lazy(() => import("../pages/teacher/TeacherReviewPage")))
 
 // MINISTRY
 const StudentListPage = Loadable(
