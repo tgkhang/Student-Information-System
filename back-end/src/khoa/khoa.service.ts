@@ -80,7 +80,7 @@ export class KhoaService {
         const khoa = await this.Khoamodel.findOne({MaKhoa});
         if (!khoa)
             throw new NotFoundException('Khoa không tồn tại.');
-        const existingKhoa = await this.Khoamodel.findOne({TenKhoa: khoa.TenKhoa});
+        const existingKhoa = await this.Khoamodel.findOne({TenKhoa: updateDTO.TenKhoa});
         if (existingKhoa && existingKhoa.MaKhoa != khoa.MaKhoa)
             throw new BadRequestException('Tên khoa đã tồn tại.');
 

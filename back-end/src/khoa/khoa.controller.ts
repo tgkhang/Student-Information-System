@@ -91,7 +91,16 @@ export class KhoaController {
 
     @Put('updateFaculty/:MaKhoa')
     @UseGuards(JWTAuthGuard)
-    async updateTeacher(@Param('MaKhoa') MaKhoa: string, @Body() updateDTO: updateKhoaDTO,) {
-        return this.khoaService.updateFaculty(MaKhoa, updateDTO);
+    @UsePipes(new ValidationPipe())
+    async updateFaculty(@Req() req: any,@Param('MaKhoa') MaKhoa: string, @Body() updateDTO: updateKhoaDTO,) {
+        try{
+            if (req.user.role !== "Admin")
+                throw new UnauthorizedException('Bạn không có quyền thực hiện thao tác này.');
+            console.log(2);
+            return this.khoaService.updateFaculty(MaKhoa, updateDTO);
+        }catch(error)
+        {
+            return error;
+        }
     }
 }
