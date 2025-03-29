@@ -5,7 +5,11 @@ export type KhoaDocument = Khoa & Document;
 
 @Schema()
 export class Khoa {
-  @Prop({ required: true })
+
+  @Prop({required: true, unique:true})
+  MaKhoa: string
+  
+  @Prop({ required: true, unique:true })
   TenKhoa: string;
 
 //   @Prop({ type: [{ type: Types.ObjectId, ref: 'SinhVien' }] })

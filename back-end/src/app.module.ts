@@ -11,11 +11,18 @@ import { PhuHuynhModule } from './PhuHuynh/PhuHuynh.module';
 import { ConfigModule } from '@nestjs/config';
 import { config } from 'dotenv';
 import { KhoaModule } from './khoa/khoa.module';
+import { AzureStorageModule } from '@nestjs/azure-storage';
 @Module({
   imports: [
+      // MongooseModule.forRoot(process.env.MONGO_URI),
     MongooseModule.forRoot(
       'mongodb+srv://sis:sis@cluster0.xqphw.mongodb.net/',
     ),
+    // AzureStorageModule.withConfig({
+    //   sasKey: process.env.AZURE_STORAGE_SAS_KEY,
+    //   accountName: process.env.AZURE_STORAGE_ACCOUNT,
+    //   containerName: 'course-documents',
+    // }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config]

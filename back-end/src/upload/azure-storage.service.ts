@@ -2,6 +2,7 @@
 // import { BlobServiceClient } from '@azure/storage-blob';
 // import * as multer from 'multer';
 // import * as stream from 'stream';
+
 // @Injectable()
 // export class AzureStorageService {
 //   private blobServiceClient: BlobServiceClient;
@@ -26,7 +27,7 @@
 //   }
 
 //   // Upload file lên Azure Blob Storage
-//   async uploadFile(file: multer.File): Promise<string> {
+//   async uploadFile(file: Express.Multer.File): Promise<string> {
 //     const blobClient = this.containerClient.getBlockBlobClient(file.originalname);
 
 //     const bufferStream = new stream.PassThrough();
