@@ -112,7 +112,7 @@ export default function Login() {
             <Link
               component={RouterLink}
               variant="subtitle2"
-              to={PATH_AUTH.fotgotPassword}
+              to={PATH_AUTH.forgotPassword}
             >
               Forgot password?
             </Link>
