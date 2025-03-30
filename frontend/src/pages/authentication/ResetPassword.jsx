@@ -2,25 +2,13 @@
 import { Container, Box, Typography, Button, TextField, FormControlLabel, Checkbox } from "@mui/material";
 import Page from "../../components/Page";
 
+import { BackgroundCircles } from "../authentication/ForgotPassword"
 import Logo from "../../assets/Logo.svg"
 import { guestContainerLogin, guestContainerLoginBox,
         guestContainerLoginSection, guestContainerLoginSubsection,
         guestLoginSection, guestRoundBlueButton } from "../../assets/styles/guest";
 
 // ----------------------------------------------------------------------
-
-export function BackgroundCircles() {
-  return (
-    <Box sx = {{ position: "absolute", width: "100vw", height: "100vh", overflow: "hidden" }}>
-      <Box sx={{ width: "60rem", height: "55rem", borderRadius: "50%", backgroundColor: "#2970FF", position: "absolute",
-                  bottom: -450, left: -270, zIndex: -1 }}
-      />
-      <Box sx={{ width: "50rem", height: "40rem", borderRadius: "50%", backgroundColor: "#2970FF", position: "absolute",
-                  top: -330, right: -230, zIndex: -1 }}
-      />
-    </Box>
-  );
-}
 
 export default function Login() {
     return (
@@ -30,7 +18,7 @@ export default function Login() {
 
         <Typography component="a" href="/home"
                     sx={{position: "absolute", top: "0.25em", right: "0.75em", zIndex: 10,
-                        fontWeight: 800, color: "white", fontSize: "3rem", textDecoration: "none"}}>
+                        fontWeight: 800, color: "#407BFF", fontSize: "3rem", textDecoration: "none"}}>
           &lt;
         </Typography>
 
@@ -40,8 +28,8 @@ export default function Login() {
             
             <Box sx={guestContainerLoginSection}>
               <Box sx={{display: "flex", flexDirection: "column", width: "90%", gap: "0.3em"}}>
-                <Typography variant="h1" sx={{color: "#407BFF", fontWeight: 700}}>Login</Typography>
-                <Typography variant="h4">to your institute.</Typography>
+                <Typography variant="h4">Reset your</Typography>
+                <Typography variant="h1" sx={{color: "#407BFF", fontWeight: 700}}>Password.</Typography>
               </Box>
             </Box>
 
@@ -50,52 +38,33 @@ export default function Login() {
               <Box sx={{...guestContainerLoginSubsection, alignItems: "center"}}>
                 <Box sx={{display: "flex", flexDirection: "column", alignItems: "center"}}>
                   <Box component="img" src={Logo} alt="InfoStudia" sx={{ width: "100%", maxWidth: 50 }} />
-                  <Typography variant="h4" sx={{color: "#407BFF", fontWeight: 700}}>Login</Typography>
+                  <Typography variant="h4" sx={{color: "#407BFF", fontWeight: 700}}>Reset Password</Typography>
                 </Box>
                 <Typography sx={guestLoginSection}>
-                  Please use the email and password that your organization provided to log in to your account.
+                  You have chosen to reset your password.<br />
+                  Make sure you remember your new password.
                 </Typography>
               </Box>
 
               <Box sx={guestContainerLoginSubsection}>
-                <TextField placeholder="Enter your username" 
+                <TextField placeholder="Enter new password" 
                   fullWidth variant="outlined" size="small"
                   InputProps={{ sx: { borderRadius: "2em", fontSize: "0.8rem" }}}
-                  label="Username"
+                  label="New password"
                   InputLabelProps={{ sx: { fontSize: "0.8rem", "&.Mui-focused": { color: "#407BFF"} } }}
                 />
-                <TextField placeholder="Enter your password" 
+                <TextField placeholder="Re-enter new password" 
                   fullWidth variant="outlined" size="small"
                   InputProps={{ sx: { borderRadius: "2em", fontSize: "0.8rem" }}}
-                  label="Password"
+                  label="Re-enter new password"
                   InputLabelProps={{ sx: { fontSize: "0.8rem", "&.Mui-focused": { color: "#407BFF"} } }}
                 />
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-                  <FormControlLabel
-                      control={ <Checkbox sx={{ color: "#407BFF", '&.Mui-checked': { color: "#407BFF" }}} /> } 
-                      label={ <Typography sx={{ fontSize: "0.8rem" }}>Remember Me</Typography>} >
-                  </FormControlLabel>
-                  <Typography component="a" href="/auth/forgot-password"
-                    sx={{ fontSize: "0.8rem", textDecoration: "none", color: "#407BFF", fontWeight: 600,
-                      "&:hover": { textDecoration: "underline" }}}>
-                      Forgot Password
-                  </Typography>
-                </Box>
               </Box>
               
               <Box sx={guestContainerLoginSubsection}>
                 <Button sx={guestRoundBlueButton}>
-                    Login
+                    Reset password
                 </Button>
-              </Box>
-
-              <Box sx={guestContainerLoginSubsection}>
-                <Typography sx={guestLoginSection}>
-                  Don’t have an account?
-                  <Typography sx={{...guestLoginSection, color: "#407BFF", fontWeight: 600}}>
-                    Contact your Student Affairs Office.
-                  </Typography>
-                </Typography>
               </Box>
 
             </Box>

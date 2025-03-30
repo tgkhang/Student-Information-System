@@ -9,7 +9,7 @@ const buttonStyles = {
     p: "0.8em",
     borderRadius: "0.4em",
     fontSize: "1.2rem",
-    boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
 };
 
 const blueButton = {
@@ -45,18 +45,24 @@ const guestViewDetailsButton = {
     backgroundColor: "#407BFF",
     color: "white",
     fontWeight: 500,
-    "&:hover": { backgroundColor: "#0053FA" }
+    "&:hover": { backgroundColor: "#2970FF" }
 }
 
-export { buttonStyles, blueButton, whiteButton, guestBlueButton, guestWhiteButton, guestViewDetailsButton };
+const guestRoundBlueButton = {
+    ...blueButton,
+    fontSize: "0.8rem",
+    borderRadius: "2em",
+    fontWeight: 700
+}
+
+export { buttonStyles, blueButton, whiteButton, guestBlueButton, guestWhiteButton, guestViewDetailsButton, guestRoundBlueButton };
 
 
 // CONTAINERS
 
 const guestDefaultContainer = {
     disableGutters: true,
-    maxWidth: "xl",
-    sx: { }
+    maxWidth: "xl"
 }
 
 const guestContainerMain = {
@@ -69,7 +75,45 @@ const guestContainerBesidesHome = {
     sx: { pt: "6em", px: "6.5em" }
 }
 
-export { guestDefaultContainer, guestContainerMain, guestContainerBesidesHome }
+const guestContainerLogin = {
+    ...guestDefaultContainer,
+    sx: { width: "100vw", height: "100vh",
+        position: "relative", overflow: "hidden",
+        display: "flex", justifyContent: "center", alignItems: "center" }
+}
+
+const guestContainerLoginBox = {
+    width: "75%",
+    height: "75%",
+    padding: "3em",
+    borderRadius: "1rem",
+    backgroundColor: "white",
+    boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.08)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "3em"
+}
+
+const guestContainerLoginSection = {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "2em"
+}
+
+const guestContainerLoginSubsection = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.7em",
+    width: "80%"
+}
+
+export { guestDefaultContainer, guestContainerMain, guestContainerBesidesHome,
+        guestContainerLogin, guestContainerLoginBox, guestContainerLoginSection, guestContainerLoginSubsection }
 
 
 // TEXT
@@ -87,4 +131,15 @@ const guestSpanStrong = {
     fontWeight: 700
 }
 
-export { guestTitle, guestSpanStrong }
+const guestLoginSection = {
+    fontSize: "0.8rem",
+    textAlign: "center",
+    color: "text.secondary",
+}
+
+const guestLoginLabel = {
+    fontSize: "0.8rem",
+    color: "black"
+}
+
+export { guestTitle, guestSpanStrong, guestLoginSection, guestLoginLabel }

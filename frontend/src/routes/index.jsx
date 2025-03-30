@@ -28,7 +28,7 @@ export default function Router() {
         { path: "login", element: <Login /> },
         // { path: "register", element: <Register /> },
         { path: "forgot-password", element: <ForgotPassword /> },
-        // { path: "verify", element: <VerifyCode /> },
+        { path: "reset-password", element: <ResetPassword /> },
       ],
     },
     // Main Routes
@@ -117,15 +117,9 @@ export default function Router() {
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import("../pages/authentication/Login")));
-// const Register = Loadable(
-//   lazy(() => import("../pages/authentication/Register"))
-// );
-const ForgotPassword = Loadable(
-  lazy(() => import("../pages/authentication/ForgotPassword"))
-);
-// const VerifyCode = Loadable(
-//   lazy(() => import("../pages/authentication/VerifyCode"))
-// );
+const ForgotPassword = Loadable(lazy(() => import("../pages/authentication/ForgotPassword")));
+const ResetPassword = Loadable(lazy(() => import("../pages/authentication/ResetPassword")));
+
 
 // MAIN
 

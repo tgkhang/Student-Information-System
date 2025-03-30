@@ -15,13 +15,12 @@ export default function GuestPage() {
         <Header />
 
         <Container {...guestContainerMain}>
-                
+
+            <Container {...guestDefaultContainer}
+                    sx={{ minHeight: "100vh", gap: "11em",
+                        display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+
                 {/* Left Section */}
-
-                <Container {...guestDefaultContainer}
-                        sx={{ minHeight: "100vh", gap: "11em",
-                            display: "flex", alignItems: "center", justifyContent: "space-between"}}>
-
                 <Box sx={{flexGrow: 1, pr: "5em",
                             display: "flex", flexDirection: "column", justifyContent: "left", gap: "3.5em"}}>
                     <Box>
@@ -37,25 +36,21 @@ export default function GuestPage() {
                         </Typography>
                     </Box>
 
-                    <Box sx={{ display: "flex", justifyContent: "space-between"}}>
-                    <Button
-                        component="a"
-                        href="/services"
-                        sx={guestBlueButton}>
-                            Get Started
+                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Button component="a" href="/services"
+                            sx={guestBlueButton}>
+                        Get Started
                     </Button>
-                    <Button
-                        component="a"
-                        href="/auth/login"
-                        sx={guestWhiteButton}>
-                            Learn More
+                    <Button component="a" href="/auth/login"
+                            sx={guestWhiteButton}>
+                        Learn More
                     </Button>
                     </Box>
 
                 </Box>
                 
                 {/* Right Section*/}
-                <Box component="img" src={FrontPicture} alt="InfoStudia" sx={{ width: "100%", maxWidth: 500}} />
+                <Box component="img" src={FrontPicture} alt="InfoStudia" sx={{ width: "100%", maxWidth: 500 }} />
 
             </Container>
 
@@ -63,4 +58,4 @@ export default function GuestPage() {
 
       </Page>
     );
-  }
+}
