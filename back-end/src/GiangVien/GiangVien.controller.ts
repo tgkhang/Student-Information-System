@@ -97,4 +97,18 @@ export class GiangVienController {
         return this.GiangVienService.updateTeacher(MaGV, updateGiangVienDto);
     }
 
+    @Get('getTeacherNoti')
+    @UseGuards(JWTAuthGuard)
+    async getTeacherNoti(@Req() req: any) {
+        try{
+            if (req.user.role != 'Teacher')
+                throw new UnauthorizedException('Bạn không có quyền lấy thông báo từ giáo viên.')
+            return this.GiangVienService.getTeacherNoti(req.user.username);
+
+        }catch(error)
+        {
+            return {message: error.message};
+        }
+    }
+
 }

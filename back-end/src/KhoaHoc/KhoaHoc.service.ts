@@ -107,6 +107,10 @@ export class KhoaHocService {
         return khoaHoc;
     }
 
+    async getCourseByID(KhoaHocID: string)
+    {
+        return await this.khoaHocModel.findById(KhoaHocID).exec();
+    }
     async getListCourse(query: GetCourseListDto)
     {
         const { pageSize, pageNumber, sortBy, sortOrder } = query;

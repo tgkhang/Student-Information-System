@@ -10,6 +10,7 @@ import {
   Get,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
 import { SinhVienService } from './SinhVien.service';
 import { CreateSinhVienDto } from './dto/create-sinhvien.dto';
@@ -92,5 +93,17 @@ export class SinhVienController {
     await this.authService.deleteAccountByUsername(mssv);
     return this.sinhVienService.deleteStudentByMSSV(mssv);
   }
-}
 
+  @Get('getStudentNoti')
+  @UseGuards(JWTAuthGuard)
+  async getStudentNoti(@Req() req: any) {
+      try{
+          if (req.user.role != 'Student')
+              throw new UnauthorizedException('Bạn không có quyền lấy thông báo từ sinh viên.')
+          return this.sinhVienService.getStudentNoti(req.user.username);
+      }catch(error)
+      {
+          return {message: error.message};
+      }
+  }
+}

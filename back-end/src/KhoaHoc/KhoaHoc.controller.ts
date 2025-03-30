@@ -100,7 +100,7 @@ export class KhoaHocController {
             if (req.user.role !== 'Admin')
                 throw new UnauthorizedException('Bạn không có quyền xóa khóa học.');
             await this.khoaHocService.deleteCourse(MaKhoaHoc);
-            return {message: 'Khóa học đã được xóa thành công'};
+            return {code: 200, message: 'Khóa học đã được xóa thành công'};
         }catch(error)
         {
             return {message: error.message};

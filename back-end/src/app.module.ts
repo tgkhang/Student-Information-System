@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { config } from 'dotenv';
 import { KhoaModule } from './khoa/khoa.module';
 import { AzureStorageModule } from '@nestjs/azure-storage';
+import { ThongBaosModule } from './ThongBao/ThongBao.module';
 @Module({
   imports: [
       // MongooseModule.forRoot(process.env.MONGO_URI),
@@ -34,6 +35,7 @@ import { AzureStorageModule } from '@nestjs/azure-storage';
     KyLuatModule,
     PhuHuynhModule,
     KhoaModule,
+    ThongBaosModule,
   ],
 })
 export class AppModule {}
