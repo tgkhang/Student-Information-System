@@ -1,5 +1,4 @@
-// GUEST
-
+// GUEST UI
 
 // BUTTONS
 
@@ -72,7 +71,7 @@ const guestContainerMain = {
 
 const guestContainerBesidesHome = {
     ...guestContainerMain,
-    sx: { pt: "6em", px: "6.5em" }
+    sx: { pt: "6em", pb: "3em", px: "6.5em" }
 }
 
 const guestContainerLogin = {
@@ -112,8 +111,38 @@ const guestContainerLoginSubsection = {
     width: "80%"
 }
 
-export { guestDefaultContainer, guestContainerMain, guestContainerBesidesHome,
-        guestContainerLogin, guestContainerLoginBox, guestContainerLoginSection, guestContainerLoginSubsection }
+const guestContainerContact = {
+    ...guestDefaultContainer,
+    sx: {
+        pt: "6em", pb: "3em", px: "6.5em",
+        minHeight: "100vh",
+        position: "relative",
+        backgroundImage: "url('/Contact.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+
+        "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            zIndex: -1
+        },
+
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        color: "white",
+        zIndex: 0,
+    }
+};
+
+export { guestDefaultContainer, guestContainerMain, guestContainerBesidesHome, guestContainerContact,
+        guestContainerLogin, guestContainerLoginBox, guestContainerLoginSection, guestContainerLoginSubsection, }
 
 
 // TEXT

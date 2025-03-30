@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Components
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import Page from "../components/Page";
 
 // Icons
@@ -173,7 +174,7 @@ export default function AboutUs() {
         
         </Container>
 
-        <Container {...guestDefaultContainer} sx={{ mb: 10}}>
+        <Container {...guestDefaultContainer} sx={{ mb: 5}}>
         
           {/* Meet Our Team Section */}
           <motion.div 
@@ -334,6 +335,8 @@ export default function AboutUs() {
           </AnimatePresence>
       
       </Container>
+
+      <Footer />
     
     </Page>
   );
