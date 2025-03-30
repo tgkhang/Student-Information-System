@@ -1,8 +1,10 @@
 // components
 import { Container, Box, Typography, Button, TextField} from "@mui/material";
+import { motion } from "framer-motion";
 import Page from "../../components/Page";
 
 import Logo from "../../assets/Logo.svg"
+
 import { guestContainerLogin, guestContainerLoginBox,
         guestContainerLoginSection, guestContainerLoginSubsection,
         guestLoginSection, guestRoundBlueButton } from "../../assets/styles/guest";
@@ -11,12 +13,16 @@ import { guestContainerLogin, guestContainerLoginBox,
 
 export function BackgroundCircles() {
   return (
-    <Box sx = {{ position: "absolute", width: "100vw", height: "100vh", overflow: "hidden" }}>
-      <Box sx={{ width: "60rem", height: "55rem", borderRadius: "50%", backgroundColor: "#2970FF", position: "absolute",
-                  top: -450, left: -270, zIndex: -1 }}
+    <Box sx={{ position: "absolute", width: "100vw", height: "100vh", overflow: "hidden" }}>
+      <motion.div 
+        initial={{ opacity: 0, x: -200 }}
+        animate={{ opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } }}
+        style={{ position: "absolute", width: "60rem", height: "55rem", borderRadius: "50%", backgroundColor: "#2970FF", top: -450, left: -270, zIndex: -1 }}
       />
-      <Box sx={{ width: "50rem", height: "40rem", borderRadius: "50%", backgroundColor: "#2970FF", position: "absolute",
-                  bottom: -330, right: -230, zIndex: -1 }}
+      <motion.div 
+        initial={{ opacity: 0, x: 200 }}
+        animate={{ opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } }}
+        style={{ position: "absolute", width: "50rem", height: "40rem", borderRadius: "50%", backgroundColor: "#2970FF", bottom: -330, right: -230, zIndex: -1 }}
       />
     </Box>
   );
@@ -29,14 +35,18 @@ export default function ForgotPassword() {
       <BackgroundCircles></BackgroundCircles>
 
       <Typography component="a" href="/home"
-                    sx={{position: "absolute", top: "0.25em", right: "0.75em", zIndex: 10,
+                    sx={{position: "fixed", top: "0.25em", right: "0.75em", zIndex: 10,
                         fontWeight: 800, color: "#407BFF", fontSize: "3rem", textDecoration: "none"}}>
           &lt;
       </Typography>
 
       <Container {...guestContainerLogin}>
         
-        <Box sx={guestContainerLoginBox}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }}
+          style={guestContainerLoginBox} 
+        >
           
           <Box sx={guestContainerLoginSection}>
             <Box sx={{display: "flex", flexDirection: "column", width: "90%", gap: "0.3em"}}>
@@ -46,7 +56,7 @@ export default function ForgotPassword() {
           </Box>
 
           <Box sx={guestContainerLoginSection}>
-
+          
             <Box sx={{...guestContainerLoginSubsection, alignItems: "center"}}>
               <Box sx={{display: "flex", flexDirection: "column", alignItems: "center"}}>
                 <Box component="img" src={Logo} alt="InfoStudia" sx={{ width: "100%", maxWidth: 50 }} />
@@ -84,10 +94,10 @@ export default function ForgotPassword() {
                   </Typography>
                 </Typography>
             </Box>
-
+          
           </Box>
 
-        </Box>
+        </motion.div>
       
       </Container>
 

@@ -91,7 +91,12 @@ export default function AboutUs() {
         <Container {...guestDefaultContainer}>
 
           {/* Introduction Section */}
-          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.8 }} 
+            viewport={{ once: true }}
+          >
             <Typography sx={guestTitle}>
               About Us
             </Typography>
@@ -105,19 +110,26 @@ export default function AboutUs() {
           <Grid container spacing={5} sx={{ mt: 3, px: 5 }}>
 
             <Grid item xs={12} md={6} display="flex" justifyContent="left">
-              <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
-                <img
-                  src="https://www.iitms.co.in/products/img/student-information-system-sis.png"
-                  alt="Our Mission"
-                  style={{ maxWidth: "100%", width: "30em" }}
-                />
+              <motion.div 
+                initial={{ opacity: 0, x: -50 }} 
+                whileInView={{ opacity: 1, x: 0 }} 
+                transition={{ duration: 0.8 }} 
+                viewport={{ once: true }}
+              >
+                <img src="https://www.iitms.co.in/products/img/student-information-system-sis.png"
+                      alt="Our Mission" sx={{ maxWidth: "100%", width: "30em" }}/>
               </motion.div>
             </Grid>
 
             <Grid item xs={12} md={6} display="flex" alignItems="center">
-              <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
+              <motion.div 
+                initial={{ opacity: 0, x: 50 }} 
+                whileInView={{ opacity: 1, x: 0 }} 
+                transition={{ duration: 0.8 }} 
+                viewport={{ once: true }}
+              >
                 <Typography variant="h4" sx={{ fontWeight: "700", color: "#407BFF" }} gutterBottom>
-                  Our Mission
+                    Our Mission
                 </Typography>
                 <Typography variant="h6" color="text.secondary" textAlign="justify">
                   Our mission is to innovate and create digital products that help businesses grow. We focus on user
@@ -127,7 +139,12 @@ export default function AboutUs() {
             </Grid>
 
             <Grid item xs={12} md={6} display="flex" alignItems="center">
-              <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
+              <motion.div 
+                  initial={{ opacity: 0, x: 50 }} 
+                  whileInView={{ opacity: 1, x: 0 }} 
+                  transition={{ duration: 0.8 }} 
+                  viewport={{ once: true }}
+              >
                 <Typography variant="h4" sx={{ fontWeight: "700", color: "#407BFF" }} gutterBottom>
                   Our Vision
                 </Typography>
@@ -140,11 +157,14 @@ export default function AboutUs() {
             </Grid>
 
             <Grid item xs={12} md={6} display="flex" justifyContent="right">
-              <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
-                <img
-                  src="https://images.squarespace-cdn.com/content/v1/5f8a1cfb2ad7a514c3fa8a88/1604354481681-DK4Y4SUFVKZ9D6BD4IC1/Choosing-a-SIS.png"
-                  alt="Our Vision"
-                  style={{ maxWidth: "100%", width: "30em" }}
+              <motion.div 
+                  initial={{ opacity: 0, x: -50 }} 
+                  whileInView={{ opacity: 1, x: 0 }} 
+                  transition={{ duration: 0.8 }} 
+                  viewport={{ once: true }}
+              >
+                <img src="https://images.squarespace-cdn.com/content/v1/5f8a1cfb2ad7a514c3fa8a88/1604354481681-DK4Y4SUFVKZ9D6BD4IC1/Choosing-a-SIS.png"
+                  alt="Our Vision" sx={{ maxWidth: "100%", width: "30em" }}
                 />
               </motion.div>
             </Grid>
@@ -156,17 +176,25 @@ export default function AboutUs() {
         <Container {...guestDefaultContainer} sx={{ mb: 10}}>
         
           {/* Meet Our Team Section */}
-          <Typography variant="h3" textAlign="center" fontWeight={700} sx={{ color: "#407BFF", mt: 15, mb: 10 }}>
-            Meet Our Team
-          </Typography>
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.8 }} 
+            viewport={{ once: true }}
+          >
+            <Typography variant="h3" textAlign="center" fontWeight={700} sx={{ color: "#407BFF", mt: 15, mb: 10 }}>
+              Meet Our Team
+            </Typography>
+          </motion.div>
 
           <Grid container spacing={8} justifyContent="center">
             {teamMembers.map((member, index) => (
               <Grid item xs={12} sm={6} md={5} lg={4} key={index}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
+                  viewport={{ once: true }}
                 >
                   {/* Team Member Card */}
                   <Card

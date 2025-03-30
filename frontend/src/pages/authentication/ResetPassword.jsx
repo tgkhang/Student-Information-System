@@ -1,6 +1,7 @@
 // components
 import { Container, Box, Typography, Button, TextField, FormControlLabel, Checkbox } from "@mui/material";
 import Page from "../../components/Page";
+import { motion } from "framer-motion";
 
 import { BackgroundCircles } from "../authentication/ForgotPassword"
 import Logo from "../../assets/Logo.svg"
@@ -17,14 +18,18 @@ export default function Login() {
         <BackgroundCircles></BackgroundCircles>
 
         <Typography component="a" href="/home"
-                    sx={{position: "absolute", top: "0.25em", right: "0.75em", zIndex: 10,
+                    sx={{position: "fixed", top: "0.25em", right: "0.75em", zIndex: 10,
                         fontWeight: 800, color: "#407BFF", fontSize: "3rem", textDecoration: "none"}}>
           &lt;
         </Typography>
 
         <Container {...guestContainerLogin}>
           
-          <Box sx={guestContainerLoginBox}>
+          <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }}
+              style={guestContainerLoginBox} 
+          >
             
             <Box sx={guestContainerLoginSection}>
               <Box sx={{display: "flex", flexDirection: "column", width: "90%", gap: "0.3em"}}>
@@ -69,7 +74,7 @@ export default function Login() {
 
             </Box>
 
-          </Box>
+          </motion.div>
           
 
         </Container>
