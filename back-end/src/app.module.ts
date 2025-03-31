@@ -10,6 +10,8 @@ import { KhoaHocModule } from './KhoaHoc/KhoaHoc.module';
 import { HocPhiModule } from './HocPhi/HocPhi.module';
 import { BaiKiemTraModule } from './BaiKiemTra/BaiKiemTra.module';
 import { KhoaModule } from './Khoa/Khoa.module';
+import { DiemDanhModule } from './DiemDanh/DiemDanh.module';
+import { DiemSoModule } from './DiemSo/DiemSo.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { KhoaModule } from './Khoa/Khoa.module';
     HocPhiModule,
     BaiKiemTraModule,
     KhoaModule,
+    DiemDanhModule,
+    DiemSoModule,
   ],
 })
 export class AppModule {}

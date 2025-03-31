@@ -7,6 +7,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { SinhVienModule } from 'src/SinhVien/SinhVien.module';
 import { KhoaHocModule } from 'src/KhoaHoc/KhoaHoc.module';
+import { GiangVienModule } from 'src/GiangVien/GiangVien.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { KhoaHocModule } from 'src/KhoaHoc/KhoaHoc.module';
     SinhVienModule,
     DiemSoModule,
     KhoaHocModule,
+    GiangVienModule,
     JwtModule.register({
       secret: 'abc123',
       signOptions: { expiresIn: '1h' },
