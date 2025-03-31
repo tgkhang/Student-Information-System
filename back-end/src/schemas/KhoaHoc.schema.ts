@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document, Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type KhoaHocDocument = KhoaHoc & Document;
 
@@ -14,9 +14,6 @@ export class TaiLieu {
 
 @Schema()
 export class KhoaHoc {
-  @Prop({required: true, unique: true})
-  MaKhoaHoc: string;
-  
   @Prop({ required: true, unique: true })
   TenKhoaHoc: string;
 
@@ -32,10 +29,9 @@ export class KhoaHoc {
   @Prop()
   MoTa: string;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SinhVien' }], default: [] })
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'SinhVien' }], default: [] })
   SinhVienDangKy: Types.ObjectId[];
-  
-// fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
+
   @Prop({ type: [TaiLieu], default: [] })
   TaiLieu: TaiLieu[];
 

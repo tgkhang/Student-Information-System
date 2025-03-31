@@ -1,76 +1,69 @@
 import {
-  Body,
   Controller,
   Param,
-  Patch,
-  Post,
   UnauthorizedException,
   UseGuards,
   Request,
   Get,
-  NotFoundException,
+  Body,
+  Patch,
+  Post,
   Delete,
 } from '@nestjs/common';
-import { AuthService } from 'src/auth/auth.service';
-import { KyLuatService } from './KyLuat.service';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
-import { CreateDisciplineDto } from './dto/C&U-discipline.dto';
-@Controller('KyLuat')
-export class KyLuatController {
-  sinhVienModel: any;
-  constructor(
-    private readonly kyLuatService: KyLuatService,
-    private readonly authService: AuthService,
-  ) {}
+import { LichHocService } from './LichHoc.service';
+import { UpdateScheduleDto } from './dto/update-Schedule.dto';
+import { CreateScheduleDto } from './dto/create-Schedule.dto';
 
-  @Get('get_disciplinebyMSSV/:mssv')
+@Controller('LichHoc')
+export class LichHocController {
+  constructor(private readonly LichHocService: LichHocService) {}
+
+  @Get('get_schedulebyMSSV/:mssv')
   @UseGuards(JWTAuthGuard)
-  async getStudent(@Param('mssv') mssv: string, @Request() req: any) {
+  async GetScheduleByMSSV(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'Admin' && req.user.username !== mssv) {
       throw new UnauthorizedException(
         'Không có quyền xem thông tin sinh viên này',
       );
     }
-    return this.kyLuatService.getDisciplineByMSSV(mssv);
+    const schedule = await this.LichHocService.getScheduleByMSSV(mssv);
+    return schedule;
   }
 
-  @Get('get_discipline/:_id')
+  @Get('get_schedule/:_id')
   @UseGuards(JWTAuthGuard)
-  async getDisciplineById(@Param('_id') _id: string, @Request() req: any) {
+  async getLichHocById(@Param('_id') _id: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'Admin') {
       throw new UnauthorizedException('Không có quyền truy cập kỷ luật');
     }
-
-    const discipline = await this.kyLuatService.getDisciplineById(_id);
-    if (!discipline) {
-      throw new NotFoundException('Kỷ luật không tồn tại');
-    }
-    return discipline;
+    const schedule = await this.LichHocService.getScheduleById(_id);
+    return schedule;
   }
 
-  @Post('add_discipline')
+  @Post('add_schedule')
   @UseGuards(JWTAuthGuard)
-  async addDiscipline(
-    @Body() createDisciplineDto: CreateDisciplineDto,
+  async addSchedule(
+    @Body() createScheduleDto: CreateScheduleDto,
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'Admin') {
       throw new UnauthorizedException('Không có quyền thêm KL cho sinh viên');
     }
-    const newDiscipline =
-      await this.kyLuatService.addDiscipline(createDisciplineDto);
+    const newSchedule =
+      await this.LichHocService.addSchedule(createScheduleDto);
 
-    return { message: 'Thêm KL thành công', discipline: newDiscipline };
+    return { message: 'Thêm thành công', newSchedule };
   }
 
-  @Patch('update_discipline/:_id')
+  @Patch('update_schedule/:_id')
   @UseGuards(JWTAuthGuard)
-  async updateDiscipline(
+  async updateschedule(
     @Param('_id') _id: string,
-    @Body() createDisciplineDto: CreateDisciplineDto,
+    @Body() updateScheduleDto: UpdateScheduleDto,
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -78,18 +71,18 @@ export class KyLuatController {
       throw new UnauthorizedException('Không có quyền cập nhật kỷ luật');
     }
 
-    return this.kyLuatService.updateDiscipline(_id, createDisciplineDto);
+    return this.LichHocService.updateSchedule(_id, updateScheduleDto);
   }
 
-  @Delete('delete_discipline/:mssv')
+  @Delete('delete_schedule/:mssv')
   @UseGuards(JWTAuthGuard)
-  deleteDiscipline(@Param('mssv') mssv: string, @Request() req: any) {
+  deleteSchedule(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'Admin') {
       throw new UnauthorizedException(
         'Không có quyền truy cập thông tin sinh viên này',
       );
     }
-    return this.kyLuatService.deleteDisciplineByMSSV(mssv);
+    return this.LichHocService.deleteScheduleByMSSV(mssv);
   }
 }

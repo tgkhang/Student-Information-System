@@ -5,39 +5,38 @@ export type GiangVienDocument = GiangVien & Document;
 
 @Schema()
 export class GiangVien {
+  @Prop({ required: true })
+  MaGV: string;
 
-    @Prop({ required: true})
-    MaGV: string;
-    
-    @Prop({ required: true })
-    HoTen: string;
+  @Prop({ required: true })
+  HoTen: string;
 
-    @Prop({ type: Date })
-    NgaySinh: Date;
+  @Prop({ type: Date })
+  NgaySinh: Date;
 
-    @Prop()
-    GioiTinh: string;
+  @Prop()
+  GioiTinh: string;
 
-    @Prop()
-    DiaChi: string;
+  @Prop()
+  DiaChi: string;
 
-    @Prop()
-    SoDienThoai: string;
+  @Prop()
+  SoDienThoai: string;
 
-    @Prop()
-    ChucVu: string;
+  @Prop()
+  ChucVu: string;
 
-    @Prop()
-    Khoa: string;
+  @Prop()
+  Khoa: string;
 
-    @Prop()
-    CCCD: string;
+  @Prop()
+  CCCD: string;
 
-    @Prop()
-    TrinhDo: string;
+  @Prop()
+  TrinhDo: string;
 
-    @Prop({ type: Date, default: Date.now })
-    NgayVaoLam: Date;
+  @Prop({ type: Date, default: Date.now })
+  NgayVaoLam: Date;
 
     @Prop({
         type: [{ thongBaoId: { type: Types.ObjectId, ref: 'ThongBaos' }, isRead: { type: Boolean, default: false } }],
