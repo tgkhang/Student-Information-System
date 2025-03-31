@@ -1,35 +1,70 @@
-"use client"
 import AppBar from "@mui/material/AppBar"
 import Toolbar from "@mui/material/Toolbar"
-import IconButton from "@mui/material/IconButton"
-import MenuIcon from "@mui/icons-material/Menu"
 import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
 
-export default function Header({ toggleDrawer }) {
+import Logo from "../assets/Logo.svg"
+
+export default function Header({}) {
   return (
     <AppBar
       position="fixed"
       sx={{
         width: "100%",
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        backgroundColor: "white",
-        color: "primary.main",
+        backgroundColor: "#FCFDFF",
+        color: "#407BFF",
         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.08)",
+        px: "5em"
       }}
     >
-      <Toolbar>
-        <IconButton size="small" edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer} sx={{ mr: 2 }}>
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: "bold", color: "primary.main" }}>
+      <Toolbar sx={{}}>
+        <Box component="img" src={Logo} alt="Logo" sx={{ width: 40, mr: 2}}>
+        </Box>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 800, color: "" }}>
           InfoStudia
         </Typography>
-        <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
-          {/* Add user profile or other actions here */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
+            {["Home", "About", "Contact", "Services"].map((text, index) => (
+              <Typography
+                key={index}
+                component="a"
+                href={`/${text.toLowerCase()}`}
+                sx={{
+                  textDecoration: "none",
+                  color: "#000",
+                  fontWeight: 400,
+                  mx: 2,
+                  fontSize: "1rem",
+                  "&:hover": { color: "#407BFF" },
+                  "&:active": { color: "#165EFF" },
+                }}
+              >
+                {text}
+              </Typography>
+          ))}
+          <Button
+            component="a"
+            href="/login"
+            sx={{
+              backgroundColor: "#407BFF",
+              color: "white",
+              fontWeight: 700,
+              textTransform: "none",
+              px: 3,
+              py: 1,
+              borderRadius: "8px",
+              mx: 1.5,
+              fontSize: "1rem",
+              boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
+              "&:hover": { backgroundColor: "white", color: "#407BFF" }
+            }}
+          >
+            Login
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>
   )
 }
-

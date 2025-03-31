@@ -28,7 +28,7 @@ export default function Router() {
         { path: "login", element: <Login /> },
         // { path: "register", element: <Register /> },
         { path: "forgot-password", element: <ForgotPassword /> },
-        // { path: "verify", element: <VerifyCode /> },
+        { path: "reset-password", element: <ResetPassword /> },
       ],
     },
     // Main Routes
@@ -38,12 +38,17 @@ export default function Router() {
       children: [
         { path: "coming-soon", element: <ComingSoon /> },
         { path: "maintenance", element: <Maintenance /> },
-        { path: "about-us", element: <AboutUs /> },
         { path: "500", element: <Page500 /> },
         { path: "404", element: <Page404 /> },
         { path: "*", element: <Navigate to="/404" replace /> },
         { path: "faqs", element: <FAQs /> },
         { path: "test", element: <StudentDashboardPage /> },
+
+        { path: "home", element: <GuestPage />},
+        { path: "about", element: <AboutUs /> },
+        { path: "contact", element: <Contact /> },
+        { path: "services", element: <Services /> }
+        
       ],
     },
     // Student Routes
@@ -120,20 +125,21 @@ export default function Router() {
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import("../pages/authentication/Login")));
-// const Register = Loadable(
-//   lazy(() => import("../pages/authentication/Register"))
-// );
-const ForgotPassword = Loadable(
-  lazy(() => import("../pages/authentication/ForgotPassword"))
-);
-// const VerifyCode = Loadable(
-//   lazy(() => import("../pages/authentication/VerifyCode"))
-// );
+const ForgotPassword = Loadable(lazy(() => import("../pages/authentication/ForgotPassword")));
+const ResetPassword = Loadable(lazy(() => import("../pages/authentication/ResetPassword")));
+
 
 // MAIN
+
+// GUEST
+const GuestPage = Loadable(lazy(() => import("../pages/GuestPage")));
+const AboutUs = Loadable(lazy(() => import("../pages/AboutUs")));
+const Contact = Loadable(lazy(() => import("../pages/Contact")));
+const Services = Loadable(lazy(() => import("../pages/Services")));
+
+// OTHERS
 const Page500 = Loadable(lazy(() => import("../pages/Page500")));
 const Page404 = Loadable(lazy(() => import("../pages/Page404")));
-const AboutUs = Loadable(lazy(() => import("../pages/AboutUs")));
 const ComingSoon = Loadable(lazy(() => import("../pages/ComingSoon")));
 const Maintenance = Loadable(lazy(() => import("../pages/Maintenance")));
 const FAQs = Loadable(lazy(() => import("../pages/Faqs")));

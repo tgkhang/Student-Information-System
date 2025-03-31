@@ -1,97 +1,106 @@
-import { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
-
-// @mui
-import { Box, Button, Container, Typography, Stack } from "@mui/material";
-// Routes
-import { PATH_AUTH } from "../../routes/path";
-
-// Components
+// components
+import { Container, Box, Typography, Button, TextField} from "@mui/material";
+import { motion } from "framer-motion";
 import Page from "../../components/Page";
-import { FormProvider, RHFTextField } from "../../components/hook-form";
 
-// Form & Validation
-import * as Yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
+import Logo from "../../assets/Logo.svg"
+
+import { guestContainerLogin, guestContainerLoginBox,
+        guestContainerLoginSection, guestContainerLoginSubsection,
+        guestLoginSection, guestRoundBlueButton } from "../../assets/styles/guest";
 
 // ----------------------------------------------------------------------
 
-export default function ResetPassword() {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-
-  const ResetPasswordSchema = Yup.object().shape({
-    email: Yup.string().email("Not a valid email").required("Email is required"),
-  });
-
-  const methods = useForm({
-    resolver: yupResolver(ResetPasswordSchema),
-    defaultValues: { email: "youremail@student.hcmus.edu.vn" },
-  });
-
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
-  const onSubmit = async (data) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSent(true);
-      setEmail(data.email);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+export function BackgroundCircles() {
   return (
-    <Page title="Reset Password" sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <Container sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <Box sx={{ maxWidth: 480, width: "100%", textAlign: "center" }}>
-          {!sent ? (
-            <>
-              <Typography variant="h3" paragraph>
-                Forgot password?
+    <Box sx={{ position: "absolute", width: "100vw", height: "100vh", overflow: "hidden" }}>
+      <motion.div 
+        initial={{ opacity: 0, x: -200 }}
+        animate={{ opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } }}
+        style={{ position: "absolute", width: "60rem", height: "55rem", borderRadius: "50%", backgroundColor: "#2970FF", top: -450, left: -270, zIndex: -1 }}
+      />
+      <motion.div 
+        initial={{ opacity: 0, x: 200 }}
+        animate={{ opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } }}
+        style={{ position: "absolute", width: "50rem", height: "40rem", borderRadius: "50%", backgroundColor: "#2970FF", bottom: -330, right: -230, zIndex: -1 }}
+      />
+    </Box>
+  );
+}
+
+export default function ForgotPassword() {
+  return (
+    <Page title="Forgot Password">
+
+      <BackgroundCircles></BackgroundCircles>
+
+      <Typography component="a" href="/home"
+                    sx={{position: "fixed", top: "0.25em", right: "0.75em", zIndex: 10,
+                        fontWeight: 800, color: "#407BFF", fontSize: "3rem", textDecoration: "none"}}>
+          &lt;
+      </Typography>
+
+      <Container {...guestContainerLogin}>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }}
+          style={guestContainerLoginBox} 
+        >
+          
+          <Box sx={guestContainerLoginSection}>
+            <Box sx={{display: "flex", flexDirection: "column", width: "90%", gap: "0.3em"}}>
+              <Typography variant="h4">Forgot your</Typography>
+              <Typography variant="h1" sx={{color: "#407BFF", fontWeight: 700}}>Password?</Typography>
+            </Box>
+          </Box>
+
+          <Box sx={guestContainerLoginSection}>
+          
+            <Box sx={{...guestContainerLoginSubsection, alignItems: "center"}}>
+              <Box sx={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <Box component="img" src={Logo} alt="InfoStudia" sx={{ width: "100%", maxWidth: 50 }} />
+                <Typography variant="h4" sx={{color: "#407BFF", fontWeight: 700}}>Forgot Password</Typography>
+              </Box>
+              <Typography sx={guestLoginSection}>
+                Please type your username in the box below and we will send you a recovery link through your email.
               </Typography>
-              <Typography sx={{ color: "text.secondary", mb: 5 }}>
-                Please enter the email address associated with your account and we will email you a link to reset your password.
-              </Typography>
-  
-              <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-                <Stack spacing={3}>
-                  <RHFTextField name="email" label="Email address" InputProps={{
-                sx: { borderRadius: "16px" },
-              }}/>
-                  <Button fullWidth size="large" type="submit" variant="contained" loading={isSubmitting} sx={{ borderRadius: "16px" }}>
-                    Reset Password
-                  </Button>
-                </Stack>
-              </FormProvider>
-  
-              <Button fullWidth size="large" component={RouterLink} to={PATH_AUTH.login} sx={{ mt: 2 }}>
-                Back
-              </Button>
-            </>
-          ) : (
-            <Box>
-              <Typography variant="h3" gutterBottom>
-                Email sent
-              </Typography>
-              <Typography>
-                We have sent an email to <strong>{email}</strong>.
-                <br />
-                Please check your inbox.
-              </Typography>
-  
-              <Button size="large" variant="contained" component={RouterLink} to={PATH_AUTH.login} sx={{ mt: 5 }}>
-                Back to login
+            </Box>
+
+            <Box sx={guestContainerLoginSubsection}>
+              <TextField placeholder="Enter your username" 
+                fullWidth variant="outlined" size="small"
+                InputProps={{ sx: { borderRadius: "2em", fontSize: "0.8rem" }}}
+                label="Username"
+                InputLabelProps={{ sx: { fontSize: "0.8rem", "&.Mui-focused": { color: "#407BFF"} } }}
+              />
+            </Box>
+            
+            <Box sx={guestContainerLoginSubsection}>
+              <Button sx={guestRoundBlueButton}>
+                  Send recovery link
               </Button>
             </Box>
-          )}
-        </Box>
+
+            <Box sx={guestContainerLoginSubsection}>
+                <Typography sx={guestLoginSection}>
+                  Remembered your password?{" "}
+                  <Typography component="span" sx={{...guestLoginSection, color: "#407BFF", fontWeight: 600}}>
+                    <Box component="a" href="/auth/login"
+                        sx={{ fontSize: "0.8rem", textDecoration: "none", color: "#407BFF", fontWeight: 600,
+                              "&:hover": { textDecoration: "underline" }}}>
+                        Back to Login.
+                    </Box>
+                  </Typography>
+                </Typography>
+            </Box>
+          
+          </Box>
+
+        </motion.div>
+      
       </Container>
+
     </Page>
   );
-  
 }
