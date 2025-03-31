@@ -1,4 +1,12 @@
-import { IsDate, IsNotEmpty, IsString, IsMongoId } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsMongoId,
+  IsString,
+  IsOptional,
+  IsInt,
+  Min,
+  Max,
+} from 'class-validator';
 import { Types } from 'mongoose';
 
 export class CreateScheduleDto {
@@ -10,23 +18,24 @@ export class CreateScheduleDto {
   @IsNotEmpty()
   GiangVienID: Types.ObjectId;
 
-  @IsDate()
+  @IsInt()
+  @Min(1)
+  @Max(7)
   @IsNotEmpty()
-  NgayHoc: Date;
+  NgayHoc: number; // Represents the day of the week (1 for Monday, 7 for Sunday)
 
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
-  ThoiGianBatDau: Date;
+  ThoiGianBatDau: string; // Time in "HH:mm" format
 
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
-  ThoiGianKetThuc: Date;
+  ThoiGianKetThuc: string; // Time in "HH:mm" format
 
   @IsString()
   @IsNotEmpty()
   DiaDiem: string;
 
-  @IsDate()
-  @IsNotEmpty()
+  @IsOptional()
   NgayCapNhat: Date = new Date();
 }

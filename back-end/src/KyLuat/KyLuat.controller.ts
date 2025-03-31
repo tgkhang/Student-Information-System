@@ -10,11 +10,13 @@ import {
   Get,
   NotFoundException,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { KyLuatService } from './KyLuat.service';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreateDisciplineDto } from './dto/C&U-discipline.dto';
+import { GetListDto } from './dto/getList.dto';
 @Controller('KyLuat')
 export class KyLuatController {
   sinhVienModel: any;
@@ -27,7 +29,7 @@ export class KyLuatController {
   @UseGuards(JWTAuthGuard)
   async getStudent(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin' && req.user.username !== mssv) {
+    if (req.user.role !== 'admin' && req.user.username !== mssv) {
       throw new UnauthorizedException(
         'Không có quyền xem thông tin sinh viên này',
       );
@@ -39,11 +41,26 @@ export class KyLuatController {
   @UseGuards(JWTAuthGuard)
   async getDisciplineById(@Param('_id') _id: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền truy cập kỷ luật');
     }
 
     const discipline = await this.kyLuatService.getDisciplineById(_id);
+    if (!discipline) {
+      throw new NotFoundException('Kỷ luật không tồn tại');
+    }
+    return discipline;
+  }
+
+  @Get('get_discipline')
+  @UseGuards(JWTAuthGuard)
+  async getListDisciplines(@Query() query: GetListDto, @Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (req.user.role !== 'admin') {
+      throw new UnauthorizedException('Không có quyền truy cập kỷ luật');
+    }
+
+    const discipline = await this.kyLuatService.getDisciplines(query);
     if (!discipline) {
       throw new NotFoundException('Kỷ luật không tồn tại');
     }
@@ -57,7 +74,7 @@ export class KyLuatController {
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền thêm KL cho sinh viên');
     }
     const newDiscipline =
@@ -74,7 +91,7 @@ export class KyLuatController {
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền cập nhật kỷ luật');
     }
 
@@ -85,7 +102,7 @@ export class KyLuatController {
   @UseGuards(JWTAuthGuard)
   deleteDiscipline(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException(
         'Không có quyền truy cập thông tin sinh viên này',
       );

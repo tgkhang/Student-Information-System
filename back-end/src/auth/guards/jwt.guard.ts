@@ -24,9 +24,7 @@ export class JWTAuthGuard extends AuthGuard('jwt') {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const token = authHeader.split(' ')[1];
-    console.log(token);
     try {
-      console.log(1);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
       const payload = this.jwtService.verify(token, { secret: 'abc123' });
       const currentTime = Math.floor(Date.now() / 1000);

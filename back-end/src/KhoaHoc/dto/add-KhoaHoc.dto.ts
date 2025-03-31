@@ -1,45 +1,49 @@
-import { IsString, IsInt, IsOptional, IsArray, IsNotEmpty } from 'class-validator';
+import { IsString, IsInt, IsOptional, IsNotEmpty } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class AddCourseDto {
-    @IsNotEmpty()
-    @IsString()
-    TenKhoaHoc: string;
+  @IsNotEmpty()
+  @IsString()
+  TenKhoaHoc: string;
 
-    @IsNotEmpty()
-    @IsString()
-    GiangVienID: Types.ObjectId;
+  @IsNotEmpty()
+  @IsString()
+  GiangVienID: Types.ObjectId;
 
-    @IsOptional()
-    @IsString()
-    TroGiangID?: Types.ObjectId;
+  @IsOptional()
+  @IsString()
+  TroGiangID?: Types.ObjectId;
 
-    @IsNotEmpty()
-    @IsInt()
-    SoTinChi: number;
+  @IsNotEmpty()
+  @IsInt()
+  SoTinChi: number;
 
-    @IsOptional()
-    @IsString()
-    MoTa?: string;
+  @IsOptional()
+  @IsString()
+  MoTa?: string;
 
-    @IsInt()
-    @IsNotEmpty()
-    SoLuongToiDa: number;
+  @IsInt()
+  @IsNotEmpty()
+  SoLuongToiDa: number;
 
-    @IsNotEmpty()
-    HanDangKy: Date;
+  @IsNotEmpty()
+  HanDangKy: Date;
 
-    @IsNotEmpty()
-    NgayBatDau: Date;
+  @IsNotEmpty()
+  NgayBatDau: Date;
 
-    @IsNotEmpty()
-    NgayKetThuc: Date;
-    // @IsArray()
-    // SinhVienDangKy: Types.ObjectId[];
+  @IsNotEmpty()
+  NgayKetThuc: Date;
 
-    // @IsArray()
-    // TaiLieu: Array<{ TenTaiLieu: string; LinkTaiLieu: string }>;
+  @IsNotEmpty()
+  @IsString()
+  KhoaID: string;
+  // @IsArray()
+  // SinhVienDangKy: Types.ObjectId[];
 
-    // @IsOptional()
-    // NgayCapNhat?: Date;
+  // @IsArray()
+  // TaiLieu: Array<{ TenTaiLieu: string; LinkTaiLieu: string }>;
+
+  // @IsOptional()
+  // NgayCapNhat?: Date;
 }

@@ -11,14 +11,14 @@ export class LichHoc {
   @Prop({ type: Types.ObjectId, ref: 'GiangVien' })
   GiangVienID: Types.ObjectId;
 
-  @Prop({ type: Date })
-  NgayHoc: Date;
+  @Prop({ type: String })
+  NgayHoc: string;
 
-  @Prop({ type: Date })
-  ThoiGianBatDau: Date;
+  @Prop({ type: String })
+  ThoiGianBatDau: string;
 
-  @Prop({ type: Date })
-  ThoiGianKetThuc: Date;
+  @Prop({ type: String })
+  ThoiGianKetThuc: string;
 
   @Prop()
   DiaDiem: string;

@@ -8,14 +8,13 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { MailerService } from './mailer/mailer.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from '../schemas/user.schema';
-import { JWTAuthGuard } from './guards/jwt.guard';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
       secret: 'abc123',
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '15m' },
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],

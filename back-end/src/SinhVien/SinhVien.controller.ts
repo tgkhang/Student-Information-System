@@ -51,7 +51,14 @@ export class SinhVienController {
   async updateStudent(
     @Param('mssv') mssv: string,
     @Body() updateSinhVienDto: UpdateSinhVienDto,
+    @Request() req: any,
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (req.user.role !== 'admin') {
+      throw new UnauthorizedException(
+        'Không có quyền xem thông tin sinh viên này',
+      );
+    }
     return this.sinhVienService.updateStudent(mssv, updateSinhVienDto);
   }
 

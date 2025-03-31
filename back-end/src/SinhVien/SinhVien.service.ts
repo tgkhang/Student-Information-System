@@ -68,7 +68,10 @@ export class SinhVienService {
   }
 
   async getStudentByMSSV(mssv: string): Promise<SinhVien> {
-    const student = await this.sinhVienModel.findOne({ mssv });
+    const student = await this.sinhVienModel
+      .findOne({ mssv })
+      .populate('KhoaID', 'TenKhoa')
+      .exec();
     if (!student) {
       throw new NotFoundException('Sinh viên không tồn tại');
     }

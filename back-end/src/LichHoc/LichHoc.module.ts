@@ -8,6 +8,7 @@ import { SinhVienModule } from 'src/SinhVien/SinhVien.module';
 import { PhuHuynhModule } from 'src/PhuHuynh/PhuHuynh.module';
 import { JwtModule } from '@nestjs/jwt';
 import { GiangVienModule } from 'src/GiangVien/GiangVien.module';
+import { KhoaHocModule } from 'src/KhoaHoc/KhoaHoc.module';
 
 @Module({
   imports: [
@@ -16,6 +17,8 @@ import { GiangVienModule } from 'src/GiangVien/GiangVien.module';
     forwardRef(() => SinhVienModule),
     forwardRef(() => GiangVienModule),
     PhuHuynhModule,
+    LichHocModule,
+    KhoaHocModule,
     JwtModule.register({
       secret: 'abc123',
       signOptions: { expiresIn: '1h' },
