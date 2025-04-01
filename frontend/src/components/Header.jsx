@@ -46,7 +46,7 @@ export default function Header({}) {
           ))}
           <Button
             component="a"
-            href="/login"
+            href="/auth/login"
             sx={{
               backgroundColor: "#407BFF",
               color: "white",

@@ -64,14 +64,14 @@ const guestDefaultContainer = {
     maxWidth: "xl"
 }
 
-const guestContainerMain = {
+const guestContainerHomeParts = {
     ...guestDefaultContainer,
     sx: { px: "6.5em" }
 }
 
 const guestContainerBesidesHome = {
-    ...guestContainerMain,
-    sx: { pt: "6em", pb: "3em", px: "6.5em" }
+    ...guestDefaultContainer,
+    sx: { pt: "7em", pb: "3em", px: "6.5em" }
 }
 
 const guestContainerLogin = {
@@ -111,37 +111,47 @@ const guestContainerLoginSubsection = {
     width: "80%"
 }
 
+const guestContainerImage = {
+    disableGutters: true,
+    maxWidth: "xl",
+    pt: "6em", pb: "3em", px: "6.5em",
+    minHeight: "100vh",
+    position: "relative",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+
+    "&::before": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        zIndex: -1
+    },
+
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    color: "white",
+    zIndex: 0,
+}
+
 const guestContainerContact = {
-    ...guestDefaultContainer,
-    sx: {
-        pt: "6em", pb: "3em", px: "6.5em",
-        minHeight: "100vh",
-        position: "relative",
-        backgroundImage: "url('/Contact.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+    ...guestContainerImage,
+    backgroundImage: "url('/Contact.png')",
+}
 
-        "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            zIndex: -1
-        },
+const guestContainerImageHome = {
+    ...guestContainerImage,
+    backgroundImage: "url('/SaigonBridge.jpg')",
+    gap: "7em", pt: "5em"
+}
 
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        color: "white",
-        zIndex: 0,
-    }
-};
-
-export { guestDefaultContainer, guestContainerMain, guestContainerBesidesHome, guestContainerContact,
+export { guestDefaultContainer, guestContainerHomeParts, guestContainerBesidesHome,
+        guestContainerImage, guestContainerContact, guestContainerImageHome,
         guestContainerLogin, guestContainerLoginBox, guestContainerLoginSection, guestContainerLoginSubsection, }
 
 
@@ -151,7 +161,7 @@ const guestTitle = {
     textAlign: "center",
     fontWeight: "700",
     color: "#407BFF",
-    fontSize: "4rem",
+    fontSize: "3.5rem",
     mb: "0.5em"
 }
 
@@ -172,3 +182,16 @@ const guestLoginLabel = {
 }
 
 export { guestTitle, guestSpanStrong, guestLoginSection, guestLoginLabel }
+
+// CARD
+
+const guestBlueStairsCard = {
+    backgroundColor: "#0543F1",
+    p: "1.5em",
+    borderRadius: 3,
+    display: "flex",
+    gap: "2em",
+    width: "50%",
+}
+
+export { guestBlueStairsCard }

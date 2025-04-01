@@ -17,7 +17,17 @@ import EmailIcon from "@mui/icons-material/Email";
 
 const fadeInUp = {
     hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeIn" } }
+};
+
+const fadeCenterLeft = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeIn", delay: 0.25 } }
+};
+
+const fadeCenterRight = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeIn", delay: 0.5 } }
 };
 
 const MotionCard = motion(Card);
@@ -29,7 +39,7 @@ export default function Contact() {
 
         <Header />
 
-        <Container {...guestContainerContact}>
+        <Container disableGutters maxWidth="xl" sx={guestContainerContact}>
 
             <Container {...guestDefaultContainer}>
 
@@ -49,7 +59,7 @@ export default function Contact() {
                     <MotionBox
                         initial="hidden" 
                         whileInView="visible" 
-                        variants={fadeInUp} 
+                        variants={fadeCenterLeft} 
                         viewport={{ once: true }}
                         sx={{ flex: 1.5 }}
                     >
@@ -64,7 +74,7 @@ export default function Contact() {
                     <MotionCard
                             initial="hidden"
                             whileInView="visible"
-                            variants={fadeInUp}
+                            variants={fadeCenterRight}
                             viewport={{ once: true }}
                             sx={{
                                 backgroundColor: "white",
