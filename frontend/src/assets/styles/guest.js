@@ -1,5 +1,6 @@
 // GUEST UI
 
+
 // BUTTONS
 
 const buttonStyles = {
@@ -71,7 +72,7 @@ const guestContainerHomeParts = {
 
 const guestContainerBesidesHome = {
     ...guestDefaultContainer,
-    sx: { pt: "7em", pb: "3em", px: "6.5em" }
+    sx: { py: "7em", pb: "3em", px: "6.5em" }
 }
 
 const guestContainerLogin = {
@@ -114,7 +115,7 @@ const guestContainerLoginSubsection = {
 const guestContainerImage = {
     disableGutters: true,
     maxWidth: "xl",
-    pt: "6em", pb: "3em", px: "6.5em",
+    py: "7em", pb: "3em", px: "6.5em",
     minHeight: "100vh",
     position: "relative",
     backgroundSize: "cover",
@@ -141,7 +142,7 @@ const guestContainerImage = {
 
 const guestContainerContact = {
     ...guestContainerImage,
-    backgroundImage: "url('/Contact.png')",
+    backgroundImage: "url('/Contact.jpg')",
 }
 
 const guestContainerImageHome = {
@@ -162,7 +163,7 @@ const guestTitle = {
     fontWeight: "700",
     color: "#407BFF",
     fontSize: "3.5rem",
-    mb: "0.5em"
+    mb: "1em"
 }
 
 const guestSpanStrong = {

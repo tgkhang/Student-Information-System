@@ -49,7 +49,7 @@ export default function Contact() {
                     transition={{ duration: 0.8 }} 
                     viewport={{ once: true }}
                 >
-                    <Typography sx={{...guestTitle, color: "white", mb: 8}}>
+                    <Typography sx={{...guestTitle, color: "white"}}>
                         Contact
                     </Typography>
                 </motion.div>
