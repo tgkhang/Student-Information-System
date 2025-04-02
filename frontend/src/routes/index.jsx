@@ -2,7 +2,9 @@ import { Suspense, lazy } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 // components
 import LoadingScreen from "../components/LoadingScreen";
-
+// guards
+import AuthGuard from "../guards/AuthGuards";
+import GuestGuard from "../guards/GuestGuard";
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) => {
@@ -25,24 +27,22 @@ export default function Router() {
     {
       path: "auth",
       children: [
-        { path: "login", element: <Login /> },
+        { path: "login", element: <GuestGuard><Login /></GuestGuard> },
         // { path: "register", element: <Register /> },
-        { path: "forgot-password", element: <ForgotPassword /> },
-        { path: "reset-password", element: <ResetPassword /> },
+        { path: "forgot-password", element: <GuestGuard><ForgotPassword /></GuestGuard> },
+        { path: "reset-password", element: <GuestGuard><ResetPassword /></GuestGuard> },
       ],
     },
     // Main Routes
     {
       path: "*",
-      //   element: <LogoOnlyLayout />,
       children: [
         { path: "coming-soon", element: <ComingSoon /> },
         { path: "maintenance", element: <Maintenance /> },
         { path: "500", element: <Page500 /> },
         { path: "404", element: <Page404 /> },
-        { path: "*", element: <Navigate to="/404" replace /> },
+        { path: "*", element: <GuestPage /> },
         { path: "faqs", element: <FAQs /> },
-        { path: "test", element: <StudentDashboardPage /> },
 
         { path: "home", element: <GuestPage />},
         { path: "about", element: <AboutUs /> },
@@ -54,7 +54,9 @@ export default function Router() {
     // Student Routes
     {
       path: "student",
+      element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
+        { path: "*", element: <StudentDashboardPage /> },
         { path: "dashboard", element: <StudentDashboardPage /> },
         {
           path: "classRegistration",
@@ -67,17 +69,10 @@ export default function Router() {
       ],
     },
 
-    // Admin Routes (placeholder for future)
-    {
-      path: "admin",
-      children: [
-        // Admin routes will go here
-      ],
-    },
-
     // Teacher Routes (placeholder for future)
     {
       path: "teacher",
+      element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
         { path: "dashboard", element: <TeacherDashboardPage /> },
         {
@@ -90,29 +85,9 @@ export default function Router() {
         },
       ],
     },
-    // // Course Routes
-    // {
-    //   path: "courses",
-    //   children: [
-    //     { path: "my-courses", element: <MyCoursesPage /> },
-    //     { path: "available", element: <AvailableCoursesPage /> },
-    //     { path: "catalog", element: <CourseCatalogPage /> },
-    //   ],
-    // },
-
-    // // Schedule Routes
-    // {
-    //   path: "schedule",
-    //   children: [
-    //     {
-    //       path: "",
-    //       element: <Navigate to="/student/classAndAssignment" replace />,
-    //     },
-    //     { path: "timetable", element: <TimetablePage /> },
-    //   ],
-    // },
     {
       path: "ministry",
+      element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
         { path: "studentList", element: <StudentListPage /> },
         { path: "lecturerList", element: <LecturerListPage /> },
@@ -129,7 +104,8 @@ const ForgotPassword = Loadable(lazy(() => import("../pages/authentication/Forgo
 const ResetPassword = Loadable(lazy(() => import("../pages/authentication/ResetPassword")));
 
 
-// MAIN
+// MAINLAYOUT
+const MainLayout = Loadable(lazy(() => import("../layout/MainLayout")));
 
 // GUEST
 const GuestPage = Loadable(lazy(() => import("../pages/GuestPage")));

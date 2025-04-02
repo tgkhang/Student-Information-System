@@ -232,11 +232,6 @@ export default function CourseReviewPage() {
   return (
     <Page title="CourseReviewPage">
       <Box sx={{ display: "flex" }}>
-        <Header toggleDrawer={toggleDrawer} />
-        <TeacherNavigationDrawer
-          isDrawerOpen={isDrawerOpen}
-          toggleDrawer={toggleDrawer}
-        />
 
         <Box
           component="main"

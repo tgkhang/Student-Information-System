@@ -1,12 +1,9 @@
 import axios from "axios";
-import { PATH_AUTH, PATH_PAGE } from "../routes/paths";
-// config
-import { HOST_API } from "../config";
 
 // ----------------------------------------------------------------------
 
 const axiosInstance = axios.create({
-  baseURL: HOST_API,
+  baseURL: "http://localhost:8080/api/",
 });
 
 // Add a request interceptor to set the Authorization header for JWT
@@ -40,19 +37,19 @@ axiosInstance.interceptors.response.use(
         console.log("Access forbidden");
       } else if (status === 401) {
         // Redirect to the login page
-        window.location.href = PATH_AUTH.login;
+        window.location.href = "/auth/login";
       } else if (status === 404) {
-        window.location.href = PATH_PAGE.page404;
+        window.location.href = "/404";
       } else if (status === 500) {
-        window.location.href = PATH_PAGE.page500;
+        window.location.href = "/500";
       } else if (status === 503) {
-        window.location.href = PATH_PAGE.maintenance;
+        window.location.href = "/maintenance";
       } else {
         const errorMessage = error.response.data.message || "An error occurred";
         console.log(errorMessage);
       }
     } else if (error.request) {
-      window.location.href = PATH_PAGE.page500;
+      window.location.href = "/500";
     } else {
       // Something happened in setting up the request that triggered an error
       console.log(`Error: ${error.message}`);

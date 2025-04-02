@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Page from "../../components/Page";
-import Header from "../../components/Header";
 import TeacherNavigationDrawer from "./TeacherNavigationDrawer";
 import {
   Box,
@@ -95,11 +94,6 @@ export default function CoursePage() {
   return (
     <Page title="StudentClassRegistrationPage">
       <Box sx={{ display: "flex" }}>
-        <Header toggleDrawer={toggleDrawer} />
-        <TeacherNavigationDrawer
-          isDrawerOpen={isDrawerOpen}
-          toggleDrawer={toggleDrawer}
-        />
 
         <Box
           component="main"

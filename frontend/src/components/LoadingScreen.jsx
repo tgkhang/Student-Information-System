@@ -1,9 +1,10 @@
 import { m } from 'framer-motion';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
-//
-import Logo from './Logo';
+import { Box, Typography } from '@mui/material';
+import SchoolIcon from '@mui/icons-material/School';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +18,17 @@ const RootStyle = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  flexDirection: 'column',
   backgroundColor: theme.palette.background.default,
+}));
+
+const IconWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  height: '120px',
+  position: 'relative',
 }));
 
 // ----------------------------------------------------------------------
@@ -25,50 +36,95 @@ const RootStyle = styled('div')(({ theme }) => ({
 export default function LoadingScreen({ ...other }) {
   return (
     <>
-
       {!false && (
         <RootStyle {...other}>
-          <Logo disabledLink sx={{ width: 64, height: 64 }} />
+          <IconWrapper>
+            {/* Book icon animation */}
+            <Box
+              component={m.div}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0,
+              }}
+              sx={{
+                position: 'absolute',
+                color: (theme) => theme.palette.primary.main,
+                fontSize: '50px',
+                left: 'calc(50% - 100px)',
+              }}
+            >
+              <MenuBookIcon fontSize="inherit" />
+            </Box>
 
+            {/* Graduation cap animation */}
+            <Box
+              component={m.div}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0.5,
+              }}
+              sx={{
+                position: 'absolute',
+                color: (theme) => theme.palette.secondary.main,
+                fontSize: '50px',
+              }}
+            >
+              <SchoolIcon fontSize="inherit" />
+            </Box>
+
+            {/* Light bulb animation */}
+            <Box
+              component={m.div}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 1,
+              }}
+              sx={{
+                position: 'absolute',
+                color: (theme) => theme.palette.warning.main,
+                fontSize: '50px',
+                left: 'calc(50% + 100px)',
+              }}
+            >
+              <EmojiObjectsIcon fontSize="inherit" />
+            </Box>
+          </IconWrapper>
+
+          {/* Loading text */}
           <Box
             component={m.div}
             animate={{
-              scale: [1.2, 1, 1, 1.2, 1.2],
-              rotate: [270, 0, 0, 270, 270],
-              opacity: [0.25, 1, 1, 1, 0.25],
-              borderRadius: ['25%', '25%', '50%', '50%', '25%'],
-            }}
-            transition={{ ease: 'linear', duration: 3.2, repeat: Infinity }}
-            sx={{
-              width: 100,
-              height: 100,
-              borderRadius: '25%',
-              position: 'absolute',
-              border: (theme) => `solid 3px ${alpha(theme.palette.primary.dark, 0.24)}`,
-            }}
-          />
-
-          <Box
-            component={m.div}
-            animate={{
-              scale: [1, 1.2, 1.2, 1, 1],
-              rotate: [0, 270, 270, 0, 0],
-              opacity: [1, 0.25, 0.25, 0.25, 1],
-              borderRadius: ['25%', '25%', '50%', '50%', '25%'],
+              opacity: [0.6, 1, 0.6],
             }}
             transition={{
               ease: 'linear',
-              duration: 3.2,
+              duration: 1.5,
               repeat: Infinity,
             }}
-            sx={{
-              width: 120,
-              height: 120,
-              borderRadius: '25%',
-              position: 'absolute',
-              border: (theme) => `solid 8px ${alpha(theme.palette.primary.dark, 0.24)}`,
-            }}
-          />
+            sx={{ mt: 4 }}
+          >
+            <Typography variant="h6" color="primary.main">
+              Loading Your Learning Space...
+            </Typography>
+          </Box>
         </RootStyle>
       )}
     </>
