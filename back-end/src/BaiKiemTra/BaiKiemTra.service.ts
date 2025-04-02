@@ -16,11 +16,9 @@ import { CreateTestDto } from './dto/create-Test.dto';
 export class BaiKiemTraService {
   constructor(
     @InjectModel(SinhVien.name) private sinhVienModel: Model<SinhVienDocument>,
-    @InjectModel(GiangVien.name)
-    private giangVienModel: Model<GiangVienDocument>,
+    @InjectModel(GiangVien.name) private giangVienModel: Model<GiangVienDocument>,
     @InjectModel(KhoaHoc.name) private khoaHocModel: Model<KhoaHocDocument>,
-    @InjectModel(BaiKiemTra.name)
-    private BaiKiemTraModel: Model<BaiKiemTraDocument>,
+    @InjectModel(BaiKiemTra.name) private BaiKiemTraModel: Model<BaiKiemTraDocument>,
   ) {}
 
   async getTestByKhoaHocAndMSSV(KhoaHocID: string, MA: string) {

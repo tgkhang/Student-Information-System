@@ -13,9 +13,9 @@ import { LichHocModule } from './LichHoc/LichHoc.module';
 import { KhoaHocModule } from './KhoaHoc/KhoaHoc.module';
 import { HocPhiModule } from './HocPhi/HocPhi.module';
 import { BaiKiemTraModule } from './BaiKiemTra/BaiKiemTra.module';
-import { KhoaModule } from './Khoa/Khoa.module';
 import { DiemDanhModule } from './DiemDanh/DiemDanh.module';
 import { DiemSoModule } from './DiemSo/DiemSo.module';
+import { KhoaModule } from './khoa/Khoa.module';
 
 @Module({
   imports: [
@@ -37,7 +37,6 @@ import { DiemSoModule } from './DiemSo/DiemSo.module';
     GiangVienModule,
     KyLuatModule,
     PhuHuynhModule,
-    KhoaModule,
     ThongBaosModule,
     LichHocModule,
     KhoaHocModule,
