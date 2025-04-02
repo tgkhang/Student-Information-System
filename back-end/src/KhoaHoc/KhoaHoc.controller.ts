@@ -7,7 +7,7 @@ import { GetCourseListDto } from './dto/getListCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { Types } from 'mongoose';
 
-@Controller('KhoaHoc')
+@Controller('api/KhoaHoc')
 export class KhoaHocController {
     constructor (
         private readonly khoaHocService: KhoaHocService,

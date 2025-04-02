@@ -17,7 +17,7 @@ import { KyLuatService } from './KyLuat.service';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreateDisciplineDto } from './dto/C&U-discipline.dto';
 import { GetListDto } from './dto/getList.dto';
-@Controller('KyLuat')
+@Controller('api/KyLuat')
 export class KyLuatController {
   sinhVienModel: any;
   constructor(

@@ -15,7 +15,7 @@ import { LichHocService } from './LichHoc.service';
 import { UpdateScheduleDto } from './dto/update-Schedule.dto';
 import { CreateScheduleDto } from './dto/create-Schedule.dto';
 
-@Controller('LichHoc')
+@Controller('api/LichHoc')
 export class LichHocController {
   constructor(private readonly LichHocService: LichHocService) {}
 

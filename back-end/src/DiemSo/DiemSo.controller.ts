@@ -15,7 +15,7 @@ import { DiemSoService } from './DiemSo.service';
 import { UpdateScoreDto } from './dto/update-Score.dto';
 import { CreateScoreDto } from './dto/create-Score.dto';
 
-@Controller('DiemSo')
+@Controller('api/DiemSo')
 export class DiemSoController {
   sinhVienModel: any;
   constructor(private readonly DiemSoService: DiemSoService) {}

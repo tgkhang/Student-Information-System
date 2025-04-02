@@ -15,7 +15,7 @@ import { BaiKiemTraService } from './BaiKiemTra.service';
 import { UpdateTestDto } from './dto/update-Test.dto';
 import { CreateTestDto } from './dto/create-Test.dto';
 
-@Controller('BaiKiemTra')
+@Controller('api/BaiKiemTra')
 export class BaiKiemTraController {
   sinhVienModel: any;
   constructor(private readonly BaiKiemTraService: BaiKiemTraService) {}

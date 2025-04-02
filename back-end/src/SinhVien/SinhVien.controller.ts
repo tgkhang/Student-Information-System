@@ -20,7 +20,7 @@ import { JWTAuthGuard } from '../auth/guards/jwt.guard';
 import { SinhVien } from 'src/schemas/SinhVien.schema';
 import { GetListStudentDto } from './dto/getList-sinhvien.dto';
 
-@Controller('sinhvien')
+@Controller('api/sinhvien')
 export class SinhVienController {
   constructor(
     private readonly sinhVienService: SinhVienService,

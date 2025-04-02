@@ -4,7 +4,7 @@ import { Query, Types } from 'mongoose';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreateThongBaoDto } from './dto/addNoti.dto';
 
-@Controller('ThongBao')
+@Controller('api/ThongBao')
 export class ThongBaoController {
     constructor(
         private readonly thongBaoService: ThongBaoService,

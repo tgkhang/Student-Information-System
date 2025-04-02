@@ -1,11 +1,12 @@
 import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
+import { KhoaService } from './Khoa.service';
 import { addKhoaDTO } from './dto/addKhoa.dto';
 import { getFacultyListDTO } from './dto/getFacultyList.dto';
 import { updateKhoaDTO } from './dto/updateKhoa.dto';
-import { KhoaService } from './Khoa.service';
 
-@Controller('Khoa')
+
+@Controller('api/Khoa')
 export class KhoaController {
     constructor(
         private readonly khoaService: KhoaService,

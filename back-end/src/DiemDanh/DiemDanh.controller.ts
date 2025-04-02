@@ -15,7 +15,7 @@ import { DiemDanhService } from './DiemDanh.service';
 import { UpdateAttendanceDto } from './dto/update-Attendance.dto';
 import { CreateAttendanceDto } from './dto/create-Attendance.dto';
 import { SinhVienStatusDto } from './dto/sinhvien-status.dto';
-@Controller('DiemDanh')
+@Controller('api/DiemDanh')
 export class DiemDanhController {
   sinhVienModel: any;
   constructor(private readonly DiemDanhService: DiemDanhService) {}
