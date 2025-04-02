@@ -1,13 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import {
-  PhuHuynh,
-  PhuHuynhDocument,
-  ThongBao,
-} from 'src/schemas/PhuHuynh.schema';
+import { PhuHuynh, PhuHuynhDocument } from 'src/schemas/PhuHuynh.schema';
 import { SinhVien, SinhVienDocument } from 'src/schemas/SinhVien.schema';
 import { CreateParentsDto } from './dto/C&U-phuhuynh.dto';
+import { GetListDto } from './dto/getList.dto';
 import { KyLuatService } from 'src/KyLuat/KyLuat.service';
 import { MailerService } from 'src/auth/mailer/mailer.service';
 @Injectable()
@@ -78,10 +79,31 @@ export class PhuHuynhService {
     return result;
   }
 
-  async getListNoti(SinhVienID: string): Promise<ThongBao[]> {
+  async getListNoti(SinhVienID: string, query: GetListDto) {
+    const { pageSize, pageNumber, sortBy, sortOrder } = query;
+
+    if (!pageSize || !pageNumber || !sortBy || !sortOrder) {
+      throw new BadRequestException('Thiếu các trường cần thiết');
+    }
+
+    const skip = (pageNumber - 1) * pageSize;
+    const limit = pageSize;
+
+    const sort = {};
+    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
     const parent = await this.phuHuynhModel
       .findOne({ SinhVienID })
-      .populate('ThongBao.KyLuatID')
+      .populate({
+        path: 'ThongBao.KyLuatID',
+        populate: {
+          path: 'SinhVienID',
+          model: 'SinhVien',
+        },
+      })
+      .skip(skip)
+      .limit(limit)
+      .sort(sort)
       .exec();
 
     if (!parent) {
@@ -90,7 +112,12 @@ export class PhuHuynhService {
       );
     }
 
-    return parent.ThongBao;
+    return {
+      pageSize,
+      pageNumber,
+      total: await this.phuHuynhModel.countDocuments({ SinhVienID }),
+      data: parent.ThongBao,
+    };
   }
 
   async sendEmailToParent(_id: string, kyLuatID: string) {

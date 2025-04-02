@@ -3,16 +3,20 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { SinhVienModule } from './SinhVien/SinhVien.module';
 import { GiangVienModule } from './GiangVien/GiangVien.module';
-import { JWTAuthGuard } from './auth/guards/jwt.guard';
-import { KhoaHocModule } from './KhoaHoc/KhoaHoc.module';
-
 import { KyLuatModule } from './KyLuat/KyLuat.module';
 import { PhuHuynhModule } from './PhuHuynh/PhuHuynh.module';
 import { ConfigModule } from '@nestjs/config';
 import { config } from 'dotenv';
-import { KhoaModule } from './khoa/khoa.module';
 import { AzureStorageModule } from '@nestjs/azure-storage';
 import { ThongBaosModule } from './ThongBao/ThongBao.module';
+import { LichHocModule } from './LichHoc/LichHoc.module';
+import { KhoaHocModule } from './KhoaHoc/KhoaHoc.module';
+import { HocPhiModule } from './HocPhi/HocPhi.module';
+import { BaiKiemTraModule } from './BaiKiemTra/BaiKiemTra.module';
+import { KhoaModule } from './Khoa/Khoa.module';
+import { DiemDanhModule } from './DiemDanh/DiemDanh.module';
+import { DiemSoModule } from './DiemSo/DiemSo.module';
+
 @Module({
   imports: [
       // MongooseModule.forRoot(process.env.MONGO_URI),
@@ -31,11 +35,17 @@ import { ThongBaosModule } from './ThongBao/ThongBao.module';
     AuthModule,
     SinhVienModule,
     GiangVienModule,
-    KhoaHocModule,
     KyLuatModule,
     PhuHuynhModule,
     KhoaModule,
     ThongBaosModule,
+    LichHocModule,
+    KhoaHocModule,
+    HocPhiModule,
+    BaiKiemTraModule,
+    KhoaModule,
+    DiemDanhModule,
+    DiemSoModule,
   ],
 })
 export class AppModule {}

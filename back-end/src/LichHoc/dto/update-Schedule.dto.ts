@@ -12,7 +12,7 @@ export class UpdateScheduleDto {
 
   @IsDate()
   @IsOptional()
-  NgayHoc: Date;
+  NgayHoc: Date; //0 den 7 = Thu Hai den Chu Nhat
 
   @IsDate()
   @IsOptional()

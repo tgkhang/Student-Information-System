@@ -23,17 +23,25 @@ export class LichHocService {
     if (!sinhVien) {
       throw new NotFoundException('Sinh viên không tồn tại');
     }
+    if (!sinhVien._id) {
+      throw new NotFoundException('Sinh viên không tồn tại');
+    }
 
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    const sinhVienID = sinhVien._id.toString();
     const khoaHocs = await this.khoaHocModel
-      .find({ SinhVienDangKy: { $in: [sinhVien._id] } })
+      .find({ SinhVienDangKy: { $in: [sinhVienID] } })
       .exec();
     if (!khoaHocs || khoaHocs.length === 0) {
       throw new NotFoundException('Sinh viên chưa đăng ký khóa học nào');
     }
-
     const lichHocs = await this.lichHocModel
       .find({
-        KhoaHocID: { $in: khoaHocs.map((khoaHoc) => khoaHoc._id) },
+        KhoaHocID: {
+          $in: khoaHocs.map((khoaHoc) =>
+            (khoaHoc._id as Types.ObjectId).toString(),
+          ),
+        },
       })
       .exec();
 

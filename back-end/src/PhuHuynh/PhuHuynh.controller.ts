@@ -10,11 +10,13 @@ import {
   NotFoundException,
   Post,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { PhuHuynhService } from './PhuHuynh.service';
 import { CreateParentsDto } from './dto/C&U-phuhuynh.dto';
+import { GetListDto } from './dto/getList.dto';
 
 @Controller('PhuHuynh')
 export class PhuHuynhController {
@@ -29,7 +31,7 @@ export class PhuHuynhController {
   @UseGuards(JWTAuthGuard)
   getParents(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin' && req.user.username !== mssv) {
+    if (req.user.role !== 'admin' && req.user.username !== mssv) {
       throw new UnauthorizedException(
         'Không có quyền xem thông tin sinh viên này',
       );
@@ -41,7 +43,7 @@ export class PhuHuynhController {
   @UseGuards(JWTAuthGuard)
   async getParentsById(@Param('_id') _id: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền truy cập kỷ luật');
     }
     const parents = await this.phuHuynhService.getParentsById(_id);
@@ -58,7 +60,7 @@ export class PhuHuynhController {
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền thêm KL cho sinh viên');
     }
     const newParents = await this.phuHuynhService.addParents(createParentsDto);
@@ -74,7 +76,7 @@ export class PhuHuynhController {
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền cập nhật kỷ luật');
     }
 
@@ -85,7 +87,7 @@ export class PhuHuynhController {
   @UseGuards(JWTAuthGuard)
   deleteParents(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException(
         'Không có quyền truy cập thông tin sinh viên này',
       );
@@ -97,16 +99,23 @@ export class PhuHuynhController {
   @UseGuards(JWTAuthGuard)
   async getListNotifications(
     @Param('SinhVienID') SinhVienID: string,
+    @Query() query: GetListDto,
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền truy cập kỷ luật');
     }
-    const notifications = await this.phuHuynhService.getListNoti(SinhVienID);
+
+    const notifications = await this.phuHuynhService.getListNoti(
+      SinhVienID,
+      query,
+    );
+
     if (!notifications) {
       throw new NotFoundException('Không có thông báo nào cho phụ huynh.');
     }
+
     return notifications;
   }
 

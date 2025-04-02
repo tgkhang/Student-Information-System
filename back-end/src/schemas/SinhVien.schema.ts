@@ -49,6 +49,9 @@ export class SinhVien {
 
   @Prop({ type: Date, default: Date.now })
   ThoiGianCapNhat: Date;
+
+  @Prop({ type: Types.ObjectId, ref: 'Khoa' })
+  KhoaID: Types.ObjectId;
 }
 export const SinhVienSchema = SchemaFactory.createForClass(SinhVien);
 
