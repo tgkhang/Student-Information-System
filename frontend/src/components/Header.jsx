@@ -6,7 +6,7 @@ import Button from "@mui/material/Button"
 
 import Logo from "../assets/Logo.svg"
 
-export default function Header({}) {
+export default function Header() {
   return (
     <AppBar
       position="fixed"

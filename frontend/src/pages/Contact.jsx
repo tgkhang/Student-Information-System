@@ -1,12 +1,15 @@
 // components
-import { Container, Box, Typography, Card } from "@mui/material";
+import { Container, Box, Typography, Card, useMediaQuery } from "@mui/material";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Page from "../components/Page";
 import { motion } from "framer-motion";
-
-import { guestDefaultContainer, guestContainerContact,
-        guestTitle } from "../assets/styles/guest";
+import { useTheme } from "@mui/material/styles";
+import {
+  guestDefaultContainer,
+  guestContainerContact,
+  guestTitle,
+} from "../assets/styles/guest";
 
 import PhoneIcon from "@mui/icons-material/Phone";
 import SchoolIcon from "@mui/icons-material/School";
@@ -28,6 +31,7 @@ const fadeCenterLeft = {
 const fadeCenterRight = {
     hidden: { opacity: 0, x: -50 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeIn", delay: 0.5 } }
+
 };
 
 const MotionCard = motion(Card);
@@ -110,9 +114,9 @@ export default function Contact() {
             </Container>
 
         </Container>
+      </Container>
 
-        <Footer />
-
-      </Page>
-    );
+      <Footer />
+    </Page>
+  );
 }

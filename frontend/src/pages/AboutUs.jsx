@@ -30,13 +30,13 @@ import { guestDefaultContainer, guestContainerBesidesHome,
 const teamMembers = [
   {
     name: "Nguyễn Trọng Nhân",
-    role: "CEO, Fullstack Developer",
+    role: "Fullstack Developer",
     img: "https://scontent.fhan4-3.fna.fbcdn.net/v/t39.30808-6/474666549_2641534779375369_4594648735971289345_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=f727a1&_nc_ohc=dCbf_6N9jWAQ7kNvgEM5GVB&_nc_oc=AdnCYwXBxPmYCfe3oV9jUOTLj6uPKZ1c-1vwk0d-wrUsoFToJ-I6WcQZpk8KshxwRv0&_nc_zt=23&_nc_ht=scontent.fhan4-3.fna&_nc_gid=PnVgiWdjzmgTkuoQDwoZrQ&oh=00_AYEbVOGlrpxatLoaj8eewpNfmL7fqVta9RLku6iIn8ucqA&oe=67ED269F",
     email: "ntnhan223@clc.fitus.edu.vn",
     phone: "0345-678-901",
     university: "Trường Đại học Khoa học tự nhiên, ĐHQG-HCM",
     major: "Công nghệ phần mềm",
-    bio: "Lãnh đạo với tầm nhìn chiến lược, giúp công ty phát triển mạnh mẽ trong lĩnh vực công nghệ.",
+    bio: "Giúp công ty phát triển mạnh mẽ trong lĩnh vực công nghệ.",
   },
   {
     name: "Lâm Tiến Huy",
