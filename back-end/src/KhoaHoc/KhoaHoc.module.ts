@@ -22,6 +22,7 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule,
   ],
   providers: [KhoaHocService, SinhVienService],
-  controllers: [KhoaHocController]
+  controllers: [KhoaHocController],
+  exports: [MongooseModule, KhoaHocService],
 })  
 export class KhoaHocModule {}

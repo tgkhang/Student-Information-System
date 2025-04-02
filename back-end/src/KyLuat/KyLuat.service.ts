@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { KyLuat, KyLuatDocument } from '../schemas/KyLuat.schema';
 import { SinhVien, SinhVienDocument } from '../schemas/SinhVien.schema';
 import { CreateDisciplineDto } from './dto/C&U-discipline.dto';
 import { PhuHuynh, PhuHuynhDocument } from './../schemas/PhuHuynh.schema';
+import { GetListDto } from './dto/getList.dto';
 
 @Injectable()
 export class KyLuatService {
@@ -21,7 +26,7 @@ export class KyLuatService {
     }
     const disciplines = await this.kyLuatModel
       .find({ SinhVienID: (sinhVien._id as Types.ObjectId).toString() })
-      .populate('SinhVienID')
+      .populate({ path: 'SinhVienID', model: 'SinhVien' })
       .exec();
 
     return disciplines;
@@ -70,11 +75,46 @@ export class KyLuatService {
   async getDisciplineById(_id: string): Promise<KyLuat> {
     const discipline = await this.kyLuatModel
       .findById(_id as unknown as Types.ObjectId)
+      .populate({ path: 'SinhVienID', model: 'SinhVien' })
       .exec();
     if (!discipline) {
       throw new NotFoundException('Kỷ luật không tồn tại');
     }
     return discipline;
+  }
+
+  async getDisciplines(query: GetListDto) {
+    const { pageSize, pageNumber, sortBy, sortOrder } = query;
+
+    if (!pageSize || !pageNumber || !sortBy || !sortOrder) {
+      throw new BadRequestException('Thiếu các trường cần thiết');
+    }
+
+    const skip = (pageNumber - 1) * pageSize;
+    const limit = pageSize;
+
+    const sort = {};
+    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const discipline = await this.kyLuatModel
+      .find()
+      .populate({ path: 'SinhVienID', model: 'SinhVien' })
+      .skip(skip)
+      .limit(limit)
+      .sort(sort)
+      .exec();
+
+    if (!discipline) {
+      throw new NotFoundException(
+        'Không tồn tại kỉ luật nào trong cơ sở dữ liệu',
+      );
+    }
+
+    return {
+      pageSize,
+      pageNumber,
+      data: discipline,
+    };
   }
 
   async deleteDisciplineByMSSV(mssv: string): Promise<any> {

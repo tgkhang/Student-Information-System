@@ -23,7 +23,7 @@ export class LichHocController {
   @UseGuards(JWTAuthGuard)
   async GetScheduleByMSSV(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin' && req.user.username !== mssv) {
+    if (req.user.role !== 'admin' && req.user.username !== mssv) {
       throw new UnauthorizedException(
         'Không có quyền xem thông tin sinh viên này',
       );
@@ -36,8 +36,8 @@ export class LichHocController {
   @UseGuards(JWTAuthGuard)
   async getLichHocById(@Param('_id') _id: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
-      throw new UnauthorizedException('Không có quyền truy cập kỷ luật');
+    if (req.user.role !== 'admin') {
+      throw new UnauthorizedException('Không có quyền truy cập lịch học');
     }
     const schedule = await this.LichHocService.getScheduleById(_id);
     return schedule;
@@ -50,7 +50,7 @@ export class LichHocController {
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền thêm KL cho sinh viên');
     }
     const newSchedule =
@@ -67,7 +67,7 @@ export class LichHocController {
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền cập nhật kỷ luật');
     }
 
@@ -78,7 +78,7 @@ export class LichHocController {
   @UseGuards(JWTAuthGuard)
   deleteSchedule(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'Admin') {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException(
         'Không có quyền truy cập thông tin sinh viên này',
       );

@@ -49,6 +49,7 @@ export class SinhVien {
 
   @Prop({ type: Date, default: Date.now })
   ThoiGianCapNhat: Date;
+
 }
 export const SinhVienSchema = SchemaFactory.createForClass(SinhVien);
 

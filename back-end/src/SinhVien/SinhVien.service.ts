@@ -67,24 +67,27 @@ export class SinhVienService {
         return student.save();
     }
 
-    async getStudentByMSSV(mssv: string): Promise<SinhVien> {
-        const student = await this.sinhVienModel.findOne({ mssv });
-        if (!student) {
-        throw new NotFoundException('Sinh viên không tồn tại');
-        }
-        return student;
-    }
 
-    async deleteStudentByMSSV(mssv: string): Promise<SinhVien> {
+    async deleteStudentByMSSV(mssv: string){
         const student = await this.sinhVienModel.findOne({ mssv });
 
         if (!student) {
         throw new NotFoundException(`Không tìm thấy sinh viên có MSSV: ${mssv}`);
         }
         await this.sinhVienModel.deleteOne({ mssv });
-
+    }
+    async getStudentByMSSV(mssv: string): Promise<SinhVien> {
+        const student = await this.sinhVienModel
+        .findOne({ mssv })
+        .populate('KhoaID', 'TenKhoa')
+        .exec();
+        if (!student) {
+        throw new NotFoundException('Sinh viên không tồn tại');
+        }
         return student;
     }
+
+       
 
     async searchSinhVien(query: string) {
         const sinhVien = await this.sinhVienModel.find({

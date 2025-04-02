@@ -130,7 +130,7 @@ export class AuthController {
    * Yêu cầu: username người dùng
    * Trả về: thông báo đã gửi email
    */
-  @Post('forgot-password')
+  @Post('forgot_password')
   async forgotPassword(@Body('username') username: string) {
     try {
       return await this.authService.sendResetPasswordLink(username);
@@ -175,7 +175,7 @@ export class AuthController {
    * Yêu cầu: token từ email và mật khẩu mới
    * Trả về: thông báo thay đổi mật khẩu thành công
    */
-  @Post('reset-password')
+  @Post('reset_password')
   async resetPassword(
     @Body('token') token: string,
     @Body('newPassword') newPassword: string,
@@ -197,7 +197,7 @@ export class AuthController {
    * Trả về: Thông báo thành công hoặc lỗi
    */
   @UseGuards(JWTAuthGuard)
-  @Patch('change-password')
+  @Patch('change_password')
   async changePassword(
     @Req() req: Request & { user: User },
     @Body() body: { currentPassword: string; newPassword: string },
@@ -224,7 +224,7 @@ export class AuthController {
   }
 
   @UseGuards(JWTAuthGuard)
-  @Delete('delete-account/:username')
+  @Delete('delete_account/:username')
   async deleteAccount(@Param('username') username: string) {
     if (!username) {
       throw new UnauthorizedException('Vui lòng cung cấp username hợp lệ');
