@@ -30,6 +30,8 @@
     "react-hook-form": "^7.55.0",
     "react-quill": "^2.0.0",
     "react-router-dom": "^7.1.5",
+    "react-slick": "^0.30.3",
+    "slick-carousel": "^1.8.1",
     "xlsx": "^0.18.5",
     "yup": "^1.6.1"
   },

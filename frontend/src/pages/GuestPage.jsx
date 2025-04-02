@@ -1,7 +1,7 @@
 // components
 import React from "react";
 import { Container, Box, Typography, Button, Grid, Card, CardContent, IconButton } from "@mui/material";
-import { AccountCircle, FileUpload, SettingsSuggest, X } from '@mui/icons-material';
+import { AccountCircle, FileUpload, SettingsSuggest } from '@mui/icons-material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { School, Chat, Security, Settings } from "@mui/icons-material";
 import { motion } from "framer-motion";
@@ -87,7 +87,7 @@ const benefits = [
               <Card sx={{ maxWidth: 800, p: 4, boxShadow: 3, margin: "0 auto" }}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontStyle: "italic", mb: 2 }}>
-                    "{testimonial.text}"
+                    {testimonial.text}
                   </Typography>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold", textAlign: "right" }}>
                     – {testimonial.author}

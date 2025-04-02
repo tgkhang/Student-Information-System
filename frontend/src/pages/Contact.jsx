@@ -114,7 +114,6 @@ export default function Contact() {
             </Container>
 
         </Container>
-      </Container>
 
       <Footer />
     </Page>
