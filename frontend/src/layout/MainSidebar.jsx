@@ -73,7 +73,7 @@ export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
       {/* Spacer to push the user profile to the bottom */}
       <Box sx={{ flexGrow: 1 }} />
 
-      <Divider sx={{ borderStyle: 'dashed', mt: 2 }} />
+      <Divider sx={{ mt: 2 }} />
       
       {/* User Profile Section */}
       <Box

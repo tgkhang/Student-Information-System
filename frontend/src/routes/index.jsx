@@ -51,7 +51,6 @@ export default function Router() {
         
       ],
     },
-    // Student Routes
     {
       path: "student",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
@@ -59,17 +58,20 @@ export default function Router() {
         { path: "*", element: <StudentDashboardPage /> },
         { path: "dashboard", element: <StudentDashboardPage /> },
         {
-          path: "classRegistration",
+          path: "registration",
           element: <StudentClassRegistrationPage />,
         },
         {
           path: "classAndAssignment",
           element: <StudentClassesAndAssignmentsPage />,
         },
+        {
+          path : "course/:id",
+          element: <DetailCourse />,
+        }
       ],
     },
 
-    // Teacher Routes (placeholder for future)
     {
       path: "teacher",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
@@ -83,6 +85,10 @@ export default function Router() {
           path: "review",
           element: <TeacherReviewPage />,
         },
+        {
+          path : "course/:id",
+          element: <DetailCourseTeacher />,
+        }
       ],
     },
     {
@@ -127,13 +133,13 @@ const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Studen
 const StudentClassesAndAssignmentsPage = Loadable(
   lazy(() => import("../pages/Student/StudentClassesAndAssignmentsPage")),
 )
-
+const DetailCourse = Loadable(lazy(() => import("../pages/Student/DetailCourse")))
 
 //TEACHER
 const TeacherDashboardPage = Loadable(lazy(() => import("../pages/teacher/TeacherDashboardPage")))
 const TeacherCoursePage = Loadable(lazy(() => import("../pages/teacher/TeacherCoursePage")))
 const TeacherReviewPage = Loadable(lazy(() => import("../pages/teacher/TeacherReviewPage")))
-
+const DetailCourseTeacher = Loadable(lazy(() => import("../pages/teacher/DetailCourse")))
 // MINISTRY
 const StudentListPage = Loadable(
   lazy(() => import("../pages/ministry/StudentListPage"))
