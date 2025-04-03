@@ -123,9 +123,9 @@ export default function Login() {
           top: "0.25em",
           right: "0.75em",
           zIndex: 10,
-          fontWeight: 800,
+          fontWeight: 600,
           color: "white",
-          fontSize: "3rem",
+          fontSize: "3.5rem",
           textDecoration: "none",
         }}
       >
@@ -163,6 +163,7 @@ export default function Login() {
             </Box>
           )}
           <Box sx={guestContainerLoginSection}>
+
             <Box
               sx={{ ...guestContainerLoginSubsection, alignItems: "center" }}
             >
@@ -190,9 +191,11 @@ export default function Login() {
                 Please use the email and password that your organization
                 provided to log in to your account.
               </Typography>
+
             </Box>
-            <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-              <Box component="div" sx={guestContainerLoginSubsection}>
+
+            <form onSubmit={handleSubmit(onSubmit)} style={guestContainerLoginSubsection}>
+
                 <TextField
                   placeholder="Enter your username"
                   {...register("username")}
@@ -213,6 +216,7 @@ export default function Login() {
                     },
                   }}
                 />
+
                 <TextField
                   placeholder="Enter your password"
                   {...register("password")}
@@ -233,6 +237,7 @@ export default function Login() {
                     },
                   }}
                 />
+
                 <Box
                   sx={{
                     display: "flex",
@@ -270,15 +275,14 @@ export default function Login() {
                     Forgot Password
                   </Typography>
                 </Box>
-              </Box>
 
-              <Box component="div" sx={guestContainerLoginSubsection}>
                 <Button sx={guestRoundBlueButton} type="submit">
                   Login
                 </Button>
-              </Box>
 
-              <Box component="div" sx={guestContainerLoginSubsection}>
+            </form>
+
+            <Box component="div" sx={guestContainerLoginSubsection}>
                 <Typography sx={guestLoginSection}>
                   Don’t have an account?
                   <Typography
@@ -292,10 +296,12 @@ export default function Login() {
                   </Typography>
                 </Typography>
               </Box>
-            </form>
           </Box>
+
         </motion.div>
+
       </Container>
+
     </Page>
   );
 }

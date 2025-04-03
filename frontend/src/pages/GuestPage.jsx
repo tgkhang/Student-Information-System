@@ -45,9 +45,9 @@ const benefits = [
     return (
       <IconButton
         onClick={onClick}
-        sx={{ position: "absolute", top: "50%", right: "-50px", transform: "translateY(-50%)", backgroundColor: "white",
-          "&:hover": { backgroundColor: "#ddd" },}}>
-        <ArrowForwardIos sx={{ color: "#407BFF", fontSize: "2rem" }} />
+        sx={{ position: "absolute", top: "50%", right: "-50px", transform: "translateY(-50%)", backgroundColor: "primary.lighter",
+          "&:hover": { backgroundColor: "primary.light" },}}>
+        <ArrowForwardIos sx={{ color: "primary.main", fontSize: "2rem" }} />
       </IconButton>
     );
   };
@@ -58,10 +58,9 @@ const benefits = [
       <IconButton
         onClick={onClick}
         sx={{
-          position: "absolute", top: "50%", left: "-50px", transform: "translateY(-50%)", backgroundColor: "white",
-          "&:hover": { backgroundColor: "#ddd" },
-        }}>
-            <ArrowBackIos sx={{ color: "#407BFF", fontSize: "2rem" }} />
+          position: "absolute", top: "50%", left: "-50px", transform: "translateY(-50%)", backgroundColor: "primary.lighter",
+          "&:hover": { backgroundColor: "primary.light" },}}>
+        <ArrowBackIos sx={{ color: "primary.main", fontSize: "2rem" }} />
       </IconButton>
     );
 };
@@ -86,10 +85,10 @@ const benefits = [
             <Box key={index} sx={{ display: "flex", justifyContent: "center" }}>
               <Card sx={{ maxWidth: 800, p: 4, boxShadow: 3, margin: "0 auto" }}>
                 <CardContent>
-                  <Typography variant="h6" sx={{ fontStyle: "italic", mb: 2 }}>
+                  <Typography variant="subtitlecard1" sx={{ fontStyle: "italic", mb: 2 }}>
                     {testimonial.text}
                   </Typography>
-                  <Typography variant="subtitle1" sx={{ fontWeight: "bold", textAlign: "right" }}>
+                  <Typography variant="subtitlecard2" sx={{ textAlign: "right", color: "primary.main" }}>
                     – {testimonial.author}
                   </Typography>
                 </CardContent>
@@ -112,7 +111,7 @@ export default function GuestPage() {
         <Container {...guestDefaultContainer}>
 
             <Container {...guestContainerHomeParts}
-                    sx={{ minHeight: "100vh", gap: "11em", pt: "4em", px: "6.5em",
+                    sx={{ minHeight: "100vh", gap: "9em", pt: "4em", px: "6.5em",
                         display: "flex", alignItems: "center", justifyContent: "space-between"}}>
 
                 {/* Left Section */}
@@ -120,13 +119,13 @@ export default function GuestPage() {
                             display: "flex", flexDirection: "column", justifyContent: "left", gap: "3.5em"}}>
                     <Box>
                         <motion.div variants={fadeInLeft(0)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                            <Typography sx={{fontWeight: 500, fontSize: "4rem", lineHeight: 1.15, mb: "0.5em"}}>
+                            <Typography sx={{fontWeight: 400, fontSize: "4rem", lineHeight: 1.15, mb: "0.5em"}}>
                                 Where education meets innovation.
                             </Typography>
                         </motion.div>
 
                         <motion.div variants={fadeInLeft(0.2)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                            <Typography variant="h5" sx={{color: "text.secondary", textAlign: "justify"}}>
+                            <Typography variant="subtitle2" sx={{textAlign: "justify"}}>
                                 Streamline student management with a powerful, all-in-one system
                                 designed for modern institutions. Experience the future of
                                 education management today, with 
@@ -169,10 +168,10 @@ export default function GuestPage() {
                 
                 <motion.div variants={fadeInTop(0)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                     <Box sx={{display: "flex", alignItems: "center", flexDirection: "column"}}>
-                        <Typography sx={{...guestTitle, color: "white", mb: 0}}>
+                        <Typography sx={{...guestTitle, color: "primary.lighter", mb: 0}}>
                             Revolutionizing Student Management
                         </Typography>
-                        <Typography variant="h4" sx={{color: "white", fontWeight: "light"}}>
+                        <Typography variant="h4" sx={{color: "primary.lighter", fontWeight: "light"}}>
                             for Schools & Universities
                         </Typography>
                     </Box>
@@ -189,15 +188,15 @@ export default function GuestPage() {
                             viewport={{ once: true }}
                             style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5em"}}
                         >
-                            <Box sx= {{backgroundColor: "white", borderRadius: "6rem", p: 3}}>
+                            <Box sx= {{backgroundColor: "primary.lighter", borderRadius: "6rem", p: 3}}>
                                 {React.cloneElement(benefit.icon,
-                                    { sx: { color: "#000000", fontSize: "6rem" } })}
+                                    { sx: { color: "secondary.darker", fontSize: "6rem" } })}
                             </Box>
                             <Box>
-                                <Typography variant="h5" sx={{color: "white", textAlign: "center", fontWeight: 600, mb: 1.5}}>
+                                <Typography variant="h5" sx={{color: "primary.lighter", textAlign: "center", fontWeight: 600, mb: 1.5}}>
                                     {benefit.title}
                                 </Typography>
-                                <Typography sx={{fontSize: "1rem", color: "white", textAlign: "center"}}>
+                                <Typography sx={{fontSize: "1rem", color: "primary.lighter", textAlign: "center"}}>
                                     {benefit.description}
                                 </Typography>
                             </Box>
@@ -213,7 +212,7 @@ export default function GuestPage() {
                         display: "flex", alignItems: "center", flexDirection: "column"}}>
 
                 <motion.div variants={fadeInLeft(0)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                    <Typography sx={{...guestTitle, color:"#3a3a3d"}}>
+                    <Typography sx={{...guestTitle, color: "primary.main"}}>
                         How InfoStudia works?
                     </Typography>
                 </motion.div>
@@ -222,13 +221,13 @@ export default function GuestPage() {
                     <motion.div variants={fadeInRight(0.1)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                         <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
                             <Card sx={guestBlueStairsCard}>
-                                <AccountCircle sx={{fontSize: "5rem", color: "white"}}/>
+                                <AccountCircle sx={{fontSize: "5rem", color: "primary.lighter"}}/>
                                 <Box sx={{ display: "flex", flexDirection: "column",
                                         alignItems: "flex-start", justifyContent: "center", gap: "0.4em"}}>
-                                    <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
+                                    <Typography variant="h5" sx={{ color: "primary.lighter", fontWeight: 600 }}>
                                         Set Up Your Organization
                                     </Typography>
-                                    <Typography sx={{ fontSize: '1rem', color: "white" }}>
+                                    <Typography sx={{ fontSize: '1rem', color: "primary.lighter" }}>
                                         Contact us, set up your organization, and get started.
                                     </Typography>
                                 </Box>
@@ -238,14 +237,14 @@ export default function GuestPage() {
                     
                     <motion.div variants={fadeInRight(0.2)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                         <Box sx={{ display: "flex", justifyContent: "center" }}>
-                            <Card sx={{...guestBlueStairsCard, backgroundColor: "#1C36BA"}}>
-                                <FileUpload sx={{fontSize: "5rem", color: "white"}}/>
+                            <Card sx={{...guestBlueStairsCard, backgroundColor: "primary.darker"}}>
+                                <FileUpload sx={{fontSize: "5rem", color: "primary.lighter"}}/>
                                 <Box sx={{ display: "flex", flexDirection: "column",
                                         alignItems: "flex-start", justifyContent: "center", gap: "0.4em"}}>
-                                    <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
+                                    <Typography variant="h5" sx={{ color: "primary.lighter", fontWeight: 600 }}>
                                         Manage Your Data
                                     </Typography>
-                                    <Typography sx={{ fontSize: '1rem', color: "white" }}>
+                                    <Typography sx={{ fontSize: '1rem', color: "primary.lighter" }}>
                                         Upload student records, manage attendance, grades, and more.
                                     </Typography>
                                 </Box>
@@ -255,14 +254,14 @@ export default function GuestPage() {
                     
                     <motion.div variants={fadeInRight(0.3)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                            <Card sx={{...guestBlueStairsCard, backgroundColor: "#1B3177"}}>
-                                <SettingsSuggest sx={{fontSize: "5rem", color: "white"}}/>
+                            <Card sx={{...guestBlueStairsCard, backgroundColor: "primary.darkest"}}>
+                                <SettingsSuggest sx={{fontSize: "5rem", color: "primary.lighter"}}/>
                                 <Box sx={{ display: "flex", flexDirection: "column",
                                         alignItems: "flex-start", justifyContent: "center", gap: "0.4em"}}>
-                                    <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
+                                    <Typography variant="h5" sx={{ color: "primary.lighter", fontWeight: 600 }}>
                                         Start Automating Your Process
                                     </Typography>
-                                    <Typography sx={{ fontSize: '1rem', color: "white" }}>
+                                    <Typography sx={{ fontSize: '1rem', color: "primary.lighter" }}>
                                         Automate reports, grades, and attendance for a smooth operation.
                                     </Typography>
                                 </Box>
@@ -275,11 +274,11 @@ export default function GuestPage() {
             </Container>
 
             <Container {...guestContainerHomeParts}
-                    sx={{ minHeight: "85vh", gap: "3.5em", py: "5em", px: "6.5em", backgroundColor: "#407BFF",
+                    sx={{ minHeight: "85vh", gap: "3.5em", py: "5em", px: "6.5em", backgroundColor: "primary.main",
                         display: "flex", alignItems: "center", flexDirection: "column"}}>
                 
                 <motion.div variants={fadeInRight(0)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                    <Typography sx={{...guestTitle, color: "white"}}>
+                    <Typography sx={{...guestTitle, color: "primary.lighter"}}>
                         Our Clients Speak
                     </Typography>
                 </motion.div>
@@ -294,7 +293,7 @@ export default function GuestPage() {
                     sx={{ minHeight: "60vh", gap: "2em", py: "2em", px: "6.5em",
                         display: "flex", alignItems: "center", flexDirection: "column"}}>
                 
-                <Box sx={{width: "100%", gap: "5em", display: "flex", alignItems: "center"}}>
+                <Box sx={{width: "100%", gap: "3em", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
                     
                     <Box sx={{ width: "40%", display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <motion.img
@@ -304,10 +303,10 @@ export default function GuestPage() {
                         />
                     </Box>
 
-                    <Box sx={{display: "flex", flexDirection: "column", width: "50%"}}>
+                    <Box sx={{display: "flex", flexDirection: "column", width: "55%"}}>
                         <motion.div variants={fadeInRight(0.1)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                            <Typography sx={{...guestTitle, color:"#343435"}}>
-                                Interested in <Typography component="span" sx={{...guestTitle, color: "#407BFF"}}>InfoStudia?</Typography>
+                            <Typography sx={{...guestTitle, fontWeight: 400, color:"secondary.main", mb: 3}}>
+                                Interested in <Typography component="span" sx={{...guestTitle, display: "inline", color: "primary.main"}}>InfoStudia?</Typography>
                             </Typography>
                         </motion.div>
                         

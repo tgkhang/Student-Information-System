@@ -7,19 +7,41 @@ function createGradient(color1, color2) {
 }
 
 // SETUP COLORS
-const PRIMARY = {
-  lighter: '#C8FACD',
-  light: '#5BE584',
-  main: '#00AB55',
-  dark: '#007B55',
-  darker: '#005249',
+const GREY = {
+  0: '#FFFFFF',
+  100: '#F9FAFB',
+  200: '#F4F6F8',
+  300: '#DFE3E8',
+  400: '#C4CDD5',
+  500: '#919EAB',
+  600: '#637381',
+  700: '#454F5B',
+  800: '#212B36',
+  900: '#161C24',
+  500_8: alpha('#919EAB', 0.08),
+  500_12: alpha('#919EAB', 0.12),
+  500_16: alpha('#919EAB', 0.16),
+  500_24: alpha('#919EAB', 0.24),
+  500_32: alpha('#919EAB', 0.32),
+  500_48: alpha('#919EAB', 0.48),
+  500_56: alpha('#919EAB', 0.56),
+  500_80: alpha('#919EAB', 0.8),
 };
-const SECONDARY = {
-  lighter: '#D6E4FF',
-  light: '#84A9FF',
-  main: '#3366FF',
-  dark: '#1939B7',
-  darker: '#091A7A',
+
+const PRIMARY = { // Blue //#407BFF
+  lighter: 'white',
+  light: '#fcfdff',
+  main: '#407BFF',
+  dark: '#0543f1',
+  darker: '#1c36ba',
+  darkest: '#1b3177'
+};
+const SECONDARY = { // Gray
+  lighter: GREY[500],
+  light: GREY[600],
+  main: GREY[700],
+  dark: GREY[800],
+  darker: 'black',
 };
 const INFO = {
   lighter: '#D0F2FF',
@@ -48,27 +70,6 @@ const ERROR = {
   main: '#FF4842',
   dark: '#B72136',
   darker: '#7A0C2E',
-};
-
-const GREY = {
-  0: '#FFFFFF',
-  100: '#F9FAFB',
-  200: '#F4F6F8',
-  300: '#DFE3E8',
-  400: '#C4CDD5',
-  500: '#919EAB',
-  600: '#637381',
-  700: '#454F5B',
-  800: '#212B36',
-  900: '#161C24',
-  500_8: alpha('#919EAB', 0.08),
-  500_12: alpha('#919EAB', 0.12),
-  500_16: alpha('#919EAB', 0.16),
-  500_24: alpha('#919EAB', 0.24),
-  500_32: alpha('#919EAB', 0.32),
-  500_48: alpha('#919EAB', 0.48),
-  500_56: alpha('#919EAB', 0.56),
-  500_80: alpha('#919EAB', 0.8),
 };
 
 const GRADIENTS = {

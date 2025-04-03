@@ -104,9 +104,9 @@ export default function ForgotPassword() {
           top: "0.25em",
           right: "0.75em",
           zIndex: 10,
-          fontWeight: 800,
+          fontWeight: 600,
           color: "#407BFF",
-          fontSize: "3rem",
+          fontSize: "3.5rem",
           textDecoration: "none",
         }}
       >
@@ -172,34 +172,30 @@ export default function ForgotPassword() {
               </Typography>
             </Box>
 
-            <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-              <Box sx={guestContainerLoginSubsection}>
-                <TextField
-                  placeholder="Enter your email"
-                  {...register("email")}
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    sx: { borderRadius: "2em", fontSize: "0.8rem" },
-                  }}
-                  label="Email"
-                  error={!!errors.email} // Check if there is an error with the email
-                  helperText={errors.email?.message} // Show error message if any
-                  InputLabelProps={{
-                    sx: {
-                      fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
-                    },
-                  }}
-                />
-              </Box>
+            <form onSubmit={handleSubmit(onSubmit)} style={guestContainerLoginSubsection}>
+              <TextField
+                placeholder="Enter your email"
+                {...register("email")}
+                fullWidth
+                variant="outlined"
+                size="small"
+                InputProps={{
+                  sx: { borderRadius: "2em", fontSize: "0.8rem" },
+                }}
+                label="Email"
+                error={!!errors.email} // Check if there is an error with the email
+                helperText={errors.email?.message} // Show error message if any
+                InputLabelProps={{
+                  sx: {
+                    fontSize: "0.8rem",
+                    "&.Mui-focused": { color: "#407BFF" },
+                  },
+                }}
+              />
 
-              <Box sx={guestContainerLoginSubsection}>
-                <Button sx={guestRoundBlueButton} type="submit">
-                  Send recovery link
-                </Button>
-              </Box>
+              <Button sx={guestRoundBlueButton} type="submit">
+                Send recovery link
+              </Button>
             </form>
 
             <Box sx={guestContainerLoginSubsection}>

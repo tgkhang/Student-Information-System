@@ -102,7 +102,7 @@ export default function AboutUs() {
             <Typography sx={guestTitle}>
               About Us
             </Typography>
-            <Typography variant="h6" textAlign="center" color="text.secondary" sx={{ maxWidth: 600, mt: 6, mx: "auto" }}>
+            <Typography variant="body2" textAlign="center" color="text.secondary" sx={{ maxWidth: 700, mt: 6, mx: "auto" }}>
               We, <Typography component="span" sx={{...guestSpanStrong, fontSize: "1.4rem"}}>Group 7</Typography>
               , are a passionate team dedicated to delivering outstanding digital solutions that drive real impact.
             </Typography>
@@ -130,10 +130,10 @@ export default function AboutUs() {
                 transition={{ duration: 0.8 }} 
                 viewport={{ once: true }}
               >
-                <Typography variant="h4" sx={{ fontWeight: "700", color: "#407BFF" }} gutterBottom>
+                <Typography variant="h4" sx={{ color: "primary.main" }} gutterBottom>
                     Our Mission
                 </Typography>
-                <Typography variant="h6" color="text.secondary" textAlign="justify">
+                <Typography variant="body2" color="text.secondary" textAlign="justify">
                   Our mission is to innovate and create digital products that help businesses grow. We focus on user
                   experience, cutting-edge technology, and impactful solutions.
                 </Typography>
@@ -147,10 +147,10 @@ export default function AboutUs() {
                   transition={{ duration: 0.8 }} 
                   viewport={{ once: true }}
               >
-                <Typography variant="h4" sx={{ fontWeight: "700", color: "#407BFF" }} gutterBottom>
+                <Typography variant="h4" sx={{ color: "primary.main" }} gutterBottom>
                   Our Vision
                 </Typography>
-                <Typography variant="h6" color="text.secondary" textAlign="justify">
+                <Typography variant="body2" color="text.secondary" textAlign="justify">
                   Our vision is to become a leading force in the digital transformation landscape,
                   empowering businesses with innovative technology solutions. We strive to create products
                   that are not only functional but also intuitive, scalable, and future-proof.
@@ -184,7 +184,7 @@ export default function AboutUs() {
             transition={{ duration: 0.8 }} 
             viewport={{ once: true }}
           >
-            <Typography variant="h3" textAlign="center" fontWeight={700} sx={{ color: "#407BFF", mt: 15, mb: 10 }}>
+            <Typography variant="h3" textAlign="center" sx={{ fontSize: 40, color: "primary.main", mt: 15, mb: 8 }}>
               Meet Our Team
             </Typography>
           </motion.div>
@@ -218,7 +218,7 @@ export default function AboutUs() {
                       <Typography variant="h6" fontWeight="bold">
                         {member.name}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body3" color="text.secondary">
                         {member.role}
                       </Typography>
                     </CardContent>
@@ -278,11 +278,11 @@ export default function AboutUs() {
                     <Typography variant="h5" fontWeight="bold">
                       {selectedMember.name}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="body1" color="text.secondary" mb={2}>
                       {selectedMember.role}
                     </Typography>
                     <Typography
-                      variant="body2"
+                      variant="body3"
                       sx={{
                         display: "flex",
                         alignItems: "center",
@@ -293,7 +293,7 @@ export default function AboutUs() {
                       <PhoneIcon fontSize="small" /> {selectedMember.phone}
                     </Typography>
                     <Typography
-                      variant="body2"
+                      variant="body3"
                       sx={{
                         display: "flex",
                         alignItems: "center",
@@ -304,7 +304,7 @@ export default function AboutUs() {
                       <EmailIcon fontSize="small" /> {selectedMember.email}
                     </Typography>
                     <Typography
-                      variant="body2"
+                      variant="body3"
                       sx={{
                         display: "flex",
                         alignItems: "center",
@@ -315,7 +315,7 @@ export default function AboutUs() {
                       <SchoolIcon fontSize="small" /> {selectedMember.university}
                     </Typography>
                     <Typography
-                      variant="body2"
+                      variant="body3"
                       sx={{
                         display: "flex",
                         alignItems: "center",
@@ -326,7 +326,7 @@ export default function AboutUs() {
                       <MenuBookIcon fontSize="small" /> {selectedMember.major}
                     </Typography>
                     
-                    <Typography variant="body2" sx={{ mt: 1, fontStyle: "italic" }}>
+                    <Typography variant="body3" sx={{ mt: 2, fontStyle: "italic" }}>
                       {selectedMember.bio}
                     </Typography>
                   </motion.div>

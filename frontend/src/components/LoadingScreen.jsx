@@ -23,12 +23,12 @@ const RootStyle = styled('div')(({ theme }) => ({
 }));
 
 const IconWrapper = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: '100%',
-  height: '120px',
-  position: 'relative',
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+  height: "120px",
+  gap: "40px", // Adjust spacing between icons
 }));
 
 // ----------------------------------------------------------------------
@@ -47,16 +47,14 @@ export default function LoadingScreen({ ...other }) {
                 opacity: [0.7, 1, 0.7],
               }}
               transition={{
-                ease: 'easeInOut',
+                ease: "easeInOut",
                 duration: 1.5,
                 repeat: Infinity,
                 delay: 0,
               }}
               sx={{
-                position: 'absolute',
                 color: (theme) => theme.palette.primary.main,
-                fontSize: '50px',
-                left: 'calc(50% - 100px)',
+                fontSize: "50px",
               }}
             >
               <MenuBookIcon fontSize="inherit" />
@@ -70,15 +68,14 @@ export default function LoadingScreen({ ...other }) {
                 opacity: [0.7, 1, 0.7],
               }}
               transition={{
-                ease: 'easeInOut',
+                ease: "easeInOut",
                 duration: 1.5,
                 repeat: Infinity,
                 delay: 0.5,
               }}
               sx={{
-                position: 'absolute',
                 color: (theme) => theme.palette.secondary.main,
-                fontSize: '50px',
+                fontSize: "50px",
               }}
             >
               <SchoolIcon fontSize="inherit" />
@@ -92,16 +89,14 @@ export default function LoadingScreen({ ...other }) {
                 opacity: [0.7, 1, 0.7],
               }}
               transition={{
-                ease: 'easeInOut',
+                ease: "easeInOut",
                 duration: 1.5,
                 repeat: Infinity,
                 delay: 1,
               }}
               sx={{
-                position: 'absolute',
                 color: (theme) => theme.palette.warning.main,
-                fontSize: '50px',
-                left: 'calc(50% + 100px)',
+                fontSize: "50px",
               }}
             >
               <EmojiObjectsIcon fontSize="inherit" />
@@ -115,13 +110,12 @@ export default function LoadingScreen({ ...other }) {
               opacity: [0.6, 1, 0.6],
             }}
             transition={{
-              ease: 'linear',
+              ease: "linear",
               duration: 1.5,
               repeat: Infinity,
             }}
-            sx={{ mt: 4 }}
           >
-            <Typography variant="h6" color="primary.main">
+            <Typography variant="h4" color="primary.main">
               Loading Your Learning Space...
             </Typography>
           </Box>

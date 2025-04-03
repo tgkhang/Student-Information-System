@@ -66,9 +66,9 @@ export default function ResetPassword() {
           top: "0.25em",
           right: "0.75em",
           zIndex: 10,
-          fontWeight: 800,
+          fontWeight: 600,
           color: "#407BFF",
-          fontSize: "3rem",
+          fontSize: "3.5rem",
           textDecoration: "none",
         }}
       >
@@ -76,6 +76,7 @@ export default function ResetPassword() {
       </Typography>
 
       <Container {...guestContainerLogin}>
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{
@@ -105,6 +106,7 @@ export default function ResetPassword() {
           </Box>
 
           <Box sx={guestContainerLoginSection}>
+
             <Box
               sx={{ ...guestContainerLoginSubsection, alignItems: "center" }}
             >
@@ -135,8 +137,7 @@ export default function ResetPassword() {
               </Typography>
             </Box>
 
-            <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-              <Box sx={guestContainerLoginSubsection}>
+            <form onSubmit={handleSubmit(onSubmit)} style={guestContainerLoginSubsection}>
                 <TextField
                   placeholder="Enter new password"
                   {...register("newPassword")}
@@ -177,17 +178,18 @@ export default function ResetPassword() {
                     },
                   }}
                 />
-              </Box>
 
-              <Box sx={guestContainerLoginSubsection}>
                 <Button sx={guestRoundBlueButton} type="submit">
                   Reset password
                 </Button>
-              </Box>
             </form>
+
           </Box>
+
         </motion.div>
+
       </Container>
+
     </Page>
   );
 }
