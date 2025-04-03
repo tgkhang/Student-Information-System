@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ThongBaosDocument, ThongBaos } from 'src/schemas/ThongBao.schema';
@@ -9,108 +14,150 @@ import { KhoaHocService } from 'src/KhoaHoc/KhoaHoc.service';
 
 @Injectable()
 export class ThongBaoService {
-    constructor(
-        @InjectModel(ThongBaos.name) private readonly thongBaosModel: Model<ThongBaosDocument>,
-        private readonly sinhVienService: SinhVienService,
-        private readonly giangVienService: GiangVienService,
-        private readonly khoaHocService: KhoaHocService
-    ) {}
-    
-    async addNoti(createThongBaoDto: CreateThongBaoDto, user: any): Promise<ThongBaosDocument> {
-        var isAdmin;
-        if (user.role === 'Admin')
-        {
-            isAdmin = true;
-        }
+  constructor(
+    @InjectModel(ThongBaos.name)
+    private readonly thongBaosModel: Model<ThongBaosDocument>,
+    private readonly sinhVienService: SinhVienService,
+    private readonly giangVienService: GiangVienService,
+    private readonly khoaHocService: KhoaHocService,
+  ) {}
 
-        const newThongBao = new this.thongBaosModel(createThongBaoDto);
-        const savedThongBao = await newThongBao.save();
-        const thongBaoId: Types.ObjectId = savedThongBao._id as Types.ObjectId;
-    
-        switch (createThongBaoDto.NhomGui) {
-            case 'SinhVien':
-            if (!isAdmin) throw new UnauthorizedException('Chỉ admin mới có thể gửi thông báo đến tất cả sinh viên.');
-            if (createThongBaoDto.KhoaID)
-                await this.sinhVienService.addNotiToKhoa(createThongBaoDto.KhoaID, thongBaoId);
-            else 
-                await this.sinhVienService.addNotiToAll(thongBaoId);
-            break;
-
-            case 'GiangVien':
-            if (!isAdmin) throw new UnauthorizedException('Chỉ admin mới có thể gửi thông báo đến tất cả giảng viên.');
-            if (createThongBaoDto.KhoaID)
-                await this.giangVienService.addThongBaoToKhoa(createThongBaoDto.KhoaID, thongBaoId);
-            else 
-                await this.giangVienService.addThongBaoToAll(thongBaoId);
-            break;
-
-            case 'Khoa':
-            if (!isAdmin) throw new UnauthorizedException('Chỉ admin mới có thể gửi thông báo đến sinh viên và giáo viên trong khoa.');
-            if (!createThongBaoDto.KhoaID) throw new Error('Thiếu khoa.');
-            await Promise.all([
-                this.sinhVienService.addNotiToKhoa(createThongBaoDto.KhoaID, thongBaoId),
-                this.giangVienService.addThongBaoToKhoa(createThongBaoDto.KhoaID, thongBaoId),
-            ]);
-            break;
-
-            case 'KhoaHoc':
-                if (!createThongBaoDto.KhoaHocID) throw new BadRequestException('Thiếu khóa học ID.');
-                const khoaHoc = await this.khoaHocService.getCourseByID(createThongBaoDto.KhoaHocID.toString());
-                //const khoaHoc = await this.khoaHocModel.findById(createThongBaoDto.KhoaHocID).exec();
-                if (!khoaHoc) throw new BadRequestException('Không tìm thấy khóa học.');
-
-                if (user.role ==='Teacher' && !isAdmin) {
-                    const giangVien = await this.giangVienService.getTeacher(user.username);
-                    const giangVienId = giangVien?._id as Types.ObjectId;
-                    if (!khoaHoc.GiangVienID.equals(giangVienId) && (!khoaHoc.TroGiangID || !khoaHoc.TroGiangID.equals(giangVienId))) {
-                        throw new UnauthorizedException('You can only notify students of your own class');
-                    }
-                }
-
-                await this.sinhVienService.addThongBaoToStudentsInKhoaHoc(khoaHoc.SinhVienDangKy, thongBaoId);
-
-                if (isAdmin) {
-                    const lecturerIds = [khoaHoc.GiangVienID];
-                    if (khoaHoc.TroGiangID) lecturerIds.push(khoaHoc.TroGiangID);
-                    await this.giangVienService.addThongBaoToLecturersInKhoaHoc(lecturerIds, thongBaoId);
-                }
-                break;
-        }
-    
-        return savedThongBao;
+  async addNoti(
+    createThongBaoDto: CreateThongBaoDto,
+    user: any,
+  ): Promise<ThongBaosDocument> {
+    let isAdmin;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (user.role === 'admin') {
+      isAdmin = true;
     }
 
-    async getAllNoti(): Promise<ThongBaosDocument[]> {
-        return this.thongBaosModel.find().exec();
-    }
-    
-    async getNotiById(id: string): Promise<ThongBaosDocument> {
-        if (!Types.ObjectId.isValid(id)) {
-            throw new BadRequestException('ID thông báo không hợp lệ.');
-        }
-        const noti = await this.thongBaosModel.findById(id).exec();
-        if (!noti) {
-            throw new NotFoundException('Không tìm thấy thông báo.');
-        }
-        return noti;
-    }
+    const newThongBao = new this.thongBaosModel(createThongBaoDto);
+    const savedThongBao = await newThongBao.save();
+    const thongBaoId: Types.ObjectId = savedThongBao._id as Types.ObjectId;
 
-    async deleteNoti(id: string) {
+    switch (createThongBaoDto.NhomGui) {
+      case 'SinhVien':
+        if (!isAdmin)
+          throw new UnauthorizedException(
+            'Chỉ admin mới có thể gửi thông báo đến tất cả sinh viên.',
+          );
+        if (createThongBaoDto.KhoaID)
+          await this.sinhVienService.addNotiToKhoa(
+            createThongBaoDto.KhoaID,
+            thongBaoId,
+          );
+        else await this.sinhVienService.addNotiToAll(thongBaoId);
+        break;
 
-        if (!Types.ObjectId.isValid(id)) {
-            throw new BadRequestException('ID thông báo không hợp lệ.');
-        }
+      case 'GiangVien':
+        if (!isAdmin)
+          throw new UnauthorizedException(
+            'Chỉ admin mới có thể gửi thông báo đến tất cả giảng viên.',
+          );
+        if (createThongBaoDto.KhoaID)
+          await this.giangVienService.addThongBaoToKhoa(
+            createThongBaoDto.KhoaID,
+            thongBaoId,
+          );
+        else await this.giangVienService.addThongBaoToAll(thongBaoId);
+        break;
 
-        const noti = await this.thongBaosModel.findById(id).exec();
-        if (!noti) {
-            throw new NotFoundException('Không tìm thấy thông báo để xóa.');
-        }
-
+      case 'Khoa':
+        if (!isAdmin)
+          throw new UnauthorizedException(
+            'Chỉ admin mới có thể gửi thông báo đến sinh viên và giáo viên trong khoa.',
+          );
+        if (!createThongBaoDto.KhoaID) throw new Error('Thiếu khoa.');
         await Promise.all([
-            this.sinhVienService.removeNotiFromAll(id),
-            this.giangVienService.removeNotiFromAll(id),
+          this.sinhVienService.addNotiToKhoa(
+            createThongBaoDto.KhoaID,
+            thongBaoId,
+          ),
+          this.giangVienService.addThongBaoToKhoa(
+            createThongBaoDto.KhoaID,
+            thongBaoId,
+          ),
         ]);
+        break;
 
-        return await this.thongBaosModel.deleteOne({ _id: id }).exec();
+      case 'KhoaHoc':
+        if (!createThongBaoDto.KhoaHocID) {
+          throw new BadRequestException('Thiếu khóa học ID.');
+        }
+        // eslint-disable-next-line no-case-declarations
+        const khoaHoc = await this.khoaHocService.getCourseByID(
+          createThongBaoDto.KhoaHocID.toString(),
+        );
+        //const khoaHoc = await this.khoaHocModel.findById(createThongBaoDto.KhoaHocID).exec();
+        if (!khoaHoc) throw new BadRequestException('Không tìm thấy khóa học.');
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (user.role === 'teacher' && !isAdmin) {
+          const giangVien = await this.giangVienService.getTeacher(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+            user.username,
+          );
+          const giangVienId = giangVien?._id as Types.ObjectId;
+          if (
+            !khoaHoc.GiangVienID.equals(giangVienId) &&
+            (!khoaHoc.TroGiangID || !khoaHoc.TroGiangID.equals(giangVienId))
+          ) {
+            throw new UnauthorizedException(
+              'You can only notify students of your own class',
+            );
+          }
+        }
+
+        await this.sinhVienService.addThongBaoToStudentsInKhoaHoc(
+          khoaHoc.SinhVienDangKy,
+          thongBaoId,
+        );
+
+        if (isAdmin) {
+          const lecturerIds = [khoaHoc.GiangVienID];
+          if (khoaHoc.TroGiangID) lecturerIds.push(khoaHoc.TroGiangID);
+          await this.giangVienService.addThongBaoToLecturersInKhoaHoc(
+            lecturerIds,
+            thongBaoId,
+          );
+        }
+        break;
     }
+
+    return savedThongBao;
+  }
+
+  async getAllNoti(): Promise<ThongBaosDocument[]> {
+    return this.thongBaosModel.find().exec();
+  }
+
+  async getNotiById(id: string): Promise<ThongBaosDocument> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID thông báo không hợp lệ.');
+    }
+    const noti = await this.thongBaosModel.findById(id).exec();
+    if (!noti) {
+      throw new NotFoundException('Không tìm thấy thông báo.');
+    }
+    return noti;
+  }
+
+  async deleteNoti(id: string) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID thông báo không hợp lệ.');
+    }
+
+    const noti = await this.thongBaosModel.findById(id).exec();
+    if (!noti) {
+      throw new NotFoundException('Không tìm thấy thông báo để xóa.');
+    }
+
+    await Promise.all([
+      this.sinhVienService.removeNotiFromAll(id),
+      this.giangVienService.removeNotiFromAll(id),
+    ]);
+
+    return await this.thongBaosModel.deleteOne({ _id: id }).exec();
+  }
 }

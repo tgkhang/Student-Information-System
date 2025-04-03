@@ -15,5 +15,6 @@ import { JwtModule } from '@nestjs/jwt';
   ],
   providers: [KhoaService],
   controllers: [KhoaController],
+  exports: [MongooseModule],
 })
 export class KhoaModule {}

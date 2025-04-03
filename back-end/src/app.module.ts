@@ -7,7 +7,6 @@ import { KyLuatModule } from './KyLuat/KyLuat.module';
 import { PhuHuynhModule } from './PhuHuynh/PhuHuynh.module';
 import { ConfigModule } from '@nestjs/config';
 import { config } from 'dotenv';
-import { AzureStorageModule } from '@nestjs/azure-storage';
 import { ThongBaosModule } from './ThongBao/ThongBao.module';
 import { LichHocModule } from './LichHoc/LichHoc.module';
 import { KhoaHocModule } from './KhoaHoc/KhoaHoc.module';
@@ -19,9 +18,9 @@ import { KhoaModule } from './khoa/Khoa.module';
 
 @Module({
   imports: [
-      // MongooseModule.forRoot(process.env.MONGO_URI),
+    // MongooseModule.forRoot(process.env.MONGO_URI),
     MongooseModule.forRoot(
-      'mongodb+srv://sis:sis@cluster0.xqphw.mongodb.net/',
+      'mongodb+srv://khavinhthuan114:mle5zI4MPN8L8RHg@cluster0.i1pnj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
     ),
     // AzureStorageModule.withConfig({
     //   sasKey: process.env.AZURE_STORAGE_SAS_KEY,
@@ -30,7 +29,7 @@ import { KhoaModule } from './khoa/Khoa.module';
     // }),
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [config]
+      load: [config],
     }),
     AuthModule,
     SinhVienModule,

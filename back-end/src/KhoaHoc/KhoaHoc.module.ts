@@ -7,16 +7,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { SinhVienModule } from 'src/SinhVien/SinhVien.module';
 import { SinhVienService } from 'src/SinhVien/SinhVien.service';
 import { GiangVienModule } from 'src/GiangVien/GiangVien.module';
-import { GiangVienService } from 'src/GiangVien/GiangVien.service';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports:[
-    MongooseModule.forFeature([{name: KhoaHoc.name, schema: KhoaHocSchema},]),
+  imports: [
+    MongooseModule.forFeature([{ name: KhoaHoc.name, schema: KhoaHocSchema }]),
     JwtModule.register({
-              secret: 'abc123',
-              signOptions: { expiresIn: '1h' },
-            }),
+      secret: 'abc123',
+      signOptions: { expiresIn: '1h' },
+    }),
     SinhVienModule,
     GiangVienModule,
     AuthModule,
@@ -24,5 +23,5 @@ import { AuthModule } from 'src/auth/auth.module';
   providers: [KhoaHocService, SinhVienService],
   controllers: [KhoaHocController],
   exports: [MongooseModule, KhoaHocService],
-})  
+})
 export class KhoaHocModule {}

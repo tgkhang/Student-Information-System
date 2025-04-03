@@ -103,13 +103,17 @@ export class SinhVienController {
   @Get('getStudentNoti')
   @UseGuards(JWTAuthGuard)
   async getStudentNoti(@Req() req: any) {
-      try{
-          if (req.user.role != 'Student')
-              throw new UnauthorizedException('Bạn không có quyền lấy thông báo từ sinh viên.')
-          return this.sinhVienService.getStudentNoti(req.user.username);
-      }catch(error)
-      {
-          return {message: error.message};
-      }
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (req.user.role != 'student')
+        throw new UnauthorizedException(
+          'Bạn không có quyền lấy thông báo từ sinh viên.',
+        );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      return this.sinhVienService.getStudentNoti(req.user.username);
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      return { message: error.message };
+    }
   }
 }

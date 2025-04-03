@@ -43,6 +43,8 @@ export class LichHocService {
           ),
         },
       })
+      .populate({ path: 'GiangVienID', model: 'GiangVien' })
+      .populate({ path: 'KhoaHocID', model: 'KhoaHoc' })
       .exec();
 
     return lichHocs;
@@ -51,6 +53,8 @@ export class LichHocService {
   async getScheduleById(_id: string): Promise<LichHoc> {
     const schedule = await this.lichHocModel
       .findById(_id as unknown as Types.ObjectId)
+      .populate({ path: 'GiangVienID', model: 'GiangVien' })
+      .populate({ path: 'KhoaHocID', model: 'KhoaHoc' })
       .exec();
     if (!schedule) {
       throw new NotFoundException('Kỷ luật không tồn tại');

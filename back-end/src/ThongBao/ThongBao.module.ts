@@ -14,9 +14,10 @@ import { KhoaHocService } from 'src/KhoaHoc/KhoaHoc.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name: ThongBaos.name, schema: ThongBaosSchema},
-      { name: KhoaHoc.name, schema: KhoaHocSchema }]
-    ),
+    MongooseModule.forFeature([
+      { name: ThongBaos.name, schema: ThongBaosSchema },
+      { name: KhoaHoc.name, schema: KhoaHocSchema },
+    ]),
     SinhVienModule,
     GiangVienModule,
 
@@ -26,7 +27,12 @@ import { KhoaHocService } from 'src/KhoaHoc/KhoaHoc.service';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [ThongBaoService, SinhVienService, GiangVienService, KhoaHocService],
-  controllers: [ThongBaoController]
+  providers: [
+    ThongBaoService,
+    SinhVienService,
+    GiangVienService,
+    KhoaHocService,
+  ],
+  controllers: [ThongBaoController],
 })
 export class ThongBaosModule {}
