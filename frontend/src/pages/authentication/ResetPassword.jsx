@@ -66,9 +66,9 @@ export default function ResetPassword() {
           top: "0.25em",
           right: "0.75em",
           zIndex: 10,
-          fontWeight: 800,
-          color: "#407BFF",
-          fontSize: "3rem",
+          fontWeight: 600,
+          color: "primary.main",
+          fontSize: "3.5rem",
           textDecoration: "none",
         }}
       >
@@ -76,6 +76,7 @@ export default function ResetPassword() {
       </Typography>
 
       <Container {...guestContainerLogin}>
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{
@@ -97,7 +98,7 @@ export default function ResetPassword() {
               <Typography variant="h4">Reset your</Typography>
               <Typography
                 variant="h1"
-                sx={{ color: "#407BFF", fontWeight: 700 }}
+                sx={{ color: "primary.main", fontWeight: 700 }}
               >
                 Password.
               </Typography>
@@ -105,6 +106,7 @@ export default function ResetPassword() {
           </Box>
 
           <Box sx={guestContainerLoginSection}>
+
             <Box
               sx={{ ...guestContainerLoginSubsection, alignItems: "center" }}
             >
@@ -123,7 +125,7 @@ export default function ResetPassword() {
                 />
                 <Typography
                   variant="h4"
-                  sx={{ color: "#407BFF", fontWeight: 700 }}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   Reset Password
                 </Typography>
@@ -135,8 +137,7 @@ export default function ResetPassword() {
               </Typography>
             </Box>
 
-            <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-              <Box sx={guestContainerLoginSubsection}>
+            <form onSubmit={handleSubmit(onSubmit)} style={guestContainerLoginSubsection}>
                 <TextField
                   placeholder="Enter new password"
                   {...register("newPassword")}
@@ -153,7 +154,7 @@ export default function ResetPassword() {
                   InputLabelProps={{
                     sx: {
                       fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
+                      "&.Mui-focused": { color: "primary.main" },
                     },
                   }}
                 />
@@ -173,21 +174,22 @@ export default function ResetPassword() {
                   InputLabelProps={{
                     sx: {
                       fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
+                      "&.Mui-focused": { color: "primary.main" },
                     },
                   }}
                 />
-              </Box>
 
-              <Box sx={guestContainerLoginSubsection}>
                 <Button sx={guestRoundBlueButton} type="submit">
                   Reset password
                 </Button>
-              </Box>
             </form>
+
           </Box>
+
         </motion.div>
+
       </Container>
+
     </Page>
   );
 }

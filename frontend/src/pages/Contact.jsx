@@ -81,7 +81,6 @@ export default function Contact() {
                             variants={fadeCenterRight}
                             viewport={{ once: true }}
                             sx={{
-                                backgroundColor: "white",
                                 borderRadius: 3,
                                 boxShadow: 3,
                                 p: "3em",
@@ -90,20 +89,20 @@ export default function Contact() {
                                 gap: "2em"
                             }}
                     >
-                            <Typography variant="h4" sx={{color: "black", textAlign: "center", fontWeight: 700}}>
+                            <Typography variant="h4" sx={{color: "secondary.darkest", textAlign: "center", fontWeight: 700}}>
                                 Contact Info
                             </Typography>
                             <Box sx={{display: "flex", flexDirection: "column", gap: "1em", alignItems:"flex-start"}}>
-                                <Typography sx={{fontSize: "1rem", color: "black", display: "flex", justifyContent: "center"}}>
+                                <Typography sx={{fontSize: "1rem", color: "secondary.darkest", display: "flex", justifyContent: "center"}}>
                                     <MenuBookIcon sx={{mr: 2}}/> 227 Nguyễn Văn Cừ, Ward 4, District 5, Hồ Chí Minh City
                                 </Typography>
-                                <Typography sx={{fontSize: "1rem", color: "black", display: "flex", justifyContent: "center"}}>
+                                <Typography sx={{fontSize: "1rem", color: "secondary.darkest", display: "flex", justifyContent: "center"}}>
                                     <EmailIcon sx={{mr: 2}}/> ntnhan223@clc.fitus.edu.vn
                                 </Typography>
-                                <Typography sx={{fontSize: "1rem", color: "black", display: "flex", justifyContent: "center"}}>
+                                <Typography sx={{fontSize: "1rem", color: "secondary.darkest", display: "flex", justifyContent: "center"}}>
                                     <PhoneIcon sx={{mr: 2}}/> 028 3975 6922 | 028 3975 6991
                                 </Typography>
-                                <Typography sx={{fontSize: "1rem", color: "black", display: "flex", justifyContent: "center"}}>
+                                <Typography sx={{fontSize: "1rem", color: "secondary.darkest", display: "flex", justifyContent: "center"}}>
                                     <SchoolIcon sx={{mr: 2}}/> Mr. Nguyễn Trọng Nhân
                                 </Typography>
                             </Box>

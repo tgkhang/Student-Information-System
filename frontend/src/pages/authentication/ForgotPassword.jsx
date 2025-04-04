@@ -104,9 +104,9 @@ export default function ForgotPassword() {
           top: "0.25em",
           right: "0.75em",
           zIndex: 10,
-          fontWeight: 800,
-          color: "#407BFF",
-          fontSize: "3rem",
+          fontWeight: 600,
+          color: "primary.main",
+          fontSize: "3.5rem",
           textDecoration: "none",
         }}
       >
@@ -135,7 +135,7 @@ export default function ForgotPassword() {
               <Typography variant="h4">Forgot your</Typography>
               <Typography
                 variant="h1"
-                sx={{ color: "#407BFF", fontWeight: 700 }}
+                sx={{ color: "primary.main", fontWeight: 700 }}
               >
                 Password?
               </Typography>
@@ -161,7 +161,7 @@ export default function ForgotPassword() {
                 />
                 <Typography
                   variant="h4"
-                  sx={{ color: "#407BFF", fontWeight: 700 }}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   Forgot Password
                 </Typography>
@@ -172,34 +172,30 @@ export default function ForgotPassword() {
               </Typography>
             </Box>
 
-            <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-              <Box sx={guestContainerLoginSubsection}>
-                <TextField
-                  placeholder="Enter your email"
-                  {...register("email")}
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    sx: { borderRadius: "2em", fontSize: "0.8rem" },
-                  }}
-                  label="Email"
-                  error={!!errors.email} // Check if there is an error with the email
-                  helperText={errors.email?.message} // Show error message if any
-                  InputLabelProps={{
-                    sx: {
-                      fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
-                    },
-                  }}
-                />
-              </Box>
+            <form onSubmit={handleSubmit(onSubmit)} style={guestContainerLoginSubsection}>
+              <TextField
+                placeholder="Enter your email"
+                {...register("email")}
+                fullWidth
+                variant="outlined"
+                size="small"
+                InputProps={{
+                  sx: { borderRadius: "2em", fontSize: "0.8rem" },
+                }}
+                label="Email"
+                error={!!errors.email} // Check if there is an error with the email
+                helperText={errors.email?.message} // Show error message if any
+                InputLabelProps={{
+                  sx: {
+                    fontSize: "0.8rem",
+                    "&.Mui-focused": { color: "primary.main" },
+                  },
+                }}
+              />
 
-              <Box sx={guestContainerLoginSubsection}>
-                <Button sx={guestRoundBlueButton} type="submit">
-                  Send recovery link
-                </Button>
-              </Box>
+              <Button sx={guestRoundBlueButton} type="submit">
+                Send recovery link
+              </Button>
             </form>
 
             <Box sx={guestContainerLoginSubsection}>
@@ -209,7 +205,7 @@ export default function ForgotPassword() {
                   component="span"
                   sx={{
                     ...guestLoginSection,
-                    color: "#407BFF",
+                    color: "primary.main",
                     fontWeight: 600,
                   }}
                 >
@@ -219,7 +215,7 @@ export default function ForgotPassword() {
                     sx={{
                       fontSize: "0.8rem",
                       textDecoration: "none",
-                      color: "#407BFF",
+                      color: "primary.main",
                       fontWeight: 600,
                       "&:hover": { textDecoration: "underline" },
                     }}

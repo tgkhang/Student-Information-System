@@ -31,16 +31,16 @@ export default function Services() {
                 {/* For Organizations */}
                 <Grid item xs={9}>
                     <motion.div variants={fadeInLeft(0.2)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                    <Card sx={{ p: 3, boxShadow: 3, borderRadius: "1em", backgroundColor: "#407BFF" }}>
+                    <Card sx={{ p: 3, boxShadow: 3, borderRadius: "1em", backgroundColor: "primary.main" }}>
                         <CardContent>
                             <Grid container alignItems="center" spacing={7}>
                                 <Grid item>
-                                    <Box sx={{ color: "white" }}>
-                                        <BusinessCenter sx={{fontSize: "10rem"}} />
+                                    <Box sx={{ color: "primary.lighter" }}>
+                                        <BusinessCenter sx={{fontSize: "12rem"}} />
                                     </Box>
                                 </Grid>
                                 <Grid item xs>
-                                    <Typography variant="h4" sx={{ mb: 2, color: "white", fontWeight: 600 }}>
+                                    <Typography variant="h4" sx={{ mb: 2, color: "primary.lighter", fontWeight: 600 }}>
                                         For Administrators
                                     </Typography>
                                     <ul class="ul-guest">
@@ -60,16 +60,16 @@ export default function Services() {
                 {/* For Students */}
                 <Grid item xs={9}>
                     <motion.div variants={fadeInLeft(0.4)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                        <Card sx={{ p: 3, boxShadow: 3, borderRadius: "1em", backgroundColor: "#0543F1" }}>
+                        <Card sx={{ p: 3, boxShadow: 3, borderRadius: "1em", backgroundColor: "primary.dark" }}>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={7}>
                                     <Grid item>
-                                        <Box sx={{ color: "white" }}>
-                                            <School sx={{fontSize: "10rem"}} />
+                                        <Box sx={{ color: "primary.lighter" }}>
+                                            <School sx={{fontSize: "12rem"}} />
                                         </Box>
                                     </Grid>
                                     <Grid item xs>
-                                        <Typography variant="h4" sx={{ mb: 2, color: "white", fontWeight: 600 }}>
+                                        <Typography variant="h4" sx={{ mb: 2, color: "primary.lighter", fontWeight: 600 }}>
                                             For Students
                                         </Typography>
                                         <ul class="ul-guest">
@@ -88,17 +88,17 @@ export default function Services() {
 
                 {/* For Teachers */}
                 <Grid item xs={9}>
-                    <motion.div variants={fadeInLeft(0.6)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                        <Card sx={{ p: 3, boxShadow: 3, borderRadius: "1em", backgroundColor: "#1C36BA" }}>
+                    <motion.div variants={fadeInLeft(0)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+                        <Card sx={{ p: 3, boxShadow: 3, borderRadius: "1em", backgroundColor: "primary.darker" }}>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={7}>
                                         <Grid item>
-                                            <Box sx={{ color: "white" }}>
-                                                <Person sx={{fontSize: "10rem"}} />
+                                            <Box sx={{ color: "primary.lighter" }}>
+                                                <Person sx={{fontSize: "12rem"}} />
                                             </Box>
                                         </Grid>
                                     <Grid item xs>
-                                        <Typography variant="h4" sx={{ mb: 2, color: "white", fontWeight: 600 }}>
+                                        <Typography variant="h4" sx={{ mb: 2, color: "primary.lighter", fontWeight: 600 }}>
                                             For Teachers
                                         </Typography>
                                         <ul class="ul-guest">
@@ -117,17 +117,17 @@ export default function Services() {
 
                 {/* For Administrators */}
                 <Grid item xs={9}>
-                    <motion.div variants={fadeInLeft(0.8)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                        <Card sx={{ p: 3, boxShadow: 3, borderRadius: "1em", backgroundColor: "#1B3177" }}>
+                    <motion.div variants={fadeInLeft(0.2)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+                        <Card sx={{ p: 3, boxShadow: 3, borderRadius: "1em", backgroundColor: "primary.darkest" }}>
                             <CardContent>
                                 <Grid container alignItems="center" spacing={7}>
                                     <Grid item>
-                                        <Box sx={{ color: "white" }}>
-                                            <AdminPanelSettings sx={{fontSize: "10rem"}} />
+                                        <Box sx={{ color: "primary.lighter" }}>
+                                            <AdminPanelSettings sx={{fontSize: "12rem"}} />
                                         </Box>
                                     </Grid>
                                     <Grid item xs>
-                                        <Typography variant="h4" sx={{ mb: 2, color: "white", fontWeight: 600 }}>
+                                        <Typography variant="h4" sx={{ mb: 2, color: "primary.lighter", fontWeight: 600 }}>
                                             For Administrators
                                         </Typography>
                                         <ul class="ul-guest">
@@ -145,9 +145,9 @@ export default function Services() {
                 </Grid>
             </Grid>
 
-            <motion.div variants={fadeInRight(0)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <motion.div variants={fadeInRight(0.2)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                 <Box sx={{display: "flex", flexDirection: "column", alignItems: "center", gap: "1em", mt: 8}}>
-                    <Typography variant="h5" sx={{ color: "#407BFF", fontWeight: 600 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 500, fontStyle: "italic" }}>
                         Already a student, teacher, or administrator in your organization?
                     </Typography>
                     <Button component="a" href="/auth/login" sx={{...guestWhiteButton, width: "40%"}}>

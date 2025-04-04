@@ -8,12 +8,14 @@ import NotistackProvider from "./components/NotistackProvider";
 
 export default function App() {
   return (
-    <HelmetProvider>
-      <BrowserRouter>
-        <NotistackProvider>
-          <MainRouter />
-        </NotistackProvider>
-      </BrowserRouter>
-    </HelmetProvider>
+    <ThemeProvider>
+      <HelmetProvider>
+        <BrowserRouter>
+          <NotistackProvider>
+            <MainRouter />
+          </NotistackProvider>
+        </BrowserRouter>
+      </HelmetProvider>
+    </ThemeProvider>
   );
 }

@@ -123,9 +123,9 @@ export default function Login() {
           top: "0.25em",
           right: "0.75em",
           zIndex: 10,
-          fontWeight: 800,
+          fontWeight: 600,
           color: "white",
-          fontSize: "3rem",
+          fontSize: "3.5rem",
           textDecoration: "none",
         }}
       >
@@ -154,7 +154,7 @@ export default function Login() {
               >
                 <Typography
                   variant="h1"
-                  sx={{ color: "#407BFF", fontWeight: 700 }}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   Login
                 </Typography>
@@ -163,6 +163,7 @@ export default function Login() {
             </Box>
           )}
           <Box sx={guestContainerLoginSection}>
+
             <Box
               sx={{ ...guestContainerLoginSubsection, alignItems: "center" }}
             >
@@ -181,7 +182,7 @@ export default function Login() {
                 />
                 <Typography
                   variant="h4"
-                  sx={{ color: "#407BFF", fontWeight: 700 }}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   Login
                 </Typography>
@@ -190,9 +191,11 @@ export default function Login() {
                 Please use the email and password that your organization
                 provided to log in to your account.
               </Typography>
+
             </Box>
-            <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-              <Box component="div" sx={guestContainerLoginSubsection}>
+
+            <form onSubmit={handleSubmit(onSubmit)} style={guestContainerLoginSubsection}>
+
                 <TextField
                   placeholder="Enter your username"
                   {...register("username")}
@@ -209,10 +212,11 @@ export default function Login() {
                   InputLabelProps={{
                     sx: {
                       fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
+                      "&.Mui-focused": { color: "primary.main" },
                     },
                   }}
                 />
+
                 <TextField
                   placeholder="Enter your password"
                   {...register("password")}
@@ -229,10 +233,11 @@ export default function Login() {
                   InputLabelProps={{
                     sx: {
                       fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
+                      "&.Mui-focused": { color: "primary.main" },
                     },
                   }}
                 />
+
                 <Box
                   sx={{
                     display: "flex",
@@ -245,8 +250,8 @@ export default function Login() {
                     control={
                       <Checkbox
                         sx={{
-                          color: "#407BFF",
-                          "&.Mui-checked": { color: "#407BFF" },
+                          color: "primary.main",
+                          "&.Mui-checked": { color: "primary.main" },
                         }}
                       />
                     }
@@ -262,7 +267,7 @@ export default function Login() {
                     sx={{
                       fontSize: "0.8rem",
                       textDecoration: "none",
-                      color: "#407BFF",
+                      color: "primary.main",
                       fontWeight: 600,
                       "&:hover": { textDecoration: "underline" },
                     }}
@@ -270,21 +275,20 @@ export default function Login() {
                     Forgot Password
                   </Typography>
                 </Box>
-              </Box>
 
-              <Box component="div" sx={guestContainerLoginSubsection}>
                 <Button sx={guestRoundBlueButton} type="submit">
                   Login
                 </Button>
-              </Box>
 
-              <Box component="div" sx={guestContainerLoginSubsection}>
+            </form>
+
+            <Box component="div" sx={guestContainerLoginSubsection}>
                 <Typography sx={guestLoginSection}>
                   Don’t have an account?
                   <Typography
                     sx={{
                       ...guestLoginSection,
-                      color: "#407BFF",
+                      color: "primary.main",
                       fontWeight: 600,
                     }}
                   >
@@ -292,10 +296,12 @@ export default function Login() {
                   </Typography>
                 </Typography>
               </Box>
-            </form>
           </Box>
+
         </motion.div>
+
       </Container>
+
     </Page>
   );
 }
