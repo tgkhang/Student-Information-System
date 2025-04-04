@@ -11,7 +11,6 @@ import { IconButtonAnimate } from './animate';
 
 function SnackbarStyles() {
   const theme = useTheme();
-  const isLight = theme.palette.mode === 'light';
 
   return (
     <GlobalStyles
@@ -23,12 +22,12 @@ function SnackbarStyles() {
             margin: theme.spacing(0.25, 0),
             boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
             borderRadius: theme.shape.borderRadius,
-            color: theme.palette.grey[isLight ? 0 : 800],
-            backgroundColor: theme.palette.grey[isLight ? 900 : 0],
+            color: theme.palette.grey[800],
+            backgroundColor: theme.palette.grey[200], // chọn mã grey bạn thích
             '&.SnackbarItem-variantSuccess, &.SnackbarItem-variantError, &.SnackbarItem-variantWarning, &.SnackbarItem-variantInfo':
               {
                 color: theme.palette.text.primary,
-                backgroundColor: theme.palette.background.paper,
+                backgroundColor: theme.palette.grey[200],
               },
             [theme.breakpoints.up('md')]: {
               minWidth: 240,
