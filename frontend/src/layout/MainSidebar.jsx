@@ -20,8 +20,8 @@ import { AuthContext } from '../contexts/JWTContext';
 import MenuIcon from '@mui/icons-material/Menu';
 import { navAdminConfig, navTeacherConfig, navStudentConfig } from './NavConfig';
 // Constants
-const DRAWER_WIDTH = 280;
-const COLLAPSED_WIDTH = 70;
+const DRAWER_WIDTH = 250;
+const COLLAPSED_WIDTH = 85;
 
 const ListItemIconStyle = styled(ListItemIcon)({
   width: 22,
@@ -31,6 +31,7 @@ const ListItemIconStyle = styled(ListItemIcon)({
   alignItems: 'center',
   justifyContent: 'center',
 });
+
 // Sidebar Component
 export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
   // Internal collapsed state
@@ -52,8 +53,8 @@ export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
           </IconButton>
         ) : (
           <>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#407BFF' }}>
-              InfoStudia Menu
+            <Typography sx={{ flexGrow: 1, fontWeight: 700, fontSize: "1.2rem", color: "primary.main" }}>
+              Workplace
             </Typography>
             <IconButton onClick={onToggleSidebar}>
               <MenuIcon />
@@ -64,7 +65,7 @@ export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
 
       <Divider sx={{ borderStyle: 'dashed' }} />
 
-      <List disablePadding sx={{ p: 1 }}>
+      <List disablePadding>
         {navConfig.map((item) => (
           <NavItem key={item.title} item={item} isOpenSidebar={isOpenSidebar} />
         ))}
@@ -78,9 +79,9 @@ export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
       {/* User Profile Section */}
       <Box
         sx={{
-          p: 2,
+          p: 2, backgroundColor: "primary.main",
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'center', gap: "1em",
           justifyContent: isOpenSidebar ? 'center' : 'flex-start',
         }}
       >
@@ -90,7 +91,7 @@ export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
           sx={{ 
             width: 40, 
             height: 40,
-            border: '2px solid #407BFF',
+            border: '2px solid primary.main',
             bgcolor: user?.avatar ? 'transparent' : 'grey.300',
             color: 'white', 
             fontWeight: 'bold',
@@ -101,11 +102,11 @@ export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
         </Avatar>
         
         {!isOpenSidebar && (
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+          <Box sx = {{ display: "flex", flexDirection: "column", justifyContent: "flex-start"}}>
+            <Typography variant="h5" sx={{ color: 'primary.lighter' }}>
               {user?.name || "Unknown"}
             </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', textTransform: 'capitalize'  }}>
+            <Typography variant="caption" sx={{ color: 'primary.lighter', textTransform: 'capitalize'  }}>
               {user?.role || "unknown"} 
             </Typography>
           </Box>
@@ -130,7 +131,8 @@ export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
           }),
           bgcolor: 'background.default',
           position: 'fixed',
-          height: '100%',
+          height: "calc(100vh - 64px)", // Full height minus header
+          marginTop: "64px", // Adjust for header
           boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.15)',
           overflowX: 'hidden',
           display: 'flex',
@@ -156,19 +158,17 @@ function NavItem({ item, isOpenSidebar }) {
         position: 'relative',
         textTransform: 'capitalize',
         color: 'text.secondary',
-        borderRadius: 1,
         '&.active': {
-          color: 'primary.main',
-          bgcolor: 'action.selected',
+          color: 'white',
+          bgcolor: 'primary.main',
           fontWeight: 'fontWeightBold',
         },
-        mb: 0.5,
         '&:hover': {
           bgcolor: 'action.hover',
-          color: '#407BFF',
+          color: 'primary.main',
         },
         justifyContent: isOpenSidebar ? 'center' : 'flex-start',
-        px: isOpenSidebar ? 1 : 3,
+        px: 0, py: "1.75em"
       }}
     >
       <ListItemIconStyle>{icon}</ListItemIconStyle>
@@ -176,7 +176,7 @@ function NavItem({ item, isOpenSidebar }) {
         <ListItemText 
           disableTypography 
           primary={title} 
-          sx={{ textTransform: 'capitalize', ml: 1 }} 
+          sx={{ textTransform: 'capitalize' }} 
         />
       )}
     </ListItemButton>

@@ -67,7 +67,7 @@ export default function ResetPassword() {
           right: "0.75em",
           zIndex: 10,
           fontWeight: 600,
-          color: "#407BFF",
+          color: "primary.main",
           fontSize: "3.5rem",
           textDecoration: "none",
         }}
@@ -98,7 +98,7 @@ export default function ResetPassword() {
               <Typography variant="h4">Reset your</Typography>
               <Typography
                 variant="h1"
-                sx={{ color: "#407BFF", fontWeight: 700 }}
+                sx={{ color: "primary.main", fontWeight: 700 }}
               >
                 Password.
               </Typography>
@@ -125,7 +125,7 @@ export default function ResetPassword() {
                 />
                 <Typography
                   variant="h4"
-                  sx={{ color: "#407BFF", fontWeight: 700 }}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   Reset Password
                 </Typography>
@@ -154,7 +154,7 @@ export default function ResetPassword() {
                   InputLabelProps={{
                     sx: {
                       fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
+                      "&.Mui-focused": { color: "primary.main" },
                     },
                   }}
                 />
@@ -174,7 +174,7 @@ export default function ResetPassword() {
                   InputLabelProps={{
                     sx: {
                       fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
+                      "&.Mui-focused": { color: "primary.main" },
                     },
                   }}
                 />

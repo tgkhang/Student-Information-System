@@ -19,7 +19,7 @@ export default function Header() {
         px: "5em"
       }}
     >
-      <Toolbar sx={{}}>
+      <Toolbar>
         <Box component="img" src={Logo} alt="Logo" sx={{ width: 40, mr: 2}}>
         </Box>
         <Typography sx={{ flexGrow: 1, fontWeight: 700, fontSize: "1.5rem" }}>

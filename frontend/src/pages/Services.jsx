@@ -36,7 +36,7 @@ export default function Services() {
                             <Grid container alignItems="center" spacing={7}>
                                 <Grid item>
                                     <Box sx={{ color: "primary.lighter" }}>
-                                        <BusinessCenter sx={{fontSize: "10rem"}} />
+                                        <BusinessCenter sx={{fontSize: "12rem"}} />
                                     </Box>
                                 </Grid>
                                 <Grid item xs>
@@ -65,7 +65,7 @@ export default function Services() {
                                 <Grid container alignItems="center" spacing={7}>
                                     <Grid item>
                                         <Box sx={{ color: "primary.lighter" }}>
-                                            <School sx={{fontSize: "10rem"}} />
+                                            <School sx={{fontSize: "12rem"}} />
                                         </Box>
                                     </Grid>
                                     <Grid item xs>
@@ -94,7 +94,7 @@ export default function Services() {
                                 <Grid container alignItems="center" spacing={7}>
                                         <Grid item>
                                             <Box sx={{ color: "primary.lighter" }}>
-                                                <Person sx={{fontSize: "10rem"}} />
+                                                <Person sx={{fontSize: "12rem"}} />
                                             </Box>
                                         </Grid>
                                     <Grid item xs>
@@ -123,7 +123,7 @@ export default function Services() {
                                 <Grid container alignItems="center" spacing={7}>
                                     <Grid item>
                                         <Box sx={{ color: "primary.lighter" }}>
-                                            <AdminPanelSettings sx={{fontSize: "10rem"}} />
+                                            <AdminPanelSettings sx={{fontSize: "12rem"}} />
                                         </Box>
                                     </Grid>
                                     <Grid item xs>

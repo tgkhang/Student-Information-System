@@ -105,7 +105,7 @@ export default function ForgotPassword() {
           right: "0.75em",
           zIndex: 10,
           fontWeight: 600,
-          color: "#407BFF",
+          color: "primary.main",
           fontSize: "3.5rem",
           textDecoration: "none",
         }}
@@ -135,7 +135,7 @@ export default function ForgotPassword() {
               <Typography variant="h4">Forgot your</Typography>
               <Typography
                 variant="h1"
-                sx={{ color: "#407BFF", fontWeight: 700 }}
+                sx={{ color: "primary.main", fontWeight: 700 }}
               >
                 Password?
               </Typography>
@@ -161,7 +161,7 @@ export default function ForgotPassword() {
                 />
                 <Typography
                   variant="h4"
-                  sx={{ color: "#407BFF", fontWeight: 700 }}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   Forgot Password
                 </Typography>
@@ -188,7 +188,7 @@ export default function ForgotPassword() {
                 InputLabelProps={{
                   sx: {
                     fontSize: "0.8rem",
-                    "&.Mui-focused": { color: "#407BFF" },
+                    "&.Mui-focused": { color: "primary.main" },
                   },
                 }}
               />
@@ -205,7 +205,7 @@ export default function ForgotPassword() {
                   component="span"
                   sx={{
                     ...guestLoginSection,
-                    color: "#407BFF",
+                    color: "primary.main",
                     fontWeight: 600,
                   }}
                 >
@@ -215,7 +215,7 @@ export default function ForgotPassword() {
                     sx={{
                       fontSize: "0.8rem",
                       textDecoration: "none",
-                      color: "#407BFF",
+                      color: "primary.main",
                       fontWeight: 600,
                       "&:hover": { textDecoration: "underline" },
                     }}

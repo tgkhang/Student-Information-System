@@ -154,7 +154,7 @@ export default function Login() {
               >
                 <Typography
                   variant="h1"
-                  sx={{ color: "#407BFF", fontWeight: 700 }}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   Login
                 </Typography>
@@ -182,7 +182,7 @@ export default function Login() {
                 />
                 <Typography
                   variant="h4"
-                  sx={{ color: "#407BFF", fontWeight: 700 }}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   Login
                 </Typography>
@@ -212,7 +212,7 @@ export default function Login() {
                   InputLabelProps={{
                     sx: {
                       fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
+                      "&.Mui-focused": { color: "primary.main" },
                     },
                   }}
                 />
@@ -233,7 +233,7 @@ export default function Login() {
                   InputLabelProps={{
                     sx: {
                       fontSize: "0.8rem",
-                      "&.Mui-focused": { color: "#407BFF" },
+                      "&.Mui-focused": { color: "primary.main" },
                     },
                   }}
                 />
@@ -250,8 +250,8 @@ export default function Login() {
                     control={
                       <Checkbox
                         sx={{
-                          color: "#407BFF",
-                          "&.Mui-checked": { color: "#407BFF" },
+                          color: "primary.main",
+                          "&.Mui-checked": { color: "primary.main" },
                         }}
                       />
                     }
@@ -267,7 +267,7 @@ export default function Login() {
                     sx={{
                       fontSize: "0.8rem",
                       textDecoration: "none",
-                      color: "#407BFF",
+                      color: "primary.main",
                       fontWeight: 600,
                       "&:hover": { textDecoration: "underline" },
                     }}
@@ -288,7 +288,7 @@ export default function Login() {
                   <Typography
                     sx={{
                       ...guestLoginSection,
-                      color: "#407BFF",
+                      color: "primary.main",
                       fontWeight: 600,
                     }}
                   >

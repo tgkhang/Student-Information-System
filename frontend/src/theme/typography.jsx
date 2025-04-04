@@ -113,6 +113,11 @@ const typography = {
     fontSize: pxToRem(12),
   },
 
+  notification: {
+    lineHeight: 1.5,
+    fontSize: "0.9rem",
+  },
+
   overline: {
     fontWeight: 700,
     lineHeight: 1.5,
