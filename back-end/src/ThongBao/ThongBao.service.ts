@@ -161,3 +161,4 @@ export class ThongBaoService {
     return await this.thongBaosModel.deleteOne({ _id: id }).exec();
   }
 }
+

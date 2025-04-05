@@ -68,7 +68,7 @@ export class GiangVienController {
     const username = await this.GiangVienService.generateUsername(body.HoTen);
     const email = `${username}@student.hcmus.edu.vn`;
     const password = username;
-    const role = 'Teacher';
+    const role = 'teacher';
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const registrationResult = await this.AuthService.register(
       username,

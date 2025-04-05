@@ -25,19 +25,23 @@ export class UploadService {
         return BlobServiceClient.fromConnectionString(connectionString);
     }
 
-    async uploadFile(file: Express.Multer.File, khoaHocId: string, moTa: string, username: string): Promise<TaiLieu> {
+    async uploadFile(file: Express.Multer.File, khoaHocId: string, moTa: string, username: string, role: string): Promise<TaiLieu> {
         const khoaHoc = await this.khoaHocModel.findById(khoaHocId).populate('GiangVienID TroGiangID').exec();
         if (!khoaHoc) {
             throw new NotFoundException(`Không tìm thấy khóa học với ID ${khoaHocId}`);
         }
-        const giangVien = khoaHoc.GiangVienID as unknown as GiangVienDocument;
-        const troGiang = khoaHoc.TroGiangID as unknown as GiangVienDocument | undefined;
-
-        const isGiangVien = giangVien && giangVien.MaGV === username;
-        const isTroGiang = troGiang && troGiang.MaGV === username;
-        if (!isGiangVien && !isTroGiang) {
-        throw new UnauthorizedException('Bạn không có quyền upload tài liệu cho khóa học này');
+        if (role !== "admin")
+        {
+            const giangVien = khoaHoc.GiangVienID as unknown as GiangVienDocument;
+            const troGiang = khoaHoc.TroGiangID as unknown as GiangVienDocument | undefined;
+    
+            const isGiangVien = giangVien && giangVien.MaGV === username;
+            const isTroGiang = troGiang && troGiang.MaGV === username;
+            if (!isGiangVien && !isTroGiang) {
+            throw new UnauthorizedException('Bạn không có quyền upload tài liệu cho khóa học này');
+            }
         }
+        
         const blobServiceClient = await this.getBlobServiceClient();
         const containerName = this.configService.get<string>('AZURE_CONTAINER_NAME');
         if (!containerName) throw new NotFoundException('Không tìm thấy container name');
@@ -81,7 +85,7 @@ export class UploadService {
         try{
             const taiLieu = await this.taiLieuModel.findById(taiLieuId).exec();
             if (!taiLieu) throw new NotFoundException(`Không tìm thấy tài liệu với ID ${taiLieuId}`);
-            if (user.role !== 'Admin' && taiLieu.TenNguoiDung !== user.username) {
+            if (user.role !== 'admin' && taiLieu.TenNguoiDung !== user.username) {
                 throw new UnauthorizedException('Bạn không có quyền xóa tài liệu này');
             }
             const blobServiceClient = await this.getBlobServiceClient();
