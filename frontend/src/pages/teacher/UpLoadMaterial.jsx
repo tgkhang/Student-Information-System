@@ -84,7 +84,6 @@ export default function UploadMaterials() {
     
     enqueueSnackbar("Upload completed successfully!", {
       variant: "success",
-      anchorOrigin: { vertical: "top", horizontal: "right" }
     });
   };
 
