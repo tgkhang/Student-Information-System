@@ -21,7 +21,7 @@ import { getFacultyListDTO } from './dto/getFacultyList.dto';
 import { updateKhoaDTO } from './dto/updateKhoa.dto';
 
 
-@Controller('Khoa')
+@Controller('api/Khoa')
 export class KhoaController {
   constructor(private readonly khoaService: KhoaService) {}
 

@@ -24,7 +24,7 @@ import { GetListStudentDto } from './dto/getList-sinhvien.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
 
-@Controller('sinhvien')
+@Controller('api/sinhvien')
 export class SinhVienController {
   constructor(
     private readonly sinhVienService: SinhVienService,

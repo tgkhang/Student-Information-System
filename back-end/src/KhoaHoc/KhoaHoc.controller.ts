@@ -20,7 +20,7 @@ import { AddCourseDto } from 'src/KhoaHoc/dto/add-KhoaHoc.dto';
 import { GetCourseListDto } from './dto/getListCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 
-@Controller('KhoaHoc')
+@Controller('api/KhoaHoc')
 export class KhoaHocController {
   constructor(private readonly khoaHocService: KhoaHocService) {}
 

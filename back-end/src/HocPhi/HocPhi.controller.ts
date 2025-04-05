@@ -16,7 +16,7 @@ import { HocPhiService } from './HocPhi.service';
 import { UpdateTuitionDto } from './dto/update-tuition.dto';
 import { CreateHocPhiDto } from './dto/create-tuition.dto';
 import { GetListDto } from './dto/getList.dto';
-@Controller('HocPhi')
+@Controller('api/HocPhi')
 export class HocPhiController {
   constructor(private readonly HocPhiService: HocPhiService) {}
 

@@ -18,7 +18,7 @@ import { PhuHuynhService } from './PhuHuynh.service';
 import { CreateParentsDto } from './dto/C&U-phuhuynh.dto';
 import { GetListDto } from './dto/getList.dto';
 
-@Controller('PhuHuynh')
+@Controller('api/PhuHuynh')
 export class PhuHuynhController {
   PhuHuynhService: any;
   kyLuatService: any;

@@ -21,7 +21,7 @@ import { UpdateGiangVienDto } from './dto/update-giangvien.dto';
 import { AddTeacherDto } from './dto/add-giangvien.dto';
 import { GetTeacherListDto } from './dto/getListGiangVien.dto';
 
-@Controller('GiangVien')
+@Controller('api/GiangVien')
 export class GiangVienController {
   constructor(
     private readonly GiangVienService: GiangVienService,
