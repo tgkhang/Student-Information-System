@@ -9,11 +9,14 @@ import { SinhVien, SinhVienDocument } from '../schemas/SinhVien.schema';
 import { CreateSinhVienDto } from './dto/create-sinhvien.dto';
 import { UpdateSinhVienDto } from './dto/update-sinhvien.dto';
 import { GetListStudentDto } from './dto/getList-sinhvien.dto';
+import * as XLSX from 'xlsx';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class SinhVienService {
   constructor(
     @InjectModel(SinhVien.name) private sinhVienModel: Model<SinhVienDocument>,
+    private readonly authService: AuthService,
   ) {}
 
   async addStudent(createSinhVienDto: CreateSinhVienDto): Promise<SinhVien> {
@@ -34,6 +37,62 @@ export class SinhVienService {
     return newStudent.save();
   }
 
+  async importExcel(file: Express.Multer.File): Promise<string> {
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const data: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+    for (const sinhVienData of data) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      const username = sinhVienData.mssv.toString();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const email = `${sinhVienData.mssv}@student.hcmus.edu.vn`;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      const password = sinhVienData.mssv.toString();
+      const role = 'Student';
+      console.log(password);
+      await this.authService.register(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        username,
+        email,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        password,
+        role,
+      );
+
+      const sinhVien = new this.sinhVienModel({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        mssv: sinhVienData.mssv,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        HoTen: sinhVienData.HoTen,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        NgaySinh: sinhVienData.NgaySinh
+          ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+            new Date(sinhVienData.NgaySinh)
+          : null,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        GioiTinh: sinhVienData.GioiTinh,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        DiaChi: sinhVienData.DiaChi,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        SoDienThoai: sinhVienData.SoDienThoai,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        KhoaID: sinhVienData.KhoaID,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        CCCD: sinhVienData.CCCD,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        Anh: sinhVienData.Anh,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        TrangThai: sinhVienData.TrangThai,
+        ThoiGianCapNhat: new Date(),
+      });
+
+      await sinhVien.save(); // Lưu sinh viên vào MongoDB
+    }
+
+    return 'File imported successfully!';
+  }
   async updateStudent(
     mssv: string,
     updateSinhVienDto: UpdateSinhVienDto,

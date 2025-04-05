@@ -3,20 +3,20 @@ import mongoose, { Document, Types } from 'mongoose';
 
 export type KhoaHocDocument = KhoaHoc & Document;
 
-@Schema()
-export class TaiLieu {
-  @Prop({ required: true })
-  TenTaiLieu: string;
+// @Schema()
+// export class TaiLieu {
+//   @Prop({ required: true })
+//   TenTaiLieu: string;
 
-  @Prop({ required: true })
-  LinkTaiLieu: string;
-}
+//   @Prop({ required: true })
+//   LinkTaiLieu: string;
+// }
 
 @Schema()
 export class KhoaHoc {
-  @Prop({ required: true, unique: true })
+  @Prop({required: true, unique: true})
   MaKhoaHoc: string;
-
+  
   @Prop({ required: true, unique: true })
   TenKhoaHoc: string;
 
@@ -32,15 +32,14 @@ export class KhoaHoc {
   @Prop()
   MoTa: string;
 
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SinhVien' }],
-    default: [],
-  })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SinhVien' }], default: [] })
   SinhVienDangKy: Types.ObjectId[];
-
-  // fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
-  @Prop({ type: [TaiLieu], default: [] })
-  TaiLieu: TaiLieu[];
+  
+// fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
+  // @Prop({ type: [TaiLieu], default: [] })
+  // TaiLieu: TaiLieu[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'TaiLieu' }], default: [] }) // Danh sách ID tài liệu
+  TaiLieu: Types.ObjectId[];
 
   @Prop({ type: Date, default: Date.now })
   NgayCapNhat: Date;
@@ -51,16 +50,16 @@ export class KhoaHoc {
   @Prop({ default: 0 })
   SoLuongSinhVienDangKy: number;
 
-  @Prop({ required: true })
+  @Prop({ required: true})
   HanDangKy: Date;
 
-  @Prop({ required: true })
+  @Prop({required: true})
   NgayBatDau: Date;
 
-  @Prop({ required: true })
+  @Prop({required: true})
   NgayKetThuc: Date;
 
-  @Prop({ type: Types.ObjectId, ref: 'Khoa', required: true })
+  @Prop({type:Types.ObjectId, ref:'Khoa', required: true})
   KhoaID: Types.ObjectId;
 }
 

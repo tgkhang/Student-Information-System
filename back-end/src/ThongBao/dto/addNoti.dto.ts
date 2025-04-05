@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsEnum, IsNotEmpty, IsOptional, IsDate, IsDateString } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class CreateThongBaoDto {

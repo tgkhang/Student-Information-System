@@ -187,4 +187,26 @@ export class KhoaHocController {
       body.mssv,
     );
   }
+
+  @Get('files/:khoaHocId')
+    @UseGuards(JWTAuthGuard)
+    async getFilesByKhoaHocId(@Req() req: any,@Param('khoaHocId') khoaHocId: string) {
+        
+        const files = await this.khoaHocService.getFilesByKhoaHocId(khoaHocId);
+        return { message: 'Danh sách tài liệu của khóa học', files };
+    }
+
+    @Delete('removeFile/:khoaHocId/:taiLieuId')
+    @UseGuards(JWTAuthGuard)
+    async removeFile(@Req() req: any, @Param('khoaHocId') khoaHocId: string, @Param('taiLieuId') taiLieuId: string){
+        
+        try {
+            if (req.user.role !== "Admin" && req.user.role !=="Teacher")
+                throw new UnauthorizedException('Không có quyền thực hiện thao tác này')
+            const result = await this.khoaHocService.deleteFile(khoaHocId, taiLieuId, req.user);
+            return result;
+        } catch (error) {
+            return { message: error.message };
+        }
+    }
 }

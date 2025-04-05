@@ -14,13 +14,15 @@ import { HocPhiModule } from './HocPhi/HocPhi.module';
 import { BaiKiemTraModule } from './BaiKiemTra/BaiKiemTra.module';
 import { DiemDanhModule } from './DiemDanh/DiemDanh.module';
 import { DiemSoModule } from './DiemSo/DiemSo.module';
-import { KhoaModule } from './khoa/Khoa.module';
+import { KhoaModule } from './Khoa/Khoa.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
     // MongooseModule.forRoot(process.env.MONGO_URI),
     MongooseModule.forRoot(
-      'mongodb+srv://khavinhthuan114:mle5zI4MPN8L8RHg@cluster0.i1pnj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+      'mongodb+srv://sis:sis@cluster0.xqphw.mongodb.net/',
+      //'mongodb+srv://khavinhthuan114:mle5zI4MPN8L8RHg@cluster0.i1pnj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
     ),
     // AzureStorageModule.withConfig({
     //   sasKey: process.env.AZURE_STORAGE_SAS_KEY,
@@ -44,6 +46,7 @@ import { KhoaModule } from './khoa/Khoa.module';
     KhoaModule,
     DiemDanhModule,
     DiemSoModule,
+    UploadModule,
   ],
 })
 export class AppModule {}
