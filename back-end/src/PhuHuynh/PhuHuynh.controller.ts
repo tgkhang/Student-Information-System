@@ -68,19 +68,19 @@ export class PhuHuynhController {
     return { message: 'Thêm thông tin phụ huynh thành công', parents: newParents };
   }
 
-  @Patch('update_Parents/:mssv')
+  @Patch('update_Parents/:_id')
   @UseGuards(JWTAuthGuard)
   updateParents(
-    @Param('mssv') mssv: string,
+    @Param('_id') _id: string,
     @Body() createParentsDto: CreateParentsDto,
     @Request() req: any,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.username !== mssv) {
+    if (req.user.role !== 'admin') {
       throw new UnauthorizedException('Không có quyền cập nhật thông tin cho phụ huynh này');
     }
 
-    return this.phuHuynhService.updateParents(mssv, createParentsDto);
+    return this.phuHuynhService.updateParents(_id, createParentsDto);
   }
 
   @Delete('delete_parents/:mssv')
