@@ -73,6 +73,10 @@ export default function Router() {
           path : "notification/:id",
           element: <DetailNotification />,
         },
+        {
+          path : "course",
+          element: <StudentCoursePage />,
+        },
 
       ],
     },
@@ -116,6 +120,7 @@ export default function Router() {
         { path: "lecturerList", element: <LecturerListPage /> },
         { path: "lecturerProfile/:id", element: <LecturerProfile /> },
         { path: "studentProfile/:id", element: <StudentProfile /> },
+        { path: "course", element: <AdminCoursePage /> },
       ],
     },
   ]);
@@ -152,6 +157,7 @@ const StudentClassesAndAssignmentsPage = Loadable(
 )
 const DetailCourse = Loadable(lazy(() => import("../pages/Student/DetailCourse")))
 const DetailNotification = Loadable(lazy(() => import("../pages/Student/DetailNotification")))
+const StudentCoursePage = Loadable(lazy(() => import("../pages/Student/StudentCoursePage")));
 //TEACHER
 const TeacherDashboardPage = Loadable(lazy(() => import("../pages/teacher/TeacherDashboardPage")))
 const TeacherCoursePage = Loadable(lazy(() => import("../pages/teacher/TeacherCoursePage")))
@@ -173,3 +179,4 @@ const LecturerProfile = Loadable(
 const StudentProfile = Loadable(
   lazy(() => import("../pages/ministry/StudentProfileEditPage"))
 );
+const AdminCoursePage = Loadable(lazy(() => import("../pages/ministry/AdminCoursePage")));
