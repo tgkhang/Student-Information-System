@@ -9,11 +9,15 @@ import {
   Patch,
   Post,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { BaiKiemTraService } from './BaiKiemTra.service';
 import { UpdateTestDto } from './dto/update-Test.dto';
 import { CreateTestDto } from './dto/create-Test.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
 
 @Controller('api/BaiKiemTra')
 export class BaiKiemTraController {
@@ -105,5 +109,50 @@ export class BaiKiemTraController {
     const MaGV = req.user.username;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.BaiKiemTraService.deleteTestByMaKhoaHoc(MaKhoaHoc, _id, MaGV);
+  }
+
+  @Post('importTest')
+  @UseGuards(JWTAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: multer.memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 },
+      fileFilter: (req, file, callback) => {
+        const allowedMimeTypes = [
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+          'application/vnd.ms-excel', // .xls
+        ];
+
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          return callback(new Error('Chỉ chấp nhận file Excel!'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  async importExcel(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createTestdto: CreateTestDto,
+    @Request() req: any,
+  ): Promise<string> {
+    if (!file) {
+      throw new Error('Không có file được gửi lên!');
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (req.user.role != 'teacher') {
+      throw new UnauthorizedException(
+        'Không có quyền truy cập bài kiểm tra này',
+      );
+    }
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const MAGV = req.user.username;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      await this.BaiKiemTraService.importExcel(file, createTestdto, MAGV);
+      return 'File imported successfully!';
+    } catch (error) {
+      console.error('Lỗi khi xử lý file:', error);
+      throw new Error('Lỗi khi xử lý file');
+    }
   }
 }

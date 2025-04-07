@@ -11,17 +11,16 @@ import { AuthModule } from 'src/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { KhoaHoc, KhoaHocSchema } from 'src/schemas/KhoaHoc.schema';
 import { KhoaHocService } from 'src/KhoaHoc/KhoaHoc.service';
-import { UploadModule } from 'src/upload/upload.module';
 import { TaiLieu, TaiLieuSchema } from 'src/schemas/TaiLieu.schema';
 import { UploadService } from 'src/upload/upload.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name: ThongBaos.name, schema: ThongBaosSchema},
-      { name: KhoaHoc.name, schema: KhoaHocSchema }
-      , {name: TaiLieu.name, schema:TaiLieuSchema}
-      ]
-    ),
+    MongooseModule.forFeature([
+      { name: ThongBaos.name, schema: ThongBaosSchema },
+      { name: KhoaHoc.name, schema: KhoaHocSchema },
+      { name: TaiLieu.name, schema: TaiLieuSchema },
+    ]),
     SinhVienModule,
     GiangVienModule,
     AuthModule,
@@ -31,7 +30,13 @@ import { UploadService } from 'src/upload/upload.service';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [ThongBaoService, SinhVienService, GiangVienService, KhoaHocService, UploadService],
-  controllers: [ThongBaoController]
+  providers: [
+    ThongBaoService,
+    SinhVienService,
+    GiangVienService,
+    KhoaHocService,
+    UploadService,
+  ],
+  controllers: [ThongBaoController],
 })
 export class ThongBaosModule {}
