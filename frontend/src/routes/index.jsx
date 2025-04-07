@@ -121,10 +121,12 @@ export default function Router() {
         { path: "lecturerProfile/:id", element: <LecturerProfile /> },
         { path: "studentProfile/:id", element: <StudentProfile /> },
         { path: "course", element: <AdminCoursePage /> },
+        { path: "notification", element: <NotificationPage /> },
       ],
     },
   ]);
 }
+
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import("../pages/authentication/Login")));
@@ -180,3 +182,4 @@ const StudentProfile = Loadable(
   lazy(() => import("../pages/ministry/StudentProfileEditPage"))
 );
 const AdminCoursePage = Loadable(lazy(() => import("../pages/ministry/AdminCoursePage")));
+const NotificationPage = Loadable(lazy(() => import("../pages/ministry/NotificationPage")));
