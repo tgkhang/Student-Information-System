@@ -133,6 +133,9 @@ export default function Router() {
         { path: "course", element: <AdminCoursePage /> },
         { path: "notification", element: <NotificationPage /> },
         { path: "createBroadcastNotification", element: <BroadcastNotificationPage /> },
+        { path: "addCourse", element: <CourseAddingPage /> },
+        { path: "addStudent", element: <AddStudentPage />},
+        { path: "addTeacher", element: <AddTeacherPage /> },
       ],
     },
   ]);
@@ -198,3 +201,6 @@ const StudentProfile = Loadable(
 const AdminCoursePage = Loadable(lazy(() => import("../pages/ministry/AdminCoursePage")));
 const NotificationPage = Loadable(lazy(() => import("../pages/ministry/NotificationPage")));
 const BroadcastNotificationPage = Loadable(lazy(() => import("../pages/ministry/BroadCastNotificationPage")));
+const CourseAddingPage = Loadable(lazy(() => import("../pages/ministry/CourseAddingPage")));
+const AddStudentPage = Loadable(lazy(() => import("../pages/ministry/AddStudentPage")));
+const AddTeacherPage = Loadable(lazy(() => import("../pages/ministry/AddTeacherPage")));
