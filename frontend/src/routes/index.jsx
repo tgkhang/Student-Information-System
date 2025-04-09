@@ -54,8 +54,12 @@ export default function Router() {
       path: "student",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
-        { path: "*", element: <StudentDashboardPage /> },
+        { path: "", element: <StudentDashboardPage /> },
         { path: "dashboard", element: <StudentDashboardPage /> },
+        {
+          path: "*",
+          element: <Navigate to="/404" replace />,
+        },
         {
           path: "registration",
           element: <StudentClassRegistrationPage />,
@@ -80,6 +84,18 @@ export default function Router() {
           path : "quizResult/:id",
           element: <StudentViewQuiz />,
         },
+        {
+          path: "quiz/:id",
+          element: <StudentTakingQuiz />,
+        },
+        {
+          path: "attemptQuiz/:id",
+          element: <StudentAttemptQuiz />,
+        },
+        {
+          path: "calendar",
+          element: <StudentCalendar />,
+        }
       ],
     },
 
@@ -116,6 +132,7 @@ export default function Router() {
           path : "createQuiz/:id",
           element: <CreateQuiz />,
         },
+        
       ],
     },
     {
@@ -164,6 +181,9 @@ const DetailCourse = Loadable(lazy(() => import("../pages/Student/DetailCourse")
 const DetailNotification = Loadable(lazy(() => import("../pages/Student/DetailNotification")))
 const StudentSubmission = Loadable(lazy(() => import("../pages/Student/StudentSubmission")))
 const StudentViewQuiz = Loadable(lazy(() => import("../pages/Student/StudentViewQuiz")))
+const StudentTakingQuiz = Loadable(lazy(() => import("../pages/Student/StudentTakingQuiz")))
+const StudentAttemptQuiz = Loadable(lazy(() => import("../pages/Student/StudentAttemptQuiz")))
+const StudentCalendar = Loadable(lazy(() => import("../pages/Student/StudentCalendar")))
 //TEACHER
 const TeacherDashboardPage = Loadable(lazy(() => import("../pages/teacher/TeacherDashboardPage")))
 const TeacherCoursePage = Loadable(lazy(() => import("../pages/teacher/TeacherCoursePage")))
