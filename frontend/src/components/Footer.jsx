@@ -22,6 +22,9 @@ export default function Footer({}) {
             <Typography sx={{ color: "primary.lighter", fontSize: "0.8rem" }}>
                 Terms of Service
             </Typography>
+            <Box component="a" href="/faqs" sx={{ color: "primary.lighter", fontSize: "0.8rem", textDecoration: "none" }}>
+                FAQs
+            </Box>
             <Typography sx={{ color: "primary.lighter", fontSize: "0.8rem" }}>
                 LinkedIn
             </Typography>

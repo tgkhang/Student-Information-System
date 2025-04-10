@@ -16,6 +16,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
+import { ChevronLeft } from "@mui/icons-material";
 // components
 import Page from "../../components/Page";
 import Logo from "../../assets/Logo.svg";
@@ -115,22 +116,24 @@ export default function Login() {
     <Page title="Login">
       <BackgroundCircles></BackgroundCircles>
 
-      <Typography
+      <Box
         component="a"
-        href="/home"
+        href="/"
         sx={{
           position: "fixed",
           top: "0.25em",
           right: "0.75em",
           zIndex: 10,
           fontWeight: 600,
-          color: "white",
+          color: "primary.lighter",
           fontSize: "3.5rem",
           textDecoration: "none",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        &lt;
-      </Typography>
+        <ChevronLeft fontSize="inherit" />
+      </Box>
 
       <Container {...guestContainerLogin}>
         <motion.div

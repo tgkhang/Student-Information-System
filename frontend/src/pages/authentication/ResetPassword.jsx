@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 
 import { BackgroundCircles } from "../authentication/ForgotPassword";
 import Logo from "../../assets/Logo.svg";
+import { ChevronLeft } from "@mui/icons-material";
 import {
   guestContainerLogin,
   guestContainerLoginBox,
@@ -58,9 +59,9 @@ export default function ResetPassword() {
     <Page title="Reset Password">
       <BackgroundCircles></BackgroundCircles>
 
-      <Typography
+      <Box
         component="a"
-        href="/home"
+        href="/"
         sx={{
           position: "fixed",
           top: "0.25em",
@@ -70,10 +71,12 @@ export default function ResetPassword() {
           color: "primary.main",
           fontSize: "3.5rem",
           textDecoration: "none",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        &lt;
-      </Typography>
+        <ChevronLeft fontSize="inherit" />
+      </Box>
 
       <Container {...guestContainerLogin}>
 

@@ -109,7 +109,6 @@ const Login = Loadable(lazy(() => import("../pages/authentication/Login")));
 const ForgotPassword = Loadable(lazy(() => import("../pages/authentication/ForgotPassword")));
 const ResetPassword = Loadable(lazy(() => import("../pages/authentication/ResetPassword")));
 
-
 // MAINLAYOUT
 const MainLayout = Loadable(lazy(() => import("../layout/MainLayout")));
 
@@ -126,7 +125,6 @@ const ComingSoon = Loadable(lazy(() => import("../pages/ComingSoon")));
 const Maintenance = Loadable(lazy(() => import("../pages/Maintenance")));
 const FAQs = Loadable(lazy(() => import("../pages/Faqs")));
 
-
 // STUDENT
 const StudentDashboardPage = Loadable(lazy(() => import("../pages/Student/StudentDashboardPage")))
 const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistrationPage")))
@@ -135,11 +133,12 @@ const StudentClassesAndAssignmentsPage = Loadable(
 )
 const DetailCourse = Loadable(lazy(() => import("../pages/Student/DetailCourse")))
 
-//TEACHER
+// TEACHER
 const TeacherDashboardPage = Loadable(lazy(() => import("../pages/teacher/TeacherDashboardPage")))
 const TeacherCoursePage = Loadable(lazy(() => import("../pages/teacher/TeacherCoursePage")))
 const TeacherReviewPage = Loadable(lazy(() => import("../pages/teacher/TeacherReviewPage")))
 const DetailCourseTeacher = Loadable(lazy(() => import("../pages/teacher/DetailCourse")))
+
 // MINISTRY
 const StudentListPage = Loadable(
   lazy(() => import("../pages/ministry/StudentListPage"))

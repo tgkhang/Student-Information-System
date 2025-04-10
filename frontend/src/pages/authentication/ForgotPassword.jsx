@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Page from "../../components/Page";
 
 import Logo from "../../assets/Logo.svg";
+import { ChevronLeft } from "@mui/icons-material";
 
 import {
   guestContainerLogin,
@@ -96,9 +97,9 @@ export default function ForgotPassword() {
     <Page title="Forgot Password">
       <BackgroundCircles></BackgroundCircles>
 
-      <Typography
+      <Box
         component="a"
-        href="/home"
+        href="/"
         sx={{
           position: "fixed",
           top: "0.25em",
@@ -108,10 +109,12 @@ export default function ForgotPassword() {
           color: "primary.main",
           fontSize: "3.5rem",
           textDecoration: "none",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        &lt;
-      </Typography>
+        <ChevronLeft fontSize="inherit" />
+      </Box>
 
       <Container {...guestContainerLogin}>
         <motion.div
