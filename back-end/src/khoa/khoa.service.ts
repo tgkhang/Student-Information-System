@@ -6,8 +6,10 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Khoa, KhoaDocument } from 'src/schemas/Khoa.schema';
+
 import { updateKhoaDTO } from './dto/updateKhoa.dto';
 import { getFacultyListDTO } from './dto/getFacultyList.dto';
+
 
 @Injectable()
 export class KhoaService {

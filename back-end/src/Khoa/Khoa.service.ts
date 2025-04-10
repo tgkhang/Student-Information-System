@@ -9,6 +9,7 @@ import { Khoa, KhoaDocument } from 'src/schemas/Khoa.schema';
 import { updateKhoaDTO } from './dto/updateKhoa.dto';
 import { getFacultyListDTO } from './dto/getFacultyList.dto';
 
+
 @Injectable()
 export class KhoaService {
   constructor(
