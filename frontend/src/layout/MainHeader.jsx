@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 // @mui
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Box, 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
   IconButton,
   Avatar,
   Badge,
@@ -19,6 +19,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AuthContext } from "../contexts/JWTContext";
 import Logo from "../assets/Logo.svg";
 import NotificationList from "../components/Notifications";
+import ProfileMenu from "../components/ProfileMenu";
 
 const DRAWER_WIDTH = 280;
 
@@ -38,15 +39,34 @@ export default function MainHeader({ isCollapse }) {
   const { isAuthenticated = true } = useContext(AuthContext);
   const [hasNotifications, setHasNotifications] = useState(true);
   const [openNotifications, setOpenNotifications] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorNotif, setAnchorNotif] = useState(null);
+  const [openProfileMenu, setOpenProfileMenu] = useState(false);
+  const [anchorProfile, setAnchorProfile] = useState(null);
 
   const handleToggleNotifications = (event) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorNotif(event.currentTarget);
     setOpenNotifications((prev) => !prev);
+    setOpenProfileMenu(false); // close profile menu if open
   };
 
   const handleCloseNotifications = () => {
     setOpenNotifications(false);
+  };
+
+  const handleToggleProfileMenu = (event) => {
+    setAnchorProfile(event.currentTarget);
+    setOpenProfileMenu((prev) => !prev);
+    setOpenNotifications(false); // close notifications if open
+  };
+
+  const handleCloseProfileMenu = () => {
+    setOpenProfileMenu(false);
+  };
+
+  const user = {
+    name: "Lâm Tiến Huy",
+    username: "huytienlam",
+    avatar: "", // put avatar URL if available
   };
 
   return (
@@ -80,29 +100,59 @@ export default function MainHeader({ isCollapse }) {
                   {/* Notifications Dropdown */}
                   <Popper
                     open={openNotifications}
-                    anchorEl={anchorEl}
+                    anchorEl={anchorNotif}
                     placement="bottom-end"
-                    sx={{ zIndex: 1200, mt: 1 }}
+                    modifiers={[
+                      {
+                        name: "offset",
+                        options: {
+                          offset: [0, 8],
+                        },
+                      },
+                    ]}
+                    sx={{ zIndex: 1201 }}
                   >
-                    <Paper sx={{ width: "28rem", maxHeight: "20rem", overflowY: "auto", p: 1, boxShadow: 3 }}>
+                    <Paper sx={{ width: "28rem", maxHeight: "20rem", overflowY: "auto",
+                      p: 1, boxShadow: 3, borderRadius: 0,
+                      '&::-webkit-scrollbar': { width: '5px'},
+                      '&::-webkit-scrollbar-track': { backgroundColor: "primary.lighter" },
+                      '&::-webkit-scrollbar-thumb': { backgroundColor: "primary.main", borderRadius: '3px' },
+                      '&::-webkit-scrollbar-thumb:hover': { backgroundColor: "primary.dark" },
+                      }}>
                       <NotificationList />
                     </Paper>
                   </Popper>
                 </Box>
               </ClickAwayListener>
 
-              {/* Avatar */}
-              <Avatar
-                sx={{
-                  width: 40,
-                  height: 40,
-                  border: "2px solid primary.main",
-                  bgcolor: "primary.main",
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 18,
-                }}
-              />
+              {/* Avatar & Profile Menu */}
+              <ClickAwayListener onClickAway={handleCloseProfileMenu}>
+                <Box>
+                  <IconButton onClick={handleToggleProfileMenu}>
+                    <Avatar
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        border: "2px solid",
+                        borderColor: "primary.main",
+                        bgcolor: "primary.main",
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: 18
+                      }}
+                    >
+                      {user.name.charAt(0)}
+                    </Avatar>
+                  </IconButton>
+
+                  <ProfileMenu
+                    user={user}
+                    anchorEl={anchorProfile}
+                    open={openProfileMenu}
+                    onClose={handleCloseProfileMenu}
+                  />
+                </Box>
+              </ClickAwayListener>
             </Box>
           )}
         </Box>

@@ -45,8 +45,7 @@ export default function MainLayout() {
         onToggleSidebar={() => setCollapse(!isCollapse)}
       />
 
-      <MainStyle sx={{ height: "calc(100vh - 64px)", marginTop: "64px",
-                      marginRight: isCollapseRight ? `${DRAWER_WIDTH}px` : `${COLLAPSED_WIDTH_RIGHT}px` }}>
+      <MainStyle sx={{ height: "calc(100vh - 64px)", mt: 1.5, mr: 1.5, mb: 1.5}}>
         <Outlet />
       </MainStyle>
 

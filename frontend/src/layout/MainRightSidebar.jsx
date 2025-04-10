@@ -280,7 +280,6 @@ export default function MainRightSidebar({ isOpen, onToggle }) {
               duration: theme.transitions.duration.standard,
             }),
 
-            /* Custom scrollbar */
             '&::-webkit-scrollbar': {
               width: '5px',
             },

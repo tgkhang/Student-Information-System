@@ -62,7 +62,7 @@ export default function Router() {
           element: <StudentClassRegistrationPage />,
         },
         {
-          path: "classAndAssignment",
+          path: "schedule",
           element: <StudentClassesAndAssignmentsPage />,
         },
         {
