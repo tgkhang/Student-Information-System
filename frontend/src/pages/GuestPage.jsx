@@ -67,7 +67,7 @@ const benefits = [
   
   export function Testimonials() {
     const settings = {
-      dots: true,
+      dots: false,
       infinite: true,
       speed: 500,
       slidesToShow: 1,
@@ -111,7 +111,7 @@ export default function GuestPage() {
         <Container {...guestDefaultContainer}>
 
             <Container {...guestContainerHomeParts}
-                    sx={{ minHeight: "100vh", gap: "9em", pt: "4em", px: "6.5em",
+                    sx={{ minHeight: "100vh", gap: "7em", pt: "4em", px: "6.5em",
                         display: "flex", alignItems: "center", justifyContent: "space-between"}}>
 
                 {/* Left Section */}
@@ -119,7 +119,7 @@ export default function GuestPage() {
                             display: "flex", flexDirection: "column", justifyContent: "left", gap: "3.5em"}}>
                     <Box>
                         <motion.div variants={fadeInLeft(0)} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                            <Typography sx={{fontWeight: 400, fontSize: "4rem", lineHeight: 1.15, mb: "0.5em"}}>
+                            <Typography sx={{fontWeight: 400, fontSize: "3.75rem", lineHeight: 1.15, mb: "0.5em"}}>
                                 Where education meets innovation.
                             </Typography>
                         </motion.div>

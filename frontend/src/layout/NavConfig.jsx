@@ -16,10 +16,10 @@ const navTeacherConfig = [
   ];
 
 const navStudentConfig = [
-    { title: "Dashboard", path: "", icon: <Dashboard /> },
+    { title: "Dashboard", path: "/student/dashboard", icon: <Dashboard /> },
     { title: "Courses", path: "/", icon: <School /> },
-    { title: "Schedule", path: "/", icon: <Event /> },
-    { title: "Class Registration", path: "/", icon: <Assignment /> },
+    { title: "Schedule", path: "/student/schedule", icon: <Event /> },
+    { title: "Class Registration", path: "/student/registration", icon: <Assignment /> },
     { title: "Tuition Fee", path: "/", icon: <Payments /> },
     { title: "Settings", path: "/", icon: <Settings /> }
   ];

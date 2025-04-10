@@ -64,7 +64,7 @@ export default function FaqsHero() {
                   key={i}
                   custom={i}
                   variants={letterVariant}
-                  style={{ marginRight: char === " " ? "8px" : "2px" }}
+                  style={{ marginRight: char === " " ? "10px" : "0" }}
                 >
                   {char}
                 </motion.span>
