@@ -200,4 +200,30 @@ export class GiangVienService {
     }
     return giangVien.ThongBao || [];
   }
+
+  async markNotiAsRead(MaGV: string, thongBaoId: string): Promise<GiangVienDocument> {
+    const giangVien = await this.giangVienModel.findOne({ MaGV });
+    if (!giangVien) {
+      throw new NotFoundException('Không tìm thấy giảng viên.');
+    }
+  
+    const thongBaoExists = giangVien.ThongBao.some(
+      (noti) => noti.thongBaoId.toString() === thongBaoId,
+    );
+    if (!thongBaoExists) {
+      throw new NotFoundException('Thông báo không tồn tại trong danh sách của giảng viên.');
+    }
+  
+    const updatedGiangVien = await this.giangVienModel.findOneAndUpdate(
+      { MaGV, 'ThongBao.thongBaoId': new Types.ObjectId(thongBaoId) },
+      { $set: { 'ThongBao.$.isRead': true } },
+      { new: true },
+    );
+  
+    if (!updatedGiangVien) {
+      throw new NotFoundException('Không thể cập nhật giảng viên.');
+    }
+  
+    return updatedGiangVien;
+  }
 }
