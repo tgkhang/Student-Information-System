@@ -8,9 +8,9 @@ const ConfirmationDialog = ({ open, onClose, onConfirm, title, message }) => {
         <Typography>{message}</Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Hủy</Button>
+        <Button onClick={onClose}>Go back</Button>
         <Button onClick={onConfirm} color="error" variant="contained" autoFocus>
-          Xóa
+          Confirm
         </Button>
       </DialogActions>
     </Dialog>

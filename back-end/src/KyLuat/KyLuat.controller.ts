@@ -31,7 +31,7 @@ export class KyLuatController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'admin' && req.user.username !== mssv) {
       throw new UnauthorizedException(
-        'Không có quyền xem thông tin sinh viên này',
+        'Không có quyền xem thông tin kỷ luật của sinh viên này',
       );
     }
     return this.kyLuatService.getDisciplineByMSSV(mssv);
@@ -42,7 +42,9 @@ export class KyLuatController {
   async getDisciplineById(@Param('_id') _id: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'admin') {
-      throw new UnauthorizedException('Không có quyền truy cập kỷ luật');
+      throw new UnauthorizedException(
+        'Không có quyền truy cập thông tin kỷ luật này',
+      );
     }
 
     const discipline = await this.kyLuatService.getDisciplineById(_id);
@@ -52,7 +54,7 @@ export class KyLuatController {
     return discipline;
   }
 
-  @Get('get_discipline')
+  @Get('getListdiscipline')
   @UseGuards(JWTAuthGuard)
   async getListDisciplines(@Query() query: GetListDto, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -104,7 +106,7 @@ export class KyLuatController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'admin') {
       throw new UnauthorizedException(
-        'Không có quyền truy cập thông tin sinh viên này',
+        'Không có quyền truy cập thông tin ky luật của sinh viên này',
       );
     }
     return this.kyLuatService.deleteDisciplineByMSSV(mssv);

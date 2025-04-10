@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+
 // @mui
 import {
   AppBar,
@@ -10,18 +11,19 @@ import {
   Badge,
   ClickAwayListener,
   Popper,
-  Paper
+  Paper,
 } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 // icons
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import SchoolIcon from "@mui/icons-material/School";
+import PersonIcon from "@mui/icons-material/Person";
 // context
-import { AuthContext } from "../contexts/JWTContext";
+import useAuth from "../hooks/useAuth";
 import Logo from "../assets/Logo.svg";
 import NotificationList from "../components/Notifications";
 import ProfileMenu from "../components/ProfileMenu";
-
-const DRAWER_WIDTH = 280;
 
 const HeaderStyle = styled(AppBar)(({ theme }) => ({
   width: "100%",
@@ -35,8 +37,8 @@ const HeaderStyle = styled(AppBar)(({ theme }) => ({
   }),
 }));
 
-export default function MainHeader({ isCollapse }) {
-  const { isAuthenticated = true } = useContext(AuthContext);
+export default function MainHeader() {
+  const { isAuthenticated, user } = useAuth();
   const [hasNotifications, setHasNotifications] = useState(true);
   const [openNotifications, setOpenNotifications] = useState(false);
   const [anchorNotif, setAnchorNotif] = useState(null);
@@ -51,6 +53,17 @@ export default function MainHeader({ isCollapse }) {
 
   const handleCloseNotifications = () => {
     setOpenNotifications(false);
+  };
+  const role = "student";
+  const renderRoleIcon = () => {
+    if (role === "admin") {
+      return <AdminPanelSettingsIcon sx={{ color: "white" }} />;
+    } else if (role === "teacher") {
+      return <SchoolIcon sx={{ color: "white" }} />;
+    } else if (role === "student") {
+      return <PersonIcon sx={{ color: "white" }} />;
+    }
+    return null;
   };
 
   const handleToggleProfileMenu = (event) => {
@@ -79,21 +92,44 @@ export default function MainHeader({ isCollapse }) {
         </Typography>
 
         {/* Notification Bell & Avatar */}
-        <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: "1em" }}>
+        <Box
+          sx={{
+            display: { xs: "none", md: "flex" },
+            alignItems: "center",
+            gap: "1em",
+          }}
+        >
           {!isAuthenticated && (
             <Box sx={{ display: "flex", alignItems: "center", gap: "1em" }}>
-              
               {/* Notification Bell */}
               <ClickAwayListener onClickAway={handleCloseNotifications}>
                 <Box>
-                  <IconButton onClick={handleToggleNotifications} color="inherit">
+                  <IconButton
+                    onClick={handleToggleNotifications}
+                    color="inherit"
+                  >
                     <Badge
                       color="primary"
                       variant="dot"
                       invisible={!hasNotifications}
-                      sx={{ "& .MuiBadge-dot": { width: 10, height: 10, borderRadius: "50%", top: 4, right: 4 } }}
+                      sx={{
+                        "& .MuiBadge-dot": {
+                          width: 10,
+                          height: 10,
+                          borderRadius: "50%",
+                          top: 4,
+                          right: 4,
+                        },
+                      }}
                     >
-                      <NotificationsIcon sx={{ fontSize: "2rem", stroke: "gray", strokeWidth: "1.5", color: "transparent" }} />
+                      <NotificationsIcon
+                        sx={{
+                          fontSize: "2rem",
+                          stroke: "gray",
+                          strokeWidth: "1.5",
+                          color: "transparent",
+                        }}
+                      />
                     </Badge>
                   </IconButton>
 
@@ -110,7 +146,7 @@ export default function MainHeader({ isCollapse }) {
                         },
                       },
                     ]}
-                    sx={{ zIndex: 1201 }}
+                    sx={{ zIndex: 1501 }}
                   >
                     <Paper sx={{ width: "28rem", maxHeight: "20rem", overflowY: "auto",
                       p: 1, boxShadow: 3, borderRadius: 0,

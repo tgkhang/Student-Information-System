@@ -1,8 +1,7 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class updateKhoaDTO{
-
-    @IsNotEmpty()
-    @IsString()
-    TenKhoa: string
+export class updateKhoaDTO {
+  @IsNotEmpty()
+  @IsString()
+  TenKhoa: string;
 }

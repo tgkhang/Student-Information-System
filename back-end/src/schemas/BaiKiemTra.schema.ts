@@ -8,8 +8,14 @@ export class DeThi {
   @Prop()
   CauHoi: string;
 
+  @Prop([String])
+  DapAn: string[];
+
+  @Prop([Number])
+  DapAnDung: number[];
+
   @Prop()
-  DapAn: string;
+  Giaithich: string;
 }
 
 @Schema()
@@ -29,7 +35,7 @@ export class BaiKiemTra {
   @Prop({ required: true })
   TenBaiKiemTra: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   MoTa: string;
 
   @Prop({ type: Types.ObjectId })
@@ -41,7 +47,7 @@ export class BaiKiemTra {
   @Prop()
   ThoiGianLam: number;
 
-  @Prop({ type: DanhGia })
+  @Prop({ type: DanhGia, default: null })
   DanhGia: DanhGia;
 
   @Prop({ type: Date })

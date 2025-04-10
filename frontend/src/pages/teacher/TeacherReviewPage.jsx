@@ -3,7 +3,7 @@
 import * as React from "react";
 import Page from "../../components/Page";
 import Header from "../../components/Header";
-import classesData from "./mockdata/classData";
+import classesData from "../mockdata/courseData";
 import TeacherNavigationDrawer from "./TeacherNavigationDrawer";
 import CourseCardsView from "../../components/CourseCardsView";
 import {

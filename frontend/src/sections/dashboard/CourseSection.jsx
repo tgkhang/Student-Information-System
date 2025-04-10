@@ -20,6 +20,7 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   Chip,
+  Divider,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -30,6 +31,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import QuizIcon from '@mui/icons-material/Quiz';
 
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 // Custom styles for Moodle-like appearance
@@ -72,11 +74,19 @@ const moodleStyles = {
   },
   listItem: {
     borderLeft: '4px solid transparent',
+    cursor: 'pointer',
     '&:hover': {
       borderLeft: '4px solid #1e88e5',
       backgroundColor: 'rgba(30, 136, 229, 0.04)',
     },
     padding: '12px 16px',
+  },
+  linkItem: {
+    cursor: 'pointer',
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'underline',
+    },
   },
   addButton: {
     backgroundColor: '#4caf50',
@@ -101,6 +111,22 @@ const moodleStyles = {
     height: '24px',
     marginLeft: '8px',
   },
+  dividerContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '24px 0',
+  },
+  divider: {
+    flexGrow: 1,
+  },
+  dividerText: {
+    margin: '0 16px',
+    color: '#757575',
+  },
+  uploadButton: {
+    margin: '8px',
+    textTransform: 'none',
+  },
 };
 
 const getResourceIcon = (type) => {
@@ -115,6 +141,8 @@ const getResourceIcon = (type) => {
       return <LinkIcon />;
     case 'notification':
       return <NotificationsIcon />;
+    case 'quiz':
+      return <QuizIcon />;
     default:
       return <DescriptionIcon />;
   }
@@ -131,9 +159,10 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [newItemText, setNewItemText] = useState('');
-  const [newItemType, setNewItemType] = useState('pdf');
+  const [newItemType, setNewItemType] = useState('link');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
   
   const handleDeleteClick = (item) => {
     setItemToDelete(item);
@@ -148,7 +177,27 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
   const handleAddItem = () => {
     if (newItemText.trim()) {
       const newId = Math.max(...items.map(item => item.id), 0) + 1;
-      setItems([...items, { id: newId, content: newItemText, type: newItemType }]);
+      setItems([...items, { id: newId, content: newItemText, type: newItemType, url: linkUrl }]);
+      setNewItemText('');
+      setLinkUrl('');
+      setAddDialogOpen(false);
+    }
+  };
+  
+  const handleAddLink = () => {
+    if (newItemText.trim() && linkUrl.trim()) {
+      const newId = Math.max(...items.map(item => item.id), 0) + 1;
+      setItems([...items, { id: newId, content: newItemText, type: 'link', url: linkUrl }]);
+      setNewItemText('');
+      setLinkUrl('');
+      setAddDialogOpen(false);
+    }
+  };
+  
+  const handleAddResource = (type) => {
+    if (newItemText.trim()) {
+      const newId = Math.max(...items.map(item => item.id), 0) + 1;
+      setItems([...items, { id: newId, content: newItemText, type: type }]);
       setNewItemText('');
       setAddDialogOpen(false);
     }
@@ -186,15 +235,24 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
             <ListItem 
               key={item.id} 
               divider={index < items.length - 1}
-              sx={moodleStyles.listItem}
+              sx={{
+                ...moodleStyles.listItem,
+                ...(item.type === 'link' && moodleStyles.linkItem)
+              }}
               button
-              component="a"
-              
+              component={item.type === 'link' ? "a" : "div"}
+              href={item.type === 'link' ? item.url : undefined}
+              target={item.type === 'link' ? "_blank" : undefined}
             >
               <ListItemIcon>
                 {getResourceIcon(item.type)}
               </ListItemIcon>
-              <ListItemText primary={item.content} />
+              <ListItemText 
+                primary={item.content} 
+                primaryTypographyProps={{
+                  style: item.type === 'link' ? { textDecoration: 'underline' } : {}
+                }}
+              />
               
               {isTeacherMode && (
                 <ListItemSecondaryAction>
@@ -233,8 +291,15 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
         )}
       </AccordionDetails>
       
-      <ConfirmationDialog title={"Xác nhận xóa"} message={"Bạn có chắc chắn muốn xóa tài liệu này?"} open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} onConfirm={handleConfirmDelete} />
-      {/* Add Item Dialog */}
+      <ConfirmationDialog 
+        title={"Xác nhận xóa"} 
+        message={"Bạn có chắc chắn muốn xóa tài liệu này?"} 
+        open={deleteDialogOpen} 
+        onClose={() => setDeleteDialogOpen(false)} 
+        onConfirm={handleConfirmDelete} 
+      />
+      
+      {/* Add Item Dialog - Redesigned */}
       <Dialog
         open={addDialogOpen}
         onClose={() => setAddDialogOpen(false)}
@@ -254,47 +319,79 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
               onChange={(e) => setNewItemText(e.target.value)}
             />
           </Box>
-          <Box sx={{ mt: 3, mb: 1 }}>
+          
+          {/* Link Section */}
+          <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle2" gutterBottom>
-              Loại tài liệu:
+              Thêm đường liên kết:
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-              <Chip 
-                icon={<InsertDriveFileIcon />} 
-                label="PDF" 
-                onClick={() => setNewItemType('pdf')}
-                color={newItemType === 'pdf' ? 'primary' : 'default'}
-                variant={newItemType === 'pdf' ? 'filled' : 'outlined'}
-              />
-              <Chip 
-                icon={<YouTubeIcon />} 
-                label="Video" 
-                onClick={() => setNewItemType('video')}
-                color={newItemType === 'video' ? 'primary' : 'default'}
-                variant={newItemType === 'video' ? 'filled' : 'outlined'}
-              />
-              <Chip 
-                icon={<AssignmentIcon />} 
-                label="Bài tập" 
-                onClick={() => setNewItemType('assignment')}
-                color={newItemType === 'assignment' ? 'primary' : 'default'}
-                variant={newItemType === 'assignment' ? 'filled' : 'outlined'}
-              />
-              <Chip 
-                icon={<LinkIcon />} 
-                label="Liên kết" 
-                onClick={() => setNewItemType('link')}
-                color={newItemType === 'link' ? 'primary' : 'default'}
-                variant={newItemType === 'link' ? 'filled' : 'outlined'}
-              />
-            </Box>
+            <TextField
+              margin="dense"
+              label="Nhập URL"
+              fullWidth
+              variant="outlined"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              placeholder="https://..."
+              InputProps={{
+                startAdornment: <LinkIcon color="action" sx={{ mr: 1 }} />,
+              }}
+            />
+            
+            <Button 
+              variant="contained" 
+              color="primary" 
+              fullWidth 
+              sx={{ mt: 1 }}
+              disabled={!newItemText.trim() || !linkUrl.trim()}
+              onClick={handleAddLink}
+            >
+              Thêm liên kết
+            </Button>
+          </Box>
+          
+          {/* Divider */}
+          <Box sx={moodleStyles.dividerContainer}>
+            <Divider sx={moodleStyles.divider} />
+            <Typography variant="body2" sx={moodleStyles.dividerText}>HOẶC</Typography>
+            <Divider sx={moodleStyles.divider} />
+          </Box>
+          
+          {/* Resource Buttons */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Button
+              variant="outlined"
+              startIcon={<InsertDriveFileIcon />}
+              sx={moodleStyles.uploadButton}
+              disabled={!newItemText.trim()}
+              onClick={() => handleAddResource('pdf')}
+            >
+              Tải tài liệu PDF
+            </Button>
+            
+            <Button
+              variant="outlined"
+              startIcon={<QuizIcon />}
+              sx={moodleStyles.uploadButton}
+              disabled={!newItemText.trim()}
+              onClick={() => handleAddResource('quiz')}
+            >
+              Tạo trắc nghiệm
+            </Button>
+            
+            <Button
+              variant="outlined"
+              startIcon={<AssignmentIcon />}
+              sx={moodleStyles.uploadButton}
+              disabled={!newItemText.trim()}
+              onClick={() => handleAddResource('assignment')}
+            >
+              Tạo bài nộp
+            </Button>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAddDialogOpen(false)}>Hủy</Button>
-          <Button onClick={handleAddItem} color="primary" variant="contained">
-            Thêm
-          </Button>
         </DialogActions>
       </Dialog>
     </Accordion>
@@ -302,13 +399,11 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
 };
 
 const CourseSection = ({isTeacherMode}) => {
-  
   console.log('isTeacherMode', isTeacherMode);
   return (
     <Paper elevation={0} sx={moodleStyles.mainContainer}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" fontWeight="bold">Nội dung khóa học</Typography>
-
       </Box>
       
       <CollapsibleSection 

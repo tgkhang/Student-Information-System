@@ -41,22 +41,25 @@ export default function Router() {
         { path: "maintenance", element: <Maintenance /> },
         { path: "500", element: <Page500 /> },
         { path: "404", element: <Page404 /> },
-        { path: "*", element: <GuestPage /> },
+        { path: "", element: <GuestPage /> },
         { path: "faqs", element: <FAQs /> },
-
         { path: "home", element: <GuestPage />},
         { path: "about", element: <AboutUs /> },
         { path: "contact", element: <Contact /> },
-        { path: "services", element: <Services /> }
-        
+        { path: "services", element: <Services /> },
+        { path: "*", element: <Navigate to="/404" replace /> },
       ],
     },
     {
       path: "student",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
-        { path: "*", element: <StudentDashboardPage /> },
+        { path: "", element: <StudentDashboardPage /> },
         { path: "dashboard", element: <StudentDashboardPage /> },
+        {
+          path: "*",
+          element: <Navigate to="/404" replace />,
+        },
         {
           path: "registration",
           element: <StudentClassRegistrationPage />,
@@ -68,6 +71,34 @@ export default function Router() {
         {
           path : "course/:id",
           element: <DetailCourse />,
+        },
+        {
+          path : "notification/:id",
+          element: <DetailNotification />,
+        },
+        {
+          path : "course",
+          element: <StudentCoursePage />,
+        },
+        {
+          path : "submission/:id",
+          element: <StudentSubmission />,
+        },
+        {
+          path : "quizResult/:id",
+          element: <StudentViewQuiz />,
+        },
+        {
+          path: "quiz/:id",
+          element: <StudentTakingQuiz />,
+        },
+        {
+          path: "attemptQuiz/:id",
+          element: <StudentAttemptQuiz />,
+        },
+        {
+          path: "calendar",
+          element: <StudentCalendar />,
         }
       ],
     },
@@ -88,7 +119,24 @@ export default function Router() {
         {
           path : "course/:id",
           element: <DetailCourseTeacher />,
-        }
+        },
+        {
+          path : "notification/:id",
+          element: <CreateNotification />,
+        },
+        {
+          path : "deadline/:id",
+          element: <CreateDeadline />,
+        },
+        {
+          path : "upload/:id",
+          element: <UploadMaterials />,
+        },
+        {
+          path : "createQuiz/:id",
+          element: <CreateQuiz />,
+        },
+        
       ],
     },
     {
@@ -99,10 +147,17 @@ export default function Router() {
         { path: "lecturerList", element: <LecturerListPage /> },
         { path: "lecturerProfile/:id", element: <LecturerProfile /> },
         { path: "studentProfile/:id", element: <StudentProfile /> },
+        { path: "course", element: <AdminCoursePage /> },
+        { path: "notification", element: <NotificationPage /> },
+        { path: "createBroadcastNotification", element: <BroadcastNotificationPage /> },
+        { path: "addCourse", element: <CourseAddingPage /> },
+        { path: "addStudent", element: <AddStudentPage />},
+        { path: "addTeacher", element: <AddTeacherPage /> },
       ],
     },
   ]);
 }
+
 
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import("../pages/authentication/Login")));
@@ -132,12 +187,22 @@ const StudentClassesAndAssignmentsPage = Loadable(
   lazy(() => import("../pages/Student/StudentClassesAndAssignmentsPage")),
 )
 const DetailCourse = Loadable(lazy(() => import("../pages/Student/DetailCourse")))
-
-// TEACHER
+const DetailNotification = Loadable(lazy(() => import("../pages/Student/DetailNotification")))
+const StudentCoursePage = Loadable(lazy(() => import("../pages/Student/StudentCoursePage")));
+const StudentSubmission = Loadable(lazy(() => import("../pages/Student/StudentSubmission")))
+const StudentViewQuiz = Loadable(lazy(() => import("../pages/Student/StudentViewQuiz")))
+const StudentTakingQuiz = Loadable(lazy(() => import("../pages/Student/StudentTakingQuiz")))
+const StudentAttemptQuiz = Loadable(lazy(() => import("../pages/Student/StudentAttemptQuiz")))
+const StudentCalendar = Loadable(lazy(() => import("../pages/Student/StudentCalendar")))
+//TEACHER
 const TeacherDashboardPage = Loadable(lazy(() => import("../pages/teacher/TeacherDashboardPage")))
 const TeacherCoursePage = Loadable(lazy(() => import("../pages/teacher/TeacherCoursePage")))
 const TeacherReviewPage = Loadable(lazy(() => import("../pages/teacher/TeacherReviewPage")))
 const DetailCourseTeacher = Loadable(lazy(() => import("../pages/teacher/DetailCourse")))
+const CreateNotification = Loadable(lazy(() => import("../pages/teacher/CreateNotification")))
+const CreateDeadline = Loadable(lazy(() => import("../pages/teacher/CreateDeadline")))
+const UploadMaterials = Loadable(lazy(() => import("../pages/teacher/UpLoadMaterial")))
+const CreateQuiz = Loadable(lazy(() => import("../pages/teacher/CreateQuiz")))
 
 // MINISTRY
 const StudentListPage = Loadable(
@@ -152,3 +217,9 @@ const LecturerProfile = Loadable(
 const StudentProfile = Loadable(
   lazy(() => import("../pages/ministry/StudentProfileEditPage"))
 );
+const AdminCoursePage = Loadable(lazy(() => import("../pages/ministry/AdminCoursePage")));
+const NotificationPage = Loadable(lazy(() => import("../pages/ministry/NotificationPage")));
+const BroadcastNotificationPage = Loadable(lazy(() => import("../pages/ministry/BroadCastNotificationPage")));
+const CourseAddingPage = Loadable(lazy(() => import("../pages/ministry/CourseAddingPage")));
+const AddStudentPage = Loadable(lazy(() => import("../pages/ministry/AddStudentPage")));
+const AddTeacherPage = Loadable(lazy(() => import("../pages/ministry/AddTeacherPage")));
