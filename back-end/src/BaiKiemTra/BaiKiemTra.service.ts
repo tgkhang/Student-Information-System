@@ -11,14 +11,18 @@ import { BaiKiemTra, BaiKiemTraDocument } from '../schemas/BaiKiemTra.schema';
 import { GiangVien, GiangVienDocument } from 'src/schemas/GiangVien.schema';
 import { UpdateTestDto } from './dto/update-Test.dto';
 import { CreateTestDto } from './dto/create-Test.dto';
+import * as XLSX from 'xlsx';
+import { CreateDeThiDto } from './dto/de.thi.dto';
 
 @Injectable()
 export class BaiKiemTraService {
   constructor(
     @InjectModel(SinhVien.name) private sinhVienModel: Model<SinhVienDocument>,
-    @InjectModel(GiangVien.name) private giangVienModel: Model<GiangVienDocument>,
+    @InjectModel(GiangVien.name)
+    private giangVienModel: Model<GiangVienDocument>,
     @InjectModel(KhoaHoc.name) private khoaHocModel: Model<KhoaHocDocument>,
-    @InjectModel(BaiKiemTra.name) private BaiKiemTraModel: Model<BaiKiemTraDocument>,
+    @InjectModel(BaiKiemTra.name)
+    private BaiKiemTraModel: Model<BaiKiemTraDocument>,
   ) {}
 
   async getTestByKhoaHocAndMSSV(KhoaHocID: string, MA: string) {
@@ -77,7 +81,7 @@ export class BaiKiemTraService {
       })
       .exec();
     if (!Test) {
-      throw new NotFoundException('Phiếu điểm danh không tồn tại');
+      throw new NotFoundException('Bài Kiểm tra không tồn tại không tồn tại');
     }
     return Test;
   }
@@ -178,5 +182,72 @@ export class BaiKiemTraService {
       _id as unknown as Types.ObjectId,
     ).exec();
     return result;
+  }
+
+  async importExcel(
+    file: Express.Multer.File,
+    createTestDto: CreateTestDto,
+    MaGV: string,
+  ): Promise<void> {
+    const khoaHoc = await this.khoaHocModel
+      .findOne({ _id: createTestDto.KhoaHocID })
+      .exec();
+    if (!khoaHoc) {
+      throw new NotFoundException('Khóa học không tồn tại');
+    }
+    const giangvienid = await this.giangVienModel.findOne({ MaGV });
+
+    if (!giangvienid) {
+      throw new NotFoundException(`Giảng viên không dạy khóa học này`);
+    }
+    if (
+      khoaHoc.GiangVienID.toString() !==
+      (giangvienid._id as Types.ObjectId).toString()
+    ) {
+      throw new UnauthorizedException(
+        'Chỉ giảng viên của khóa học này mới có thể thêm bài kiểm tra',
+      );
+    }
+
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(sheet);
+    const deThiArray: CreateDeThiDto[] = [];
+
+    data.forEach((row: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const dapAn3 = row['DapAn3'] ?? null;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const dapAn4 = row['DapAn4'] ?? null;
+
+      const deThi: CreateDeThiDto = {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        CauHoi: row['CauHoi(string)'],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        DapAn: [
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          row['CauTraLoi1'],
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          row['CauTraLoi2'],
+          dapAn3,
+          dapAn4,
+        ],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        DapAnDung: [row['DapAn1'], row['DapAn2'], row['DapAn3'], row['DapAn4']],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        Giaithich: row['CauGiaiThich'] || '',
+      };
+
+      deThiArray.push(deThi);
+    });
+
+    console.log(deThiArray);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const baiKiemTra = new this.BaiKiemTraModel({
+      ...createTestDto,
+      DeThi: deThiArray,
+    });
+    await baiKiemTra.save();
+
   }
 }

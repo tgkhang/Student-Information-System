@@ -51,7 +51,9 @@ export class LichHocController {
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'admin') {
-      throw new UnauthorizedException('Không có quyền thêm KL cho sinh viên');
+      throw new UnauthorizedException(
+        'Không có quyền thêm lịch học cho sinh viên',
+      );
     }
     const newSchedule =
       await this.LichHocService.addSchedule(createScheduleDto);
@@ -68,7 +70,7 @@ export class LichHocController {
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'admin') {
-      throw new UnauthorizedException('Không có quyền cập nhật kỷ luật');
+      throw new UnauthorizedException('Không có quyền cập nhật lịch học');
     }
 
     return this.LichHocService.updateSchedule(_id, updateScheduleDto);
@@ -79,9 +81,7 @@ export class LichHocController {
   deleteSchedule(@Param('mssv') mssv: string, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'admin') {
-      throw new UnauthorizedException(
-        'Không có quyền truy cập thông tin sinh viên này',
-      );
+      throw new UnauthorizedException('Không có quyền xóa thông tin này');
     }
     return this.LichHocService.deleteScheduleByMSSV(mssv);
   }
