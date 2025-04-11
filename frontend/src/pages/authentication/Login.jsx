@@ -28,7 +28,8 @@ import {
   guestLoginSection,
   guestRoundBlueButton,
 } from "../../assets/styles/guest";
-
+import { loginApi} from "../../utils/api";
+import { useSnackbar } from "notistack"
 // ----------------------------------------------------------------------
 
 export function BackgroundCircles() {
@@ -83,11 +84,9 @@ export function BackgroundCircles() {
 
 const loginSchema = Yup.object().shape({
   username: Yup.string()
-    .required("Username is required")
-    .min(4, "Username must be at least 4 characters"),
+    .required("Username is required"),
   password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+    .required("Password is required"),
 });
 
 // ----------------------------------------------------------------------
@@ -95,6 +94,7 @@ const loginSchema = Yup.object().shape({
 export default function Login() {
   const isDesktop = useResponsive("up", "lg");
   const { login } = useContext(AuthContext);
+  const { enqueueSnackbar } = useSnackbar();
   const {
     register,
     handleSubmit,
@@ -107,9 +107,18 @@ export default function Login() {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Login data:", data);
-    login(data.username, data.password);
+  const onSubmit = async (data) => {
+    try {
+      const response = await loginApi({username: data.username, password: data.password});
+      console.log("Login response:", response);
+        console.log("Login successful:", response.data);
+        login(response.data.accessToken, response.data.user);
+        window.location.href = `/${response.data.user.role}`;
+    } catch (error) {
+      enqueueSnackbar(error.response.data.message, { variant: "error" });
+      console.error("Login error:", error);
+      // Handle error (e.g., show a notification)
+    }
   };
 
   return (

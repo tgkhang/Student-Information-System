@@ -2,7 +2,6 @@ import { createContext, useEffect, useReducer } from 'react';
 // utils
 import { isValidToken, setSession } from '../utils/jwt';
 import axiosInstance from '../utils/axios';
-import { loginApi } from '../utils/api';
 
 // ----------------------------------------------------------------------
 
@@ -58,12 +57,14 @@ function AuthProvider({ children }) {
     const initialize = async () => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
-
+        console.log('accessToken', accessToken);
+        
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
 
-          const response = await axiosInstance.get('/account/my-account');
+          const response = await axiosInstance.get(`/auth/get-account-by-token?accessToken=${accessToken}`);
           const user = response.data;
+          console.log(response)
           dispatch({
             type: 'INITIALIZE',
             payload: {
@@ -95,14 +96,8 @@ function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  const login = async (email, password) => {
-    const response = await loginApi({
-      username: email,
-      password,
-    });
-
-    const { accessToken, user } = response.data;
-
+  const login = async (accessToken, user) => {
+    console.log(accessToken, user);
     setSession(accessToken);
     dispatch({
       type: 'LOGIN',

@@ -16,23 +16,23 @@ export default function AuthGuard({ children }) {
   const { pathname } = useLocation();
   const [requestedLocation, setRequestedLocation] = useState(null);
 
-//   if (!isInitialized) {
-//     return <LoadingScreen />;
-//   }
-//   if (!isAuthenticated) {
-//     if (pathname !== requestedLocation) {
-//       setRequestedLocation(pathname);
-//     }
-//     return <Login />;
-//   }
+  if (!isInitialized) {
+    return <LoadingScreen />;
+  }
+  if (!isAuthenticated) {
+    if (pathname !== requestedLocation) {
+      setRequestedLocation(pathname);
+    }
+    return <Login />;
+  }
 
-//   if (requestedLocation && pathname.includes(user?.role.toLowerCase())) {
-//     setRequestedLocation(null);
-//     return <Navigate to={requestedLocation} />;
-//   }
-//   else if (!pathname.includes(user?.role.toLowerCase())) {
-//     return <Page404 />;
-//   }
+  if (requestedLocation && pathname.includes(user?.role.toLowerCase())) {
+    setRequestedLocation(null);
+    return <Navigate to={requestedLocation} />;
+  }
+  else if (!pathname.includes(user?.role.toLowerCase())) {
+    return <Page404 />;
+  }
 
   return <>{children}</>;
 }

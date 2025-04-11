@@ -6,11 +6,13 @@ import ThemeProvider from './theme';
 import ThemeColorPresets from './components/ThemeColorPresets';
 // components
 import NotistackProvider from "./components/NotistackProvider";
+import { AuthProvider } from "./contexts/JWTContext";
 
 export default function App() {
   return (
     <ThemeProvider>
       <HelmetProvider>
+        <AuthProvider>
         <ThemeColorPresets>
         <BrowserRouter>
           <NotistackProvider>
@@ -18,6 +20,7 @@ export default function App() {
           </NotistackProvider>
         </BrowserRouter>
         </ThemeColorPresets>
+        </AuthProvider>
       </HelmetProvider>
     </ThemeProvider>
   );

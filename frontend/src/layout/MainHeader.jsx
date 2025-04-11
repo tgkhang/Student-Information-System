@@ -76,17 +76,11 @@ export default function MainHeader() {
     setOpenProfileMenu(false);
   };
 
-  const user = {
-    name: "Lâm Tiến Huy",
-    username: "huytienlam",
-    avatar: "", // put avatar URL if available
-  };
-
   return (
     <HeaderStyle position="fixed">
       <Toolbar sx={{ px: { xs: 2, sm: 3.5 } }}>
         {/* Logo */}
-        <Box component="img" src={Logo} alt="Logo" sx={{ width: 40, mr: 2 }} />
+        <Box component="img" src={Logo} alt="Logo" sx={{ width: 40, mr: 2 }} onClick={() => {window.location.href="/"}}/>
         <Typography sx={{ flexGrow: 1, fontWeight: 700, fontSize: "1.5rem" }}>
           InfoStudia
         </Typography>
@@ -99,7 +93,7 @@ export default function MainHeader() {
             gap: "1em",
           }}
         >
-          {!isAuthenticated && (
+          {isAuthenticated && (
             <Box sx={{ display: "flex", alignItems: "center", gap: "1em" }}>
               {/* Notification Bell */}
               <ClickAwayListener onClickAway={handleCloseNotifications}>
@@ -177,7 +171,7 @@ export default function MainHeader() {
                         fontSize: 18
                       }}
                     >
-                      {user.name.charAt(0)}
+                      {user?.name?.charAt(0) || ""}
                     </Avatar>
                   </IconButton>
 

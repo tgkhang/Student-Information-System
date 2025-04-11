@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { Paper, Popper, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 
 const menuItems = [
-  { label: "Profile", path: "/student/dashboard" },
-  { label: "Calendar", path: "/student/calendar" },
-  { label: "Academic Results", path: "/student/dashboard" },
-  { label: "Subject Scores", path: "/student/dashboard" },
+  // { label: "Profile", path: "/student/dashboard" },
+  // { label: "Calendar", path: "/student/calendar" },
+  // { label: "Academic Results", path: "/student/dashboard" },
+  // { label: "Subject Scores", path: "/student/dashboard" },
   { label: "Log Out", path: "/" },
 ];
 
@@ -34,6 +34,7 @@ export default function ProfileMenu({ user, anchorEl, open, onClose }) {
             <ListItem key={index} disablePadding>
               <ListItemButton
                 onClick={() => {
+                  localStorage.removeItem("accessToken");
                   navigate(item.path);
                   onClose();
                 }}

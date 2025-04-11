@@ -249,17 +249,24 @@ function AssignmentsSection() {
 }
 
 
-// ---------------- MAIN RIGHT SIDEBAR ------------------\
+// ---------------- MAIN RIGHT SIDEBAR ------------------
 
-export default function MainRightSidebar({ isOpen, onToggle }) {
+export default function MainRightSidebar() {
   const theme = useTheme();
-
+  const [isOpen, setIsOpen] = useState(false);
+  const onToggle = () => {
+    setIsOpen(!isOpen);
+  };
   return (
     <>
       <Drawer
-        variant="persistent"
+        variant="temporary"
         anchor="right"
         open={isOpen}
+        onClose={() => setIsOpen(false)}
+        ModalProps={{
+          keepMounted: true, // Better performance on mobile
+        }}
         sx={{
           width: DRAWER_WIDTH,
           flexShrink: 0,
@@ -270,7 +277,7 @@ export default function MainRightSidebar({ isOpen, onToggle }) {
             position: 'fixed',
             height: 'calc(100vh - 64px)',
             top: '64px',
-            boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.25)',
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
@@ -279,6 +286,7 @@ export default function MainRightSidebar({ isOpen, onToggle }) {
             transition: theme.transitions.create('width', {
               duration: theme.transitions.duration.standard,
             }),
+            zIndex: 1500, // Higher z-index to ensure it appears on top
 
             '&::-webkit-scrollbar': {
               width: '5px',
@@ -343,8 +351,8 @@ export default function MainRightSidebar({ isOpen, onToggle }) {
           sx={{
             position: 'fixed',
             top: '4em',
-            right: isOpen ? DRAWER_WIDTH : 0,
-            zIndex: 1200,
+            right: 0, // Always positioned at the edge of the screen
+            zIndex: 1600, // Higher than the drawer to ensure it's always clickable
             backgroundColor: 'primary.main',
             borderRadius: '30px 0 0 30px',
             width: "2.5rem",
@@ -352,9 +360,10 @@ export default function MainRightSidebar({ isOpen, onToggle }) {
             '&:hover': {
               backgroundColor: 'primary.dark',
             },
-            transition: theme.transitions.create('right', {
+            transition: theme.transitions.create(['transform'], {
               duration: theme.transitions.duration.shortest,
             }),
+            transform: isOpen ? 'translateX(0)' : 'translateX(0)', // No translation needed
           }}
         >
           {isOpen ? (

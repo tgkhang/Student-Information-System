@@ -140,7 +140,7 @@ export default function Router() {
       ],
     },
     {
-      path: "ministry",
+      path: "admin",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
         { path: "studentList", element: <StudentListPage /> },

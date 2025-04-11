@@ -7,12 +7,8 @@ import { Box } from "@mui/material";
 import MainHeader from "./MainHeader";
 import MainSideBar from "./MainSideBar";
 import MainRightSidebar from "./MainRightSidebar";
-
+import useAuth from "../hooks/useAuth";
 // ----------------------------------------------------------------------
-
-const DRAWER_WIDTH = 250;
-const COLLAPSED_WIDTH_LEFT = 85;
-const COLLAPSED_WIDTH_RIGHT = 0;
 
 const MainStyle = styled("main")(({ theme }) => ({
   flexGrow: 1,
@@ -29,8 +25,7 @@ const MainStyle = styled("main")(({ theme }) => ({
 
 export default function MainLayout() {
   const [isCollapse, setCollapse] = useState(true);
-  const [isCollapseRight, setCollapseRight] = useState(true);
-
+  const { user } = useAuth();
   return (
     <Box
       sx={{
@@ -45,14 +40,11 @@ export default function MainLayout() {
         onToggleSidebar={() => setCollapse(!isCollapse)}
       />
 
-      <MainStyle sx={{ height: "calc(100vh - 64px)", mt: 1.5, mr: 1.5, mb: 1.5}}>
+      <MainStyle sx={{ height: "calc(100vh - 64px)"}}>
         <Outlet />
       </MainStyle>
-
-      <MainRightSidebar
-        isOpen={isCollapseRight}
-        onToggle={() => setCollapseRight(!isCollapseRight)}
-      />
+      {/* {user && user.role === "student" && ( <MainRightSidebar/>)} */}
+     <MainRightSidebar />
 
     </Box>
   );
