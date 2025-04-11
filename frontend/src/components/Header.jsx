@@ -64,8 +64,7 @@ export default function Header() {
 
           {/* Login Button */}
           <Button
-            component={Link}
-            to="/auth/login"
+            onClick={() => {window.location.href="/auth/login"}}
             sx={{
               backgroundColor: "primary.main",
               color: "primary.lighter",
