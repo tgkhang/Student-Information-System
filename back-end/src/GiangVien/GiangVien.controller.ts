@@ -56,6 +56,12 @@ export class GiangVienController {
     return this.GiangVienService.getTeacherList(query);
   }
 
+  @Get('getTeacherById/:id')
+  @UseGuards(JWTAuthGuard)
+  async getTeacherById(@Param('id') id: string) {
+    return this.GiangVienService.getTeacherById(id);
+  }
+
   @Post('addTeacher')
   @UseGuards(JWTAuthGuard)
   @UsePipes(new ValidationPipe())
@@ -136,5 +142,15 @@ export class GiangVienController {
 
     const updatedGiangVien = await this.GiangVienService.markNotiAsRead(MaGV, thongBaoId);
     return { message: 'Đã đánh dấu thông báo là đã đọc.', data: updatedGiangVien };
+  }
+
+  @Get('getCourses/:id')
+  @UseGuards(JWTAuthGuard)
+  async getCourses(@Req() req: any, @Param('id') id: string) {
+
+    // const MaGV = req.user.username;
+    // console.log(MaGV);
+    const courses = await this.GiangVienService.getCourses(id);
+    return { message: 'Danh sách khóa học của giảng viên.', data: courses };
   }
 }
