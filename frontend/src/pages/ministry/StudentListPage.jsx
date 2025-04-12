@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Typography,
   Button,
@@ -21,8 +21,18 @@ import {
 // components
 import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
-// utils
 import exportToExcel from "../../utils/exportToExcel";
+import { getStudentListApi } from "../../utils/api";
+
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  try {
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  } catch (e) {
+    return dateString;
+  }
+};
 
 const statuses = [
   "Đang học",
@@ -33,25 +43,20 @@ const statuses = [
 const courses = ["K63", "K64", "K65"]; // Ví dụ về các khóa học
 const majors = ["Công nghệ thông tin", "Kinh tế", "Cơ khí", "Xây dựng"]; // Ví dụ về chuyên ngành
 
-// Hàm tạo dữ liệu giả lập cho 100 sinh viên
-function generateStudents() {
-  const students = [];
-  for (let i = 1; i <= 100; i++) {
-    const student = {
-      id: `SV${i.toString().padStart(3, "0")}`,
-      name: `Sinh viên ${i}`,
-      dob: `199${i % 10}-0${(i % 12) + 1}-15`,
-      course: courses[i % courses.length],
-      major: majors[i % majors.length],
-      status: statuses[i % statuses.length],
-    };
-    students.push(student);
-  }
-  return students;
-}
-
 export default function StudentListPage() {
-  const students = useMemo(() => generateStudents(), []);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Pagination state
+  const [pageSize, setPageSize] = useState(50);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Sorting state
+  const [sortBy, setSortBy] = useState("mssv");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   // Trạng thái nhập liệu (chưa áp dụng)
   const [searchTerm, setSearchTerm] = useState("");
@@ -63,47 +68,107 @@ export default function StudentListPage() {
   const [appliedStatus, setAppliedStatus] = useState("");
   const [appliedCourse, setAppliedCourse] = useState("");
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const fetchStudents = async (
+    page = pageNumber,
+    size = pageSize,
+    sort = sortBy,
+    order = sortOrder
+  ) => {
+    try {
+      setLoading(true);
+      // Call the API with the required parameters
+      const response = await getStudentListApi({
+        page,
+        size,
+        sort,
+        order,
+      });
+      console.log("API Response:", response);
 
-  // Khi nhấn nút Tìm kiếm, cập nhật trạng thái áp dụng và reset trang về 1
+      if (
+        response.data &&
+        response.data.data &&
+        Array.isArray(response.data.data)
+      ) {
+        // Update total records and pages for pagination
+        setTotalRecords(response.data.total || 0);
+        setTotalPages(Math.ceil((response.data.total || 0) / size));
+
+        // Format student data for display
+        const formattedStudents = response.data.data.map((student) => ({
+          id: student.mssv || "",
+          name: student.HoTen || "",
+          dob: formatDate(student.NgaySinh || ""),
+          course: student.KhoaHoc || "",
+          major: student.ChuyenNganh || "",
+          status: student.TrangThai || "",
+        }));
+        setStudents(formattedStudents);
+        setError(null);
+      } else {
+        setError("API response format is unexpected");
+      }
+    } catch (err) {
+      console.error("Error fetching student data:", err);
+      setError(`Không thể tải dữ liệu sinh viên: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  // Handle page change
+  const handlePageChange = (event, value) => {
+    setPageNumber(value);
+    fetchStudents(value, pageSize, sortBy, sortOrder);
+  };
+
+  // Handle sort change
+  const handleSortChange = (field) => {
+    const newOrder = field === sortBy && sortOrder === "asc" ? "desc" : "asc";
+    setSortBy(field);
+    setSortOrder(newOrder);
+    fetchStudents(pageNumber, pageSize, field, newOrder);
+  };
+
+  // Handle search
   const handleSearch = () => {
     setAppliedSearch(searchTerm);
     setAppliedStatus(filterStatus);
     setAppliedCourse(filterCourse);
-    setCurrentPage(1);
+
+    // Reset to first page when searching
+    setPageNumber(1);
+
+    // In a real implementation, you would pass these filters to your API
+    // For now, we'll just do client-side filtering
+    fetchStudents(1, pageSize, sortBy, sortOrder);
   };
 
   // Lọc danh sách sinh viên dựa trên trạng thái đã áp dụng (applied)
   const filteredStudents = useMemo(() => {
     return students.filter((student) => {
       const matchesSearch =
-        student.name.toLowerCase().includes(appliedSearch.toLowerCase()) ||
-        student.id.toLowerCase().includes(appliedSearch.toLowerCase());
-      const matchesStatus = appliedStatus
-        ? student.status === appliedStatus
-        : true;
-      const matchesCourse = appliedCourse
-        ? student.course === appliedCourse
-        : true;
+        !appliedSearch ||
+        (student.name?.toLowerCase() || "").includes(
+          appliedSearch.toLowerCase()
+        ) ||
+        (student.id?.toLowerCase() || "").includes(appliedSearch.toLowerCase());
+
+      const matchesStatus = !appliedStatus || student.status === appliedStatus;
+      const matchesCourse = !appliedCourse || student.course === appliedCourse;
+
       return matchesSearch && matchesStatus && matchesCourse;
     });
   }, [students, appliedSearch, appliedStatus, appliedCourse]);
 
-  // Phân trang: 50 sinh viên mỗi trang
-  const pageSize = 50;
-  const pageCount = Math.ceil(filteredStudents.length / pageSize);
-  const displayedStudents = filteredStudents.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
   return (
     <Page title="Student List">
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ mt: 10 }}>
         <Box sx={{ my: 4 }}>
           <Stack
             direction="row"
@@ -135,12 +200,14 @@ export default function StudentListPage() {
                     student.major,
                     student.status,
                   ])
-                )}
+                )
+              }
               startIcon={<Iconify icon={"eva:download-fill"} />}
             >
               Xuất Excel
             </Button>
           </Stack>
+
           <Box sx={{ mb: 2 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={4}>
@@ -212,44 +279,50 @@ export default function StudentListPage() {
               </Grid>
             </Grid>
           </Box>
-          {/* Bảng hiển thị danh sách sinh viên */}
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Mã sinh viên</TableCell>
-                <TableCell>Họ tên</TableCell>
-                <TableCell>Ngày sinh</TableCell>
-                <TableCell>Khóa học</TableCell>
-                <TableCell>Chuyên ngành</TableCell>
-                <TableCell>Tình trạng học</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {displayedStudents.map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell>{student.id}</TableCell>
-                  <TableCell>{student.name}</TableCell>
-                  <TableCell>{student.dob}</TableCell>
-                  <TableCell>{student.course}</TableCell>
-                  <TableCell>{student.major}</TableCell>
-                  <TableCell>{student.status}</TableCell>
-                </TableRow>
-              ))}
-              {displayedStudents.length === 0 && (
+          {loading ? (
+            <Typography>Loading...</Typography>
+          ) : error ? (
+            <Typography color="error">{error}</Typography>
+          ) : (
+            <Table>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    Không tìm thấy sinh viên nào.
-                  </TableCell>
+                  <TableCell>Mã sinh viên</TableCell>
+                  <TableCell>Họ tên</TableCell>
+                  <TableCell>Ngày sinh</TableCell>
+                  <TableCell>Khóa học</TableCell>
+                  <TableCell>Chuyên ngành</TableCell>
+                  <TableCell>Tình trạng học</TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {students.map((student) => (
+                  <TableRow key={student.id}>
+                    <TableCell>{student.id}</TableCell>
+                    <TableCell>{student.name}</TableCell>
+                    <TableCell>{student.dob}</TableCell>
+                    <TableCell>{student.course}</TableCell>
+                    <TableCell>{student.major}</TableCell>
+                    <TableCell>{student.status}</TableCell>
+                  </TableRow>
+                ))}
+                {students.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center">
+                      Không có dữ liệu sinh viên
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
+
           {/* Phân trang */}
-          {pageCount > 1 && (
+          {totalPages > 1 && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <Pagination
-                count={pageCount}
-                page={currentPage}
+                count={totalPages}
+                page={pageNumber}
                 onChange={handlePageChange}
                 variant="outlined"
                 shape="rounded"
