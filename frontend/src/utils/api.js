@@ -4,7 +4,7 @@ import axiosInstance from "./axios";
 export const loginApi = (data) => axiosInstance.post("/auth/login", data);
 export const registerApi = (data) => axiosInstance.post("/auth/register", data);
 
-//admin
+//student
 export const getStudentListApi = (params = {}) => {
   const queryParams = {
     pageSize: params.pageSize || 10,
@@ -18,3 +18,18 @@ export const getStudentListApi = (params = {}) => {
     params: queryParams,
   });
 };
+
+export const getStudentByMssvApi = (mssv) => 
+  axiosInstance.get(`/sinhvien/get_student/${mssv}`);
+
+export const searchStudentApi = (query) => 
+  axiosInstance.get(`/sinhvien/search`, { params: { query } });
+
+export const addStudentApi = (studentData) => 
+  axiosInstance.post("/sinhvien/add_student", studentData);
+
+export const updateStudentApi = (mssv, updateData) => 
+  axiosInstance.put(`/sinhvien/update_student/${mssv}`, updateData);
+
+export const deleteStudentApi = (mssv) => 
+  axiosInstance.delete(`/sinhvien/delete_student/${mssv}`)
