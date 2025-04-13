@@ -43,8 +43,7 @@ export default function MainLayout() {
       <MainStyle sx={{ height: "calc(100vh - 64px)"}}>
         <Outlet />
       </MainStyle>
-      {/* {user && user.role === "student" && ( <MainRightSidebar/>)} */}
-     <MainRightSidebar />
+      {user && user.role === "student" && ( <MainRightSidebar/>)}
 
     </Box>
   );

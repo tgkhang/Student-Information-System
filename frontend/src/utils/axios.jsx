@@ -41,6 +41,7 @@ axiosInstance.interceptors.response.use(
         window.location.href = "/auth/login";
         }
       } else if (status === 404) {
+        window.localStorage.removeItem("accessToken");
         window.location.href = "/404";
       } else if (status === 500) {
         // window.location.href = "/500";

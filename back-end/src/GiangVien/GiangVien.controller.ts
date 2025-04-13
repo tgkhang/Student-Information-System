@@ -20,7 +20,10 @@ import { AuthService } from 'src/auth/auth.service';
 import { UpdateGiangVienDto } from './dto/update-giangvien.dto';
 import { AddTeacherDto } from './dto/add-giangvien.dto';
 import { GetTeacherListDto } from './dto/getListGiangVien.dto';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery, ApiParam, ApiBody } from '@nestjs/swagger';
 
+@ApiTags('GiangVien')
+@ApiBearerAuth()
 @Controller('api/GiangVien')
 export class GiangVienController {
   constructor(
@@ -30,19 +33,25 @@ export class GiangVienController {
 
   @Get('searchTeacher')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Search for teachers by name or ID' })
+  @ApiQuery({ name: 'query', required: false, description: 'Search query for teacher name or ID' })
+  @ApiResponse({ status: 200, description: 'Returns matching teachers' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async searchTeacher(@Query('query') query: string) {
     try {
-      // if (!query)
-      //     throw new BadRequestException('Vui lòng nhập tên hoặc mã số của giảng viên.')
       return this.GiangVienService.searchTeacher(query);
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return error;
     }
   }
 
   @Get('getTeacher/:MaGV')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Get teacher by ID' })
+  @ApiParam({ name: 'MaGV', description: 'Teacher ID' })
+  @ApiResponse({ status: 200, description: 'Returns teacher information' })
+  @ApiResponse({ status: 404, description: 'Teacher not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getTeacher(@Param('MaGV') MaGV: string) {
     console.log('Giao vien: ', MaGV);
     const giangVien = await this.GiangVienService.getTeacher(MaGV);
@@ -52,12 +61,20 @@ export class GiangVienController {
 
   @Get('getListTeacher')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Get list of teachers with pagination and filters' })
+  @ApiResponse({ status: 200, description: 'Returns list of teachers' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getTeacherList(@Query() query: GetTeacherListDto) {
     return this.GiangVienService.getTeacherList(query);
   }
 
   @Get('getTeacherById/:id')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Get teacher by database ID' })
+  @ApiParam({ name: 'id', description: 'Database ID of the teacher' })
+  @ApiResponse({ status: 200, description: 'Returns teacher information' })
+  @ApiResponse({ status: 404, description: 'Teacher not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getTeacherById(@Param('id') id: string) {
     return this.GiangVienService.getTeacherById(id);
   }
@@ -65,8 +82,12 @@ export class GiangVienController {
   @Post('addTeacher')
   @UseGuards(JWTAuthGuard)
   @UsePipes(new ValidationPipe())
+  @ApiOperation({ summary: 'Add a new teacher (Admin only)' })
+  @ApiBody({ type: AddTeacherDto })
+  @ApiResponse({ status: 201, description: 'Teacher added successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
   async addTeacher(@Req() req: any, @Body() body: AddTeacherDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role !== 'admin')
       throw new UnauthorizedException(
         'Bạn không có quyền thực hiện thao tác này.',
@@ -75,7 +96,6 @@ export class GiangVienController {
     const email = `${username}@student.hcmus.edu.vn`;
     const password = username;
     const role = 'teacher';
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const registrationResult = await this.AuthService.register(
       username,
       email,
@@ -93,21 +113,30 @@ export class GiangVienController {
 
   @Delete('deleteTeacher/:MaGV')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Delete a teacher by ID (Admin only)' })
+  @ApiParam({ name: 'MaGV', description: 'Teacher ID to delete' })
+  @ApiResponse({ status: 200, description: 'Teacher deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
   async deleteTeacher(@Req() req: any, @Param('MaGV') MaGV: string) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (req.user.role !== 'admin')
         throw new UnauthorizedException('Bạn không có quyền xóa giáo viên.');
       await this.GiangVienService.deleteTeacher(MaGV);
       return { message: 'Giảng viên đã được xóa thành công' };
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       return { message: error.message };
     }
   }
 
   @Put('updateTeacher/:MaGV')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Update teacher information' })
+  @ApiParam({ name: 'MaGV', description: 'Teacher ID to update' })
+  @ApiBody({ type: UpdateGiangVienDto })
+  @ApiResponse({ status: 200, description: 'Teacher updated successfully' })
+  @ApiResponse({ status: 404, description: 'Teacher not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async updateTeacher(
     @Param('MaGV') MaGV: string,
     @Body() updateGiangVienDto: UpdateGiangVienDto,
@@ -117,23 +146,29 @@ export class GiangVienController {
 
   @Get('getTeacherNoti')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Get notifications for the teacher (Teacher only)' })
+  @ApiResponse({ status: 200, description: 'Returns teacher notifications' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Teacher access required' })
   async getTeacherNoti(@Req() req: any) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (req.user.role != 'teacher')
         throw new UnauthorizedException(
           'Bạn không có quyền lấy thông báo từ giáo viên.',
         );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       return this.GiangVienService.getTeacherNoti(req.user.username);
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       return { message: error.message };
     }
   }
 
   @Post('markNotiAsRead/:thongBaoId')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Mark notification as read (Teacher only)' })
+  @ApiParam({ name: 'thongBaoId', description: 'Notification ID to mark as read' })
+  @ApiResponse({ status: 200, description: 'Notification marked as read' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Teacher access required' })
   async markNotiAsRead(@Param('thongBaoId') thongBaoId: string, @Req() req: any,) {
     if (req.user.role !== 'teacher') {
       throw new UnauthorizedException('Chỉ giảng viên mới có thể đánh dấu thông báo.');
@@ -146,10 +181,11 @@ export class GiangVienController {
 
   @Get('getCourses/:id')
   @UseGuards(JWTAuthGuard)
+  @ApiOperation({ summary: 'Get courses taught by a teacher' })
+  @ApiParam({ name: 'id', description: 'Teacher ID' })
+  @ApiResponse({ status: 200, description: 'Returns list of courses' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getCourses(@Req() req: any, @Param('id') id: string) {
-
-    // const MaGV = req.user.username;
-    // console.log(MaGV);
     const courses = await this.GiangVienService.getCourses(id);
     return { message: 'Danh sách khóa học của giảng viên.', data: courses };
   }

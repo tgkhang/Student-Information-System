@@ -1,12 +1,10 @@
 "use client";
-
-import * as React from "react";
+import {useEffect, useState} from "react";
 import {
   Box,
   Typography,
   Card,
   CardContent,
-  Chip,
   Divider,
   Avatar,
   List,
@@ -23,44 +21,25 @@ import HomeIcon from "@mui/icons-material/Home";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PersonIcon from "@mui/icons-material/Person";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
-import Button from "@mui/material/Button";
 import ApartmentIcon from "@mui/icons-material/Apartment";
-import EditIcon from "@mui/icons-material/Edit";
-import { styled } from "@mui/material/styles";
-const drawerWidth = 10;
-
-
-// Sample data for the summary cards
-const summaryData = {
-  totalCredits: 120,
-  completedCredits: 85,
-  gpa: 3.75,
-  totalCourses: 40,
-  completedCourses: 28,
-  currentSemester: "S1-2024-2025",
-};
-
-// Sample teacher data
-const teacherProfile = {
-  id: "TC12345",
-  name: "Dr. Emily Rodriguez",
-  dob: "January 15, 2000",
-  gender: "Male",
-  department: "Computer Science",
-  email: "emily.rodriguez@university.edu",
-  phone: "987-6543",
-  address: "123 University Ave, College Town, CT 12345",
-  faculty: "FIT",
-  role: "teacher",
-  cccd: "123455",
-  academic: "PhD in Computer Science",
-};
+import { getTeacherInfo} from "../../utils/api";
+import useAuth from "../../hooks/useAuth";
 
 export default function Dashboard() {
-  const [isDrawerOpen, setDrawerOpen] = React.useState(true);
-  const toggleDrawer = () => {
-    setDrawerOpen(!isDrawerOpen);
-  };
+  const { user } = useAuth();
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const response = await getTeacherInfo(user.username);
+        setProfile(response.data);
+      } catch (error) {
+        console.error("Error fetching teacher info:", error);
+      }
+    }
+    fetchTeacherInfo();
+  }, []);
 
   return (
     <Page title="TeacherDashboardPage">
@@ -75,9 +54,8 @@ export default function Dashboard() {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
               }),
-            marginLeft: isDrawerOpen ? `${drawerWidth}px` : 0,
-            width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
-            backgroundColor: "#f5f5f5",
+            marginLeft: 0,
+            width:  "100%",
           }}
         >
           <Typography
@@ -122,17 +100,11 @@ export default function Dashboard() {
                         fontSize: "2.5rem",
                       }}
                     >
-                      JD
+                      {profile?.HoTen?.charAt(0) || "T"}
                     </Avatar>
                     <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                      {teacherProfile.name}
+                      {profile?.HoTen}
                     </Typography>
-
-                    <Chip
-                      label={teacherProfile.name}
-                      color="success"
-                      sx={{ mt: 1, fontWeight: "medium" }}
-                    />
                   </Box>
 
                   <Divider sx={{ my: 2 }} />
@@ -155,8 +127,8 @@ export default function Dashboard() {
                             <FingerprintIcon color="primary" />
                           </ListItemIcon>
                           <ListItemText
-                            primary="Student ID"
-                            secondary={teacherProfile.name}
+                            primary="Teacher ID"
+                            secondary={profile?.MaGV}
                             primaryTypographyProps={{
                               variant: "body2",
                               color: "text.secondary",
@@ -173,7 +145,7 @@ export default function Dashboard() {
                           </ListItemIcon>
                           <ListItemText
                             primary="Email"
-                            secondary={teacherProfile.email}
+                            secondary={user?.email}
                             primaryTypographyProps={{
                               variant: "body2",
                               color: "text.secondary",
@@ -190,7 +162,7 @@ export default function Dashboard() {
                           </ListItemIcon>
                           <ListItemText
                             primary="Phone"
-                            secondary={teacherProfile.phone}
+                            secondary={profile?.SoDienThoai || "Not provided"} 
                             primaryTypographyProps={{
                               variant: "body2",
                               color: "text.secondary",
@@ -207,7 +179,7 @@ export default function Dashboard() {
                           </ListItemIcon>
                           <ListItemText
                             primary="Date of Birth"
-                            secondary={teacherProfile.dob}
+                            secondary={profile?.NgaySinh || "Not provided"}
                             primaryTypographyProps={{
                               variant: "body2",
                               color: "text.secondary",
@@ -224,7 +196,7 @@ export default function Dashboard() {
                           </ListItemIcon>
                           <ListItemText
                             primary="Gender"
-                            secondary={teacherProfile.gender}
+                            secondary={profile?.GioiTinh || "Not provided"}
                             primaryTypographyProps={{
                               variant: "body2",
                               color: "text.secondary",
@@ -242,7 +214,7 @@ export default function Dashboard() {
                           </ListItemIcon>
                           <ListItemText
                             primary="Address"
-                            secondary={teacherProfile.address}
+                            secondary={profile?.DiaChi || "Not provided"}
                             primaryTypographyProps={{
                               variant: "body2",
                               color: "text.secondary",
@@ -266,7 +238,7 @@ export default function Dashboard() {
                         </ListItemIcon>
                         <ListItemText
                           primary="Role"
-                          secondary={teacherProfile.role}
+                          secondary="Teacher"
                           primaryTypographyProps={{
                             variant: "body2",
                             color: "text.secondary",
@@ -283,7 +255,7 @@ export default function Dashboard() {
                         </ListItemIcon>
                         <ListItemText
                           primary="Faculty"
-                          secondary={teacherProfile.faculty}
+                          secondary={profile?.KhoaID?.TenKhoa || "Not provided"}
                           primaryTypographyProps={{
                             variant: "body2",
                             color: "text.secondary",
@@ -299,8 +271,8 @@ export default function Dashboard() {
                           <PersonIcon color="primary" />
                         </ListItemIcon>
                         <ListItemText
-                          primary="CCCD"
-                          secondary={teacherProfile.cccd}
+                          primary="Personal ID"
+                          secondary={profile?.CCCD || "Not provided"}
                           primaryTypographyProps={{
                             variant: "body2",
                             color: "text.secondary",
@@ -317,7 +289,7 @@ export default function Dashboard() {
                         </ListItemIcon>
                         <ListItemText
                           primary="Academic"
-                          secondary={teacherProfile.academic}
+                          secondary={profile?.TrinhDo || "Not provided"}
                           primaryTypographyProps={{
                             variant: "body2",
                             color: "text.secondary",
@@ -337,13 +309,13 @@ export default function Dashboard() {
                       mt: 3,
                     }}
                   >
-                    <Button
+                    {/* <Button
                       variant="contained"
                       color="primary"
                       startIcon={<EditIcon />}
                     >
                       Edit Profile
-                    </Button>
+                    </Button> */}
                   </Box>
                 </CardContent>
               </Card>

@@ -241,7 +241,7 @@ export class GiangVienService {
   }
 
   async getCourses(id: string): Promise<KhoaHocDocument[]> {
-    const giangVien = await this.giangVienModel.findById(id).exec();
+    const giangVien = await this.giangVienModel.findOne({ MaGV: id }).exec();
 
     if (!giangVien) {
       throw new NotFoundException('Không tìm thấy giảng viên.');

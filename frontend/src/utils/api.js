@@ -33,3 +33,10 @@ export const updateStudentApi = (mssv, updateData) =>
 
 export const deleteStudentApi = (mssv) => 
   axiosInstance.delete(`/sinhvien/delete_student/${mssv}`)
+
+
+//teacher
+export const getTeacherInfo = (id) => 
+  axiosInstance.get(`/giangvien/getTeacher/${id}`);
+export const getListCourses = (id) =>
+  axiosInstance.get(`/giangvien/getCourses/${id}`);
