@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Typography,
   Button,
@@ -30,6 +30,7 @@ import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
 // utils
 import exportToExcel from "../../utils/exportToExcel";
+import { getTeacherListApi, getFacultyListApi } from "../../utils/api";
 
 const statuses = ["Đang công tác", "Nghỉ hưu", "Nghỉ phép", "Nghỉ việc"];
 
@@ -221,7 +222,46 @@ function groupLecturersByDepartment(lecturers) {
   return departments;
 }
 
+
+  const fetch = async (
+    page = 1,
+    size = 3,
+    sort = "id",
+    order = "asc"
+  ) => {
+   try  {
+    console.log(size);
+      const response = await getTeacherListApi({
+              page,
+              size,
+              sort,
+              order,
+            });
+      console.log("Lecturer data:", response.data);
+
+      const r2= await getFacultyListApi({
+        page,
+        size,
+        sort,
+        order,
+      });
+      console.log("Faculty data:", r2.data);
+      return response.data;
+    }
+    catch (error) {
+      console.error("Error fetching data:", error);
+      return [];
+    }
+  };
+
 export default function LecturerListPage() {
+
+    // Initial data fetch
+    useEffect(() => {
+      fetch();
+    }, []);
+
+
   const lecturers = useMemo(() => generateLecturers(), []);
   const groupedLecturers = useMemo(() => groupLecturersByDepartment(lecturers), [lecturers]);
   

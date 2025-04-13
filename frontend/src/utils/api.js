@@ -7,11 +7,10 @@ export const registerApi = (data) => axiosInstance.post("/auth/register", data);
 //student
 export const getStudentListApi = (params = {}) => {
   const queryParams = {
-    pageSize: params.pageSize || 10,
-    pageNumber: params.pageNumber || 1,
-    sortBy: params.sortBy || "mssv",
-    sortOrder: params.sortOrder || "asc",
-    ...params,
+    pageSize:  params.size || 10,
+    pageNumber: params.page || 1,
+    sortBy:  params.sort || "mssv",
+    sortOrder: params.order || "asc",
   };
 
   return axiosInstance.get("/sinhvien/getList_Student", {
@@ -40,3 +39,30 @@ export const getTeacherInfo = (id) =>
   axiosInstance.get(`/giangvien/getTeacher/${id}`);
 export const getListCourses = (id) =>
   axiosInstance.get(`/giangvien/getCourses/${id}`);
+
+export const getTeacherListApi = (params = {}) => {
+  const queryParams = {
+    pageSize: params.pageSize || 10,
+    pageNumber: params.pageNumber || 1,
+    sortBy: params.sortBy || "MaGV",
+    sortOrder: params.sortOrder || "asc",
+    ...params,
+  };
+
+  return axiosInstance.get("/GiangVien/getListTeacher", {
+    params: queryParams,
+  });
+};
+
+export const getTeacherByIdApi = (id) =>{
+  return axiosInstance.get(`/GiangVien/getTeacher/${id}`);
+}
+
+export const searchTeacherApi = (query) =>
+  axiosInstance.get(`/GiangVien/searchTeacher`, { params: { query } });
+
+
+//FACULTY
+export const getFacultyListApi = () => {
+  return axiosInstance.get("/Khoa/getListFaculty", {});
+}

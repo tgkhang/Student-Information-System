@@ -52,7 +52,7 @@ export default function StudentListPage() {
   const [error, setError] = useState(null);
 
   // Pagination state
-  const [pageSize, setPageSize] = useState(50);
+  const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -88,7 +88,6 @@ export default function StudentListPage() {
         sort,
         order,
       });
-
       if (
         response.data &&
         response.data.data &&
