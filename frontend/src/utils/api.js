@@ -42,10 +42,10 @@ export const getListCourses = (id) =>
 
 export const getTeacherListApi = (params = {}) => {
   const queryParams = {
-    pageSize: params.pageSize || 10,
-    pageNumber: params.pageNumber || 1,
-    sortBy: params.sortBy || "MaGV",
-    sortOrder: params.sortOrder || "asc",
+    pageSize: params.size || 10,
+    pageNumber: params.page || 1,
+    sortBy: params.sort || "MaGV",
+    sortOrder: params.order || "asc",
     ...params,
   };
 
@@ -63,6 +63,17 @@ export const searchTeacherApi = (query) =>
 
 
 //FACULTY
-export const getFacultyListApi = () => {
-  return axiosInstance.get("/Khoa/getListFaculty", {});
+export const getFacultyListApi = (params = {}) => {
+  const queryParams = {
+    pageSize: params.size || 10,
+    pageNumber: params.page || 1,
+    sortBy: params.sort || "MaGV",
+    sortOrder: params.order || "asc",
+    ...params,
+  };
+
+
+  return axiosInstance.get("/Khoa/getListFaculty", {
+    params: queryParams,
+  });
 }
