@@ -9,17 +9,18 @@ import { BlobServiceClient } from '@azure/storage-blob';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { TaiLieu } from 'src/schemas/TaiLieu.schema';
-import { KhoaHoc } from 'src/schemas/KhoaHoc.schema';
+import { TaiLieu, TaiLieuDocument } from 'src/schemas/TaiLieu.schema';
+import { KhoaHoc, KhoaHocDocument } from 'src/schemas/KhoaHoc.schema';
 import { v4 as uuidv4 } from 'uuid';
-import { GiangVienDocument } from 'src/schemas/GiangVien.schema';
+import { GiangVien, GiangVienDocument } from 'src/schemas/GiangVien.schema';
 
 @Injectable()
 export class UploadService {
   constructor(
     private configService: ConfigService,
-    @InjectModel(TaiLieu.name) private taiLieuModel: Model<TaiLieu>,
-    @InjectModel(KhoaHoc.name) private khoaHocModel: Model<KhoaHoc>,
+    @InjectModel(TaiLieu.name) private taiLieuModel: Model<TaiLieuDocument>,
+    @InjectModel(KhoaHoc.name) private khoaHocModel: Model<KhoaHocDocument>,
+    @InjectModel(GiangVien.name) private readonly giangVienModel: Model<GiangVienDocument>,
   ) {}
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -97,6 +98,54 @@ export class UploadService {
     return savedFile;
   }
 
+  async uploadAvatar(file: Express.Multer.File, MaGV: string, role: string) {
+    const giangVien = await this.giangVienModel.findOne({ MaGV }).exec();
+    if (!giangVien) {
+      throw new NotFoundException(`Không tìm thấy giáo viên với MaGV ${MaGV}`);
+    }
+
+    if (MaGV !== MaGV) {
+      throw new UnauthorizedException('Bạn không có quyền upload ảnh cho giáo viên này');
+    }
+
+    const allowedExtensions = ['jpg', 'jpeg', 'png'];
+    const fileExtension = file.originalname.split('.').pop()?.toLowerCase();
+    if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
+      throw new BadRequestException('Chỉ chấp nhận file ảnh (jpg, jpeg, png)');
+    }
+
+    
+    const blobServiceClient = await this.getBlobServiceClient();
+    const containerName = this.configService.get<string>('AZURE_CONTAINER_NAME');
+    if (!containerName) {
+      throw new NotFoundException('Không tìm thấy container name');
+    }
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+
+    if (giangVien.Anh) {
+      // const oldBlobName = giangVien.Anh.split('/').pop()?.split('?')[0];
+      const oldBlobName = giangVien.Anh.split('/').slice(-2).join('/'); // Lấy "avatars/<filename>"
+      if (oldBlobName) {
+        console.log(oldBlobName);
+        const oldBlockBlobClient = containerClient.getBlockBlobClient(oldBlobName);
+        // console.log(oldBlockBlobClient);
+        await oldBlockBlobClient.deleteIfExists();
+      }
+    }
+    const fileName = `avatars/${MaGV}-${uuidv4()}.${fileExtension}`;
+    const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+
+    await blockBlobClient.uploadData(file.buffer);
+
+    const avatarUrl = blockBlobClient.url;
+
+    await this.giangVienModel.updateOne(
+      { MaGV },
+      { $set: { Anh: avatarUrl } },
+    );
+
+    return { url: avatarUrl };
+  }
   async getFileById(id: string): Promise<TaiLieu> {
     const file = await this.taiLieuModel.findById(id).exec();
     if (!file)
@@ -109,6 +158,7 @@ export class UploadService {
   //     return this.taiLieuModel.find({ khoaHocId }).exec();
   // }
 
+  
   async deleteFile(taiLieuId: string, khoaHocId: string, user: any) {
     try {
       const taiLieu = await this.taiLieuModel.findById(taiLieuId).exec();
