@@ -12,12 +12,17 @@ import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { SinhVienService } from 'src/SinhVien/SinhVien.service';
 import { GiangVien, GiangVienDocument } from 'src/schemas/GiangVien.schema';
 import { UploadService } from 'src/upload/upload.service';
+import { DanhGiaKhoaHoc, DanhGiaKhoaHocDocument } from 'src/schemas/DanhGiaKhoaHoc.schema';
+import { RateCourseDto } from './dto/rateCourse.dto';
+import { DanhGia } from 'src/schemas/BaiKiemTra.schema';
+import { LichHoc, LichHocDocument } from 'src/schemas/LichHoc.schema';
 
 @Injectable()
 export class KhoaHocService {
   constructor(
-    @InjectModel(KhoaHoc.name)
-    private readonly khoaHocModel: Model<KhoaHocDocument>,
+    @InjectModel(KhoaHoc.name) private readonly khoaHocModel: Model<KhoaHocDocument>,
+    @InjectModel(DanhGiaKhoaHoc.name) private readonly danhGiaKhoaHocModel: Model<DanhGiaKhoaHocDocument>,
+    @InjectModel(LichHoc.name) private readonly lichHocModel: Model<LichHocDocument>,
     private readonly sinhVienService: SinhVienService,
     private readonly uploadService: UploadService,
     @InjectModel(GiangVien.name) private readonly giangVienModel: Model<GiangVienDocument>,
@@ -128,7 +133,6 @@ export class KhoaHocService {
     const limit = pageSize;
     const sort = {};
     sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
-
     const khoaHocs = await this.khoaHocModel
       .find()
       .skip(skip)
@@ -137,12 +141,37 @@ export class KhoaHocService {
       .populate('GiangVienID', 'HoTen')
       .exec();
 
-    console.log(khoaHocs);
+    // console.log(khoaHocs);
+
+    const khoaHocIds = khoaHocs.map((kh) => (kh as any)._id.toString());
+    console.log(khoaHocIds);
+    const lichHocList = await this.lichHocModel
+      .find({ KhoaHocID: { $in: khoaHocIds } })
+      .populate('GiangVienID', 'HoTen')
+      .exec();
+    console.log(lichHocList);
+    const khoaHocsDetails = khoaHocs.map((khoahoc) => {
+      const khoaHocid = (khoahoc as  any)._id as Types.ObjectId;
+      return {
+        ...khoahoc.toObject(),
+        LichHoc: lichHocList
+          .filter((lh) => lh.KhoaHocID.toString() === khoaHocid.toString())
+          .map((lh) => ({
+            NgayHoc: lh.NgayHoc,
+            ThoiGianBatDau: lh.ThoiGianBatDau,
+            ThoiGianKetThuc: lh.ThoiGianKetThuc,
+            DiaDiem: lh.DiaDiem,
+            GiangVien: lh.GiangVienID ? (lh.GiangVienID as any).HoTen : null,
+            NgayCapNhat: lh.NgayCapNhat,
+          })),
+      };
+    });
+
     return {
       pageSize,
       pageNumber,
       total: await this.khoaHocModel.countDocuments(),
-      data: khoaHocs,
+      data: khoaHocsDetails,
     };
   }
 
@@ -292,13 +321,95 @@ export class KhoaHocService {
 
     const files = await this.khoaHocModel.findById(khoaHocId).populate('TaiLieu').exec();
     return files?.TaiLieu;
-}
+  }
 
-async deleteFile(khoaHocId: string, taiLieuId: string, user: any) {
+  async deleteFile(khoaHocId: string, taiLieuId: string, user: any) {
     
     const khoaHoc = await this.khoaHocModel.findById(khoaHocId).exec();
     if (!khoaHoc) throw new NotFoundException(`Không tìm thấy khóa học ${khoaHocId}`);
 
     return await this.uploadService.deleteFile(taiLieuId, khoaHocId, user);
+  }
+
+  async rateCourse(MaKhoaHoc: string, mssv: string, rateCourseDto: RateCourseDto) {
+    const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
+    if (!khoaHoc) {
+      throw new NotFoundException('Khóa học không tồn tại.');
+    }
+
+    const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
+    if (!sinhVien) {
+      throw new NotFoundException('Không tìm thấy sinh viên.');
+    }
+    // sinhVien._id
+    const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
+    if (!khoaHoc.SinhVienDangKy.some((id) => id.toString() === sinhVienId.toString())) {
+      throw new BadRequestException('Sinh viên chưa đăng ký khóa học này.');
+    }
+
+    const existingRating = await this.danhGiaKhoaHocModel
+      .findOne({ KhoaHocID: khoaHoc._id, SinhVienID: sinhVienId })
+      .exec();
+    if (existingRating) {
+      throw new BadRequestException('Sinh viên đã đánh giá khóa học này.');
+    }
+
+    // console.log(rateCourseDto.DanhGia); 
+    const danhGia = new this.danhGiaKhoaHocModel({
+      KhoaHocID: khoaHoc._id,
+      SinhVienID: sinhVienId,
+      SoSao: rateCourseDto.SoSao,
+      DanhGia: rateCourseDto.DanhGia,
+      ThoiGianDanhGia: new Date(),
+    });
+    return await danhGia.save();
+
+
+  }
+
+  async getListCourseRatings(MaKhoaHoc: string) {
+    const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
+    if (!khoaHoc) {
+      throw new NotFoundException('Khóa học không tồn tại.');
+    }
+  
+    const danhGiaList = await this.danhGiaKhoaHocModel
+      .find({ KhoaHocID: khoaHoc._id })
+      .populate('SinhVienID', 'HoTen MSSV')
+      .exec();
+    const soLuongDanhGia = danhGiaList.length;
+    const tongSoSao = danhGiaList.reduce((sum, dg) => sum + dg.SoSao, 0);
+    return {
+      MaKhoaHoc,
+      TenKhoaHoc: khoaHoc.TenKhoaHoc,
+      SoLuongDanhGia: soLuongDanhGia,
+      TrungBinhSoSao: soLuongDanhGia > 0 ? tongSoSao / soLuongDanhGia : 0,
+      DanhGia: danhGiaList.map((dg) => ({
+        SinhVienID: dg.SinhVienID._id,
+        HoTen: (dg.SinhVienID as any).HoTen,
+        MSSV: (dg.SinhVienID as any).MSSV,
+        SoSao: dg.SoSao,
+        DanhGia: dg.DanhGia,
+        ThoiGianDanhGia: dg.ThoiGianDanhGia,
+      })),
+    };
+  }
+
+  async getCourseRatings(MaKhoaHoc: string) {
+    const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
+    if (!khoaHoc) {
+      throw new NotFoundException('Khóa học không tồn tại.');
+    }
+  
+    const danhGiaList = await this.danhGiaKhoaHocModel
+      .find({ KhoaHocID: khoaHoc._id })
+      .populate('SinhVienID', 'HoTen MSSV')
+      .exec();
+    const soLuongDanhGia = danhGiaList.length;
+    const tongSoSao = danhGiaList.reduce((sum, dg) => sum + dg.SoSao, 0);
+    return {
+      SoLuongDanhGia: soLuongDanhGia,
+      TrungBinhSoSao: soLuongDanhGia > 0 ? tongSoSao / soLuongDanhGia : 0
+    };
   }
 }

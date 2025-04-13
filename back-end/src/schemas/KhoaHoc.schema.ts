@@ -3,15 +3,6 @@ import mongoose, { Document, Types } from 'mongoose';
 
 export type KhoaHocDocument = KhoaHoc & Document;
 
-// @Schema()
-// export class TaiLieu {
-//   @Prop({ required: true })
-//   TenTaiLieu: string;
-
-//   @Prop({ required: true })
-//   LinkTaiLieu: string;
-// }
-
 @Schema()
 export class KhoaHoc {
   @Prop({required: true, unique: true})
