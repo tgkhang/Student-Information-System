@@ -1,10 +1,10 @@
-import React from 'react';
-import { Box, Typography, Chip, Card, CardContent, Grid } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import PersonIcon from '@mui/icons-material/Person';
-import PeopleIcon from '@mui/icons-material/People';
-import ClassIcon from '@mui/icons-material/Class';
+import React from "react";
+import { Box, Typography, Chip, Card, CardContent, Grid } from "@mui/material";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PersonIcon from "@mui/icons-material/Person";
+import PeopleIcon from "@mui/icons-material/People";
+import ClassIcon from "@mui/icons-material/Class";
+
 import {
   Grid2,
   InputLabel,
@@ -16,66 +16,80 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
+
+// Format date for display
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  try {
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  } catch (e) {
+    return dateString;
+  }
+};
+
 // CourseCard component: display individual course information
 const CourseCard = ({ course }) => {
   return (
-    <Card 
-      sx={{ 
-        mb: 2, 
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)', 
-        borderRadius: '8px',
-        border: '1px solid #e0e0e0',
-        transition: 'transform 0.2s',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-        }
+    <Card
+      sx={{
+        mb: 2,
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
+        borderRadius: "8px",
+        border: "1px solid #e0e0e0",
+        transition: "transform 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+        },
       }}
     >
       <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           {/* Course ID and Name */}
           <Box>
-            <Typography 
-              variant="h6" 
-              color="primary" 
-              sx={{ fontWeight: 'bold', fontSize: '1rem' }}
+            <Typography
+              variant="h6"
+              color="primary"
+              sx={{ fontWeight: "bold", fontSize: "1rem" }}
             >
               {course.id} - {course.name.toUpperCase()}
             </Typography>
           </Box>
-          
+          <Typography variant="body2" color="text.secondary">
+            Instructor: {course.instructor}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {course.description}
+          </Typography>
+
           {/*Course details*/}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-            <Chip 
-              icon={<AccessTimeIcon fontSize="small" />} 
-              label={course.schedule} 
-              size="small" 
-              sx={{ bgcolor: '#f0f7ff', color: '#0057b7' }}
-            />
-            <Chip 
-              icon={<MeetingRoomIcon fontSize="small" />} 
-              label="Room" 
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+            <Chip
+              icon={<AccessTimeIcon fontSize="small" />}
+              label={`${formatDate(course.startDate)} - ${formatDate(
+                course.endDate
+              )}`}
               size="small"
-              sx={{ bgcolor: '#f5f5f5' }}
+              sx={{ bgcolor: "#f0f7ff", color: "#0057b7" }}
             />
-            <Chip 
+             <Chip 
               icon={<PersonIcon fontSize="small" />} 
-              label={course.TA} 
+              label={course.assistantName || "No Assistant"} 
               size="small"
               sx={{ bgcolor: '#f5f5f5' }}
             />
             <Chip 
               icon={<PeopleIcon fontSize="small" />} 
-              label={`${course.students} Students`} 
+              label={`${course.registeredStudents}/${course.maxStudents} Students`} 
               size="small"
               sx={{ bgcolor: '#f5f5f5' }}
             />
-            <Chip 
-              icon={<ClassIcon fontSize="small" />} 
-              label={`${course.credit} Credits`}
+            <Chip
+              icon={<ClassIcon fontSize="small" />}
+              label={`${course.credits} Credits`}
               size="small"
-              sx={{ bgcolor: '#f5f5f5' }}
+              sx={{ bgcolor: "#f5f5f5" }}
             />
           </Box>
         </Box>
@@ -87,17 +101,19 @@ const CourseCard = ({ course }) => {
 // CourseList component to display all courses
 const CourseList = ({ courses, searchTerm, semester, year }) => {
   // Filter courses based on search term and filters
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = courses.filter((course) => {
     // Filter by search term (course name or ID)
-    const matchesSearch = searchTerm ? 
-      (course.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-       course.id.toLowerCase().includes(searchTerm.toLowerCase())) : 
-      true;
-    
+    const matchesSearch = searchTerm
+      ? course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.id.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+
     // Filter by semester and year (basic)
-    const matchesSemester = semester ? course.semester.includes(semester) : true;
+    const matchesSemester = semester
+      ? course.semester.includes(semester)
+      : true;
     const matchesYear = year ? course.semester.includes(year.toString()) : true;
-    
+
     return matchesSearch && matchesSemester && matchesYear;
   });
 
@@ -112,7 +128,7 @@ const CourseList = ({ courses, searchTerm, semester, year }) => {
           ))}
         </Grid>
       ) : (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Box sx={{ textAlign: "center", py: 4 }}>
           <Typography variant="body1" color="text.secondary">
             No courses found matching your criteria.
           </Typography>
@@ -262,4 +278,4 @@ function CustomSelect({
   );
 }
 
-export { CourseCard, CoursesListAndSearch,CourseList, CustomSelect };
+export {formatDate, CourseCard, CoursesListAndSearch, CourseList, CustomSelect };
