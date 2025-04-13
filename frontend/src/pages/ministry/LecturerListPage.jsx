@@ -245,7 +245,7 @@ export default function LecturerListPage() {
 
   return (
     <Page title="Lecturer List">
-      <Container maxWidth="lg">
+      <Container maxWidth="lg"  sx={{ mt: 10 }}>
         <Box sx={{ my: 4 }}>
           <Stack
             direction="row"

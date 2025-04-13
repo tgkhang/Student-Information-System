@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import Page from "../../components/Page";
+import { useState, useEffect, useMemo } from "react";
 import {
   Typography,
   Button,
@@ -16,18 +15,19 @@ import {
   Alert,
   Pagination,
 } from "@mui/material";
+// components
+import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
 import exportToExcel from "../../utils/exportToExcel";
 import { getCoursesListApi, searchCourseApi } from "../../utils/api";
 import { CourseCard, formatDate } from "../../components/CourseList";
 
 // Years for filter
-const years = ["2022", "2023", "2024", "2025", "2026", "2027"];
+const years = ["2024", "2025", "2026", "2027"];
 
 export default function AdminCoursePage() {
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Pagination state
@@ -37,7 +37,7 @@ export default function AdminCoursePage() {
   const [totalPages, setTotalPages] = useState(1);
 
   // Sorting state
-  const [sortBy, setSortBy] = useState("CourseId");
+  const [sortBy, setSortBy] = useState("MaKhoaHoc");
   const [sortOrder, setSortOrder] = useState("asc");
 
   // Filter state
@@ -47,54 +47,37 @@ export default function AdminCoursePage() {
   // Search state
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  
-  // Request state
-  const [isFetching, setIsFetching] = useState(false);
 
   // Format course data for display
-  const formatCourseData = useCallback((courseData) => {
-    if (!courseData) return null;
-    try {
-      return {
-        id: courseData.MaKhoaHoc || "",
-        name: courseData.TenKhoaHoc || "",
-        instructor: courseData.GiangVienID?.HoTen || "Unknown",
-        assistantId: courseData.TroGiangID || "",
-        assistantName: courseData.TroGiangID?.HoTen || "No Assistant",
-        credits: courseData.SoTinChi || 0,
-        description: courseData.MoTa || "No description available",
-        registeredStudents: courseData.SoLuongSinhVienDangKy || 0,
-        maxStudents: courseData.SoLuongToiDa || 0,
-        registrationDeadline: courseData.HanDangKy || "",
-        startDate: courseData.NgayBatDau || "",
-        endDate: courseData.NgayKetThuc || "",
-        departmentId: courseData.KhoaID || "",
-        year: courseData.NgayBatDau 
-          ? new Date(courseData.NgayBatDau).getFullYear().toString()
-          : new Date().getFullYear().toString(),
-      };
-    } catch (err) {
-      console.error("Error formatting course data:", err);
-      return null;
-    }
-  }, []);
+  const formatCourseData = (courseData) => {
+    return {
+      id: courseData.MaKhoaHoc || "",
+      name: courseData.TenKhoaHoc || "",
+      instructor: courseData.GiangVienID?.HoTen || "Unknown",
+      assistantId: courseData.TroGiangID || "",
+      assistantName: courseData.TroGiangID?.HoTen || "No Assistant",
+      credits: courseData.SoTinChi || 0,
+      description: courseData.MoTa || "No description available",
+      registeredStudents: courseData.SoLuongSinhVienDangKy || 0,
+      maxStudents: courseData.SoLuongToiDa || 0,
+      registrationDeadline: courseData.HanDangKy || "",
+      startDate: courseData.NgayBatDau || "",
+      endDate: courseData.NgayKetThuc || "",
+      departmentId: courseData.KhoaID || "",
+      year: new Date(courseData.NgayBatDau || new Date()).getFullYear().toString(),
+    };
+  };
 
-  const fetchCourses = useCallback(async (
+  const fetchCourses = async (
     page = pageNumber,
     size = pageSize,
     sort = sortBy,
     order = sortOrder
   ) => {
-    // Prevent multiple simultaneous requests
-    if (isFetching) {
-      console.log("Request already in progress, skipping");
-      return;
-    }
-    
     try {
-      setIsFetching(true);
       setLoading(true);
       setError(null);
+      setIsSearchActive(false);
       
       const response = await getCoursesListApi({
         pageSize: size,
@@ -102,100 +85,59 @@ export default function AdminCoursePage() {
         sortBy: sort,
         sortOrder: order,
       });
-      //console.log("API response:", response);
-      if (
-        response?.data &&
-        response.data?.data &&
-        Array.isArray(response.data.data)
-      ) {
-        // Update total records and pages for pagination
+      
+      if (response.data && response.data.data && Array.isArray(response.data.data)) {
         setTotalRecords(response.data.total || 0);
-        const newTotalPages = Math.max(1, Math.ceil((response.data.total || 0) / size));
-        setTotalPages(newTotalPages);
-
-        const formattedCourses = response.data.data
-          .map(formatCourseData)
-          .filter(Boolean); // Remove any null results
-          
+        setTotalPages(Math.ceil((response.data.total || 0) / size));
+        
+        const formattedCourses = response.data.data.map(formatCourseData);
         setCourses(formattedCourses);
-        setIsSearchActive(false);
-        setError(null);
       } else {
         setError("API response format is unexpected");
         setCourses([]);
-        setTotalPages(1);
-        setTotalRecords(0);
       }
     } catch (err) {
       console.error("Error fetching course data:", err);
-      setError(`Không thể tải dữ liệu khóa học: ${err.message || "Unknown error"}`);
+      setError(`Không thể tải dữ liệu khóa học: ${err.message}`);
       setCourses([]);
-      setTotalPages(1);
-      setTotalRecords(0);
     } finally {
       setLoading(false);
-      setInitialLoading(false);
-      setIsFetching(false);
     }
-  }, [pageNumber, pageSize, sortBy, sortOrder, formatCourseData, isFetching]);
-
-  const handleSearch = useCallback(async () => {
-    // Prevent searching while another request is in progress
-    if (isFetching) {
-      console.log("Request already in progress, skipping search");
-      return;
-    }
-    
-    if (!searchTerm || !searchTerm.trim()) {
+  };
+  
+  const handleSearch = async () => {
+    // If search term is empty, revert to regular listing
+    if (!searchTerm.trim()) {
       setIsSearchActive(false);
       return fetchCourses(1, pageSize, sortBy, sortOrder);
     }
-
+    
     try {
-      setIsFetching(true);
       setLoading(true);
       setError(null);
       
-      const trimmedSearchTerm = searchTerm.trim();
-      const response = await searchCourseApi(trimmedSearchTerm);
+      const response = await searchCourseApi(searchTerm);
       
-      if (response?.data && Array.isArray(response.data)) {
-        const formattedResults = response.data
-          .map(formatCourseData)
-          .filter(Boolean); // Remove any null results
-        
+      if (response.data && Array.isArray(response.data)) {
+        const formattedResults = response.data.map(formatCourseData);
         setSearchResults(formattedResults);
         setIsSearchActive(true);
-        
-        const filteredCount = formattedResults.length;
-        setTotalRecords(filteredCount);
-        
-        const newTotalPages = Math.max(1, Math.ceil(filteredCount / pageSize));
-        setTotalPages(newTotalPages);
-        setPageNumber(1); // Reset to first page on new search
+        setTotalRecords(formattedResults.length);
+        setTotalPages(Math.ceil(formattedResults.length / pageSize));
       } else {
+        setError("Không tìm thấy khóa học phù hợp");
         setSearchResults([]);
         setIsSearchActive(true);
-        setTotalRecords(0);
-        setTotalPages(1);
-        setPageNumber(1);
       }
     } catch (err) {
       console.error("Error searching courses:", err);
-     if (err.response?.status === 404) {
-        setSearchResults([]);
-        setIsSearchActive(true);
-        setTotalRecords(0);
-        setTotalPages(1);
-        setPageNumber(1);
-      } else {
-        setError(`Lỗi tìm kiếm: ${err.response?.data?.message || err.message || "Unknown error"}`);
-      }
+      setError(`Không thể tìm kiếm: ${err.response?.data?.message || err.message}`);
+      setSearchResults([]);
+      setIsSearchActive(true);
     } finally {
       setLoading(false);
-      setIsFetching(false);
     }
-  }, [searchTerm, pageSize, sortBy, sortOrder, formatCourseData, fetchCourses, isFetching]);
+  };
 
   // Initial data fetch
   useEffect(() => {
@@ -203,83 +145,68 @@ export default function AdminCoursePage() {
   }, []);
 
   // Handle page change
-  const handlePageChange = useCallback((event, value) => {
-    // Prevent page change if another request is in progress
-    if (isFetching) return;
+  const handlePageChange = (event, value) => {
     setPageNumber(value);
-    if (!isSearchActive) {
+    
+    // If in search mode, we handle pagination on client side
+    if (isSearchActive) {
+      // No need to fetch from API again, just update the page
+    } else {
       fetchCourses(value, pageSize, sortBy, sortOrder);
     }
-  }, [isSearchActive, pageSize, sortBy, sortOrder, fetchCourses, isFetching]);
+  };
 
-  // Handle year filter change
-  const handleYearChange = useCallback((e) => {
-    setFilterYear(e.target.value);
-  }, []);
-
-  // Handle clear search and filters
-  const handleClearSearch = useCallback(() => {
-    if (isFetching) return;
+  // Handle clear search
+  const handleClearSearch = () => {
     setSearchTerm("");
     setFilterYear("");
     setIsSearchActive(false);
     setSearchResults([]);
     setPageNumber(1);
     fetchCourses(1, pageSize, sortBy, sortOrder);
-  }, [pageSize, sortBy, sortOrder, fetchCourses, isFetching]);
+  };
+
+  // Handle filter year change
+  const handleYearChange = (e) => {
+    setFilterYear(e.target.value);
+  };
 
   // Get displayed courses based on search status and filters
   const displayedCourses = useMemo(() => {
-    try {
-      let displayList = isSearchActive ? searchResults : courses;
-      
-      if (!Array.isArray(displayList)) {
-        return [];
-      }
-      if (filterYear) {
-        displayList = displayList.filter((course) => 
-          course && course.year === filterYear
-        );
-      }
-      if (isSearchActive) {
-        const startIndex = (pageNumber - 1) * pageSize;
-        const endIndex = startIndex + pageSize;
-        return displayList.slice(startIndex, endIndex);
-      }
-      return displayList;
-    } catch (err) {
-      console.error("Error in displayedCourses:", err);
-      return [];
+    let displayList = isSearchActive ? searchResults : courses;
+    
+    // Apply year filter
+    if (filterYear) {
+      displayList = displayList.filter(course => course.year === filterYear);
     }
+    
+    // Handle local pagination for search results
+    if (isSearchActive) {
+      const startIndex = (pageNumber - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      return displayList.slice(startIndex, endIndex);
+    }
+    
+    return displayList;
   }, [courses, searchResults, isSearchActive, filterYear, pageNumber, pageSize]);
 
-  // Update total pages when filter changes for search results
+  // Update total pages when filter changes
   useEffect(() => {
-    if (isSearchActive && searchResults) {
-      try {
-        let filteredResults = searchResults;
-        
-        if (filterYear) {
-          filteredResults = filteredResults.filter(
-            (course) => course && course.year === filterYear
-          );
-        }
-        
-        const filteredCount = filteredResults.length;
-        setTotalRecords(filteredCount);
-        
-        const newTotalPages = Math.max(1, Math.ceil(filteredCount / pageSize));
-        setTotalPages(newTotalPages);
-        
-        // Reset to first page if current page would be out 
-        if (pageNumber > newTotalPages) {
-          setPageNumber(1);
-        }
-      } catch (err) {
-        console.error("Error updating pagination for filtered results:", err);
+    if (isSearchActive) {
+      let filteredResults = searchResults;
+      if (filterYear) {
+        filteredResults = searchResults.filter(course => course.year === filterYear);
+      }
+      setTotalPages(Math.ceil(filteredResults.length / pageSize));
+      setTotalRecords(filteredResults.length);
+      
+      // Reset to first page if current page would be out of bounds
+      const newTotalPages = Math.ceil(filteredResults.length / pageSize);
+      if (pageNumber > newTotalPages && newTotalPages > 0) {
+        setPageNumber(1);
       }
     }
-  }, [filterYear, searchResults, isSearchActive, pageSize, pageNumber]);
+  }, [filterYear, searchResults, isSearchActive, pageSize]);
 
   return (
     <Page title="Admin Course Page">
@@ -296,7 +223,7 @@ export default function AdminCoursePage() {
             <Button
               color="success"
               variant="contained"
-              disabled={!displayedCourses || displayedCourses.length === 0 || loading}
+              disabled={displayedCourses.length === 0}
               onClick={() =>
                 exportToExcel(
                   [
@@ -336,9 +263,8 @@ export default function AdminCoursePage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Nhập tên hoặc mã khóa học"
-                  disabled={loading}
                   onKeyPress={(e) => {
-                    if (e.key === "Enter" && !loading) {
+                    if (e.key === 'Enter') {
                       handleSearch();
                     }
                   }}
@@ -356,7 +282,6 @@ export default function AdminCoursePage() {
                     value={filterYear}
                     label="Năm"
                     onChange={handleYearChange}
-                    disabled={loading}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "8px",
@@ -379,20 +304,14 @@ export default function AdminCoursePage() {
                     variant="contained"
                     color="primary"
                     onClick={handleSearch}
-                    disabled={loading}
                   >
-                    {loading ? (
-                      <CircularProgress size={24} color="inherit" />
-                    ) : (
-                      "Tìm kiếm"
-                    )}
+                    Tìm kiếm
                   </Button>
                   {(isSearchActive || filterYear) && (
                     <Button
                       variant="outlined"
                       color="primary"
                       onClick={handleClearSearch}
-                      disabled={loading}
                     >
                       <Iconify icon={"eva:close-fill"} />
                     </Button>
@@ -403,27 +322,22 @@ export default function AdminCoursePage() {
           </Box>
 
           {isSearchActive && (
-            <Alert
-              severity="info"
+            <Alert 
+              severity="info" 
               sx={{ mb: 2 }}
               action={
-                <Button
-                  color="inherit"
-                  size="small"
-                  onClick={handleClearSearch}
-                  disabled={loading}
-                >
+                <Button color="inherit" size="small" onClick={handleClearSearch}>
                   Quay lại
                 </Button>
               }
             >
-              {searchResults && searchResults.length > 0
+              {searchResults.length > 0 
                 ? `Tìm thấy ${totalRecords} khóa học cho "${searchTerm}"`
                 : `Không tìm thấy khóa học nào cho "${searchTerm}"`}
             </Alert>
           )}
 
-          {initialLoading ? (
+          {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", my: 3 }}>
               <CircularProgress />
             </Box>
@@ -433,37 +347,30 @@ export default function AdminCoursePage() {
             </Alert>
           ) : (
             <Box sx={{ mt: 2 }}>
-              {loading && (
-                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                  <CircularProgress size={30} />
-                </Box>
-              )}
-              
-              {!loading && displayedCourses.length > 0 ? (
+              {displayedCourses.length > 0 ? (
                 <Grid container spacing={2}>
-                  {displayedCourses.map((course, index) => (
-                    <Grid item xs={12} key={course.id || `course-${index}`}>
+                  {displayedCourses.map((course) => (
+                    <Grid item xs={12} key={course.id}>
                       <CourseCard course={course} />
                     </Grid>
                   ))}
                 </Grid>
-              ) : !loading ? (
+              ) : (
                 <Box sx={{ textAlign: "center", py: 4 }}>
                   <Typography variant="body1" color="text.secondary">
                     Không tìm thấy khóa học phù hợp với tiêu chí của bạn.
                   </Typography>
                 </Box>
-              ) : null}
+              )}
             </Box>
           )}
 
-          {totalPages > 1 && !loading && (
+          {totalPages > 1 && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
               <Pagination
                 count={totalPages}
                 page={pageNumber}
                 onChange={handlePageChange}
-                disabled={loading}
                 variant="outlined"
                 shape="rounded"
                 color="primary"

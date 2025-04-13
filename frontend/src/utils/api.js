@@ -22,7 +22,8 @@ export const getStudentByMssvApi = (mssv) =>
   axiosInstance.get(`/sinhvien/get_student/${mssv}`);
 
 export const searchStudentApi = (query) => 
-  axiosInstance.get(`/sinhvien/search`, { params: { query } });
+  axiosInstance.get(`/sinhvien/search_student`, { params: { query } });
+
 
 export const addStudentApi = (studentData) => 
   axiosInstance.post("/sinhvien/add_student", studentData);
@@ -71,9 +72,24 @@ export const getFacultyListApi = (params = {}) => {
     sortOrder: params.order || "asc",
     ...params,
   };
-
-
   return axiosInstance.get("/Khoa/getListFaculty", {
     params: queryParams,
   });
 }
+
+
+//COURSE
+export const getCoursesListApi = (params = {}) => {
+  const queryParams = {
+    pageSize: params.size || 10,
+    pageNumber: params.page || 1,
+    sortBy: params.sort || "CourseId",
+    sortOrder: params.order || "asc",
+    ...params,
+  };
+  return axiosInstance.get("/KhoaHoc/getListCourse", {
+    params: queryParams,
+  });
+}
+export const searchCourseApi = (query) =>
+  axiosInstance.get(`/KhoaHoc/searchCourse`, { params: { query } });
