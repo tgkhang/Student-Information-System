@@ -230,7 +230,6 @@ export default function Login() {
                 />
 
                 <TextField
-                  type="password"
                   placeholder="Enter your password"
                   {...register("password")}
                   fullWidth
