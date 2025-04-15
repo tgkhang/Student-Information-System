@@ -22,6 +22,8 @@ import { GetCourseListDto } from './dto/getListCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
 import { RateCourseDto } from './dto/rateCourse.dto';
 import { get } from 'mongoose';
+import { CreateDeadlineDto } from './dto/createDeadline.dto';
+import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 
 @Controller('api/KhoaHoc')
 export class KhoaHocController {
@@ -242,4 +244,40 @@ export class KhoaHocController {
   async getCourseRatings(@Param('MaKhoaHoc') MaKhoaHoc: string) {
     return await this.khoaHocService.getCourseRatings(MaKhoaHoc);
   }
+
+  @Post(':id/deadline')
+  @UseGuards(JWTAuthGuard)
+  @UsePipes(new ValidationPipe())
+  async createDeadline(@Param('id') khoaHocId: string, @Body() createDeadlineDto: CreateDeadlineDto, @Req() req: any) {
+    if (req.user.role !== 'admin' && req.user.role !== 'teacher') {
+      throw new UnauthorizedException('Không có quyền tạo deadline.');
+    }
+
+    const deadline = await this.khoaHocService.createDeadline(
+      khoaHocId,
+      createDeadlineDto,
+      req.user.username,
+      req.user.role,
+    );
+    return { message: 'Deadline created successfully', deadline };
+  }
+
+  @Put(':id/deadline/:deadlineId')
+  @UseGuards(JWTAuthGuard)
+  @UsePipes(new ValidationPipe())
+  async updateDeadline(@Param('id') khoaHocId: string, @Param('deadlineId') deadlineId: string, @Body() updateDeadlineDto: UpdateDeadlineDto, @Req() req: any) {
+    if (req.user.role !== 'admin' && req.user.role !== 'teacher') {
+      throw new UnauthorizedException('Không có quyền cập nhật deadline.');
+    }
+    const deadline = await this.khoaHocService.updateDeadline(
+      khoaHocId,
+      deadlineId,
+      updateDeadlineDto,
+      req.user.username,
+      req.user.role,
+    );
+    return { message: 'Deadline updated successfully', deadline };
+
+  }
+
 }

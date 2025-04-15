@@ -229,20 +229,4 @@ export class GiangVienService {
   }
 
 
-  // async uploadAvatar(MaGV: string, file: Express.Multer.File): Promise<GiangVienDocument> {
-  //   const giangVien = await this.giangVienModel.findOne({ MaGV }).exec();
-  //   if (!giangVien) {
-  //     throw new NotFoundException('Giảng viên không tồn tại.');
-  //   }
-
-  //   const uploadResult = await this.uploadService.uploadFile(file);
-  //   const avatarUrl = uploadResult.url; // Giả định uploadService trả về { url: string }
-
-  //   // Cập nhật Avatar trong document GiangVien
-  //   giangVien.Anh = avatarUrl;
-  //   giangVien.NgayCapNhat = new Date();
-  //   await giangVien.save();
-
-  //   return giangVien;
-  // }
 }

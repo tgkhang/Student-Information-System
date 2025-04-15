@@ -137,17 +137,5 @@ export class GiangVienController {
     const updatedGiangVien = await this.GiangVienService.markNotiAsRead(MaGV, thongBaoId);
     return { message: 'Đã đánh dấu thông báo là đã đọc.', data: updatedGiangVien };
   }
-  // @Post('upload-avatar')
-  // @UseGuards(JWTAuthGuard)
-  // @UseInterceptors(FileInterceptor('Anh'))
-  // async uploadAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
-  //   if (req.user.role !== 'teacher') {
-  //     throw new UnauthorizedException('Chỉ giảng viên mới có thể upload ảnh.');
-  //   }
-
-  //   const MaGV = req.user.username;
-  //   return await this.GiangVienService.uploadAvatar(MaGV, file);
-
-  // }
 
 }

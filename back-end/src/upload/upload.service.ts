@@ -34,7 +34,7 @@ export class UploadService {
     return BlobServiceClient.fromConnectionString(connectionString);
   }
 
-  async uploadFile(
+  async   uploadFile(
     file: Express.Multer.File,
     khoaHocId: string,
     moTa: string,
@@ -86,7 +86,7 @@ export class UploadService {
       TenTaiLieu: file.originalname,
       LinkTaiLieu: fileUrl,
       MoTa: moTa,
-      TenNguoiDung: username,
+      NguoiDang: username,
     });
     const savedFile = await fileDoc.save();
 
@@ -124,7 +124,7 @@ export class UploadService {
 
     if (giangVien.Anh) {
       // const oldBlobName = giangVien.Anh.split('/').pop()?.split('?')[0];
-      const oldBlobName = giangVien.Anh.split('/').slice(-2).join('/'); // Lấy "avatars/<filename>"
+      const oldBlobName = giangVien.Anh.split('/').slice(-2).join('/');
       if (oldBlobName) {
         console.log(oldBlobName);
         const oldBlockBlobClient = containerClient.getBlockBlobClient(oldBlobName);
@@ -167,7 +167,7 @@ export class UploadService {
           `Không tìm thấy tài liệu với ID ${taiLieuId}`,
         );
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (user.role !== 'admin' && taiLieu.TenNguoiDung !== user.username) {
+      if (user.role !== 'admin' && taiLieu.NguoiDang !== user.username) {
         throw new UnauthorizedException('Bạn không có quyền xóa tài liệu này');
       }
       const blobServiceClient = await this.getBlobServiceClient();
