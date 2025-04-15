@@ -170,24 +170,24 @@ export default function ForgotPassword() {
                 </Typography>
               </Box>
               <Typography sx={guestLoginSection}>
-                Please type your email in the box below and we will send you a
-                recovery link.
+                Please type your username in the box below and we will send you a
+                recovery link to your linked email.
               </Typography>
             </Box>
 
             <form onSubmit={handleSubmit(onSubmit)} style={guestContainerLoginSubsection}>
               <TextField
-                placeholder="Enter your email"
-                {...register("email")}
+                placeholder="Enter your username"
+                {...register("username")}
                 fullWidth
                 variant="outlined"
                 size="small"
                 InputProps={{
                   sx: { borderRadius: "2em", fontSize: "0.8rem" },
                 }}
-                label="Email"
-                error={!!errors.email} // Check if there is an error with the email
-                helperText={errors.email?.message} // Show error message if any
+                label="Username"
+                error={!!errors.username}
+                helperText={errors.username?.message}
                 InputLabelProps={{
                   sx: {
                     fontSize: "0.8rem",
