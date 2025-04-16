@@ -175,11 +175,20 @@ function CoursesListAndSearch({ courses }) {
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "flex-end",
+                  justifyContent: "space-between",
                   alignItems: "center",
-                  width: "100%",
+                  width: "100%"
                 }}
               >
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: "bold",
+                    color: "primary.main",
+                  }}
+                >
+                  Courses
+                </Typography>
                 {/* Both filters on the right */}
                 <Box sx={{ display: "flex", gap: 1 }}>
                   <CustomSelect

@@ -12,8 +12,8 @@ import classesData from "../mockdata/courseData";
 
 export default function StudentCoursePage() {  
     return (
-      <Page title="StudentCoursePage">
-        <Box sx={{ display: "flex" }}>
+      <Page title="My Courses">
+        <Box sx={{ display: "flex", p: 1 }}>
           <Box
             component="main"
             sx={{
@@ -29,17 +29,6 @@ export default function StudentCoursePage() {
               // width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
             }}
           >
-            <Typography
-              variant="h4"
-              gutterBottom
-              sx={{
-                fontWeight: "bold",
-                color: "primary.main",
-              }}
-            >
-              Courses
-            </Typography>
-  
             <CoursesListAndSearch courses={classesData} />
           </Box>
         </Box>

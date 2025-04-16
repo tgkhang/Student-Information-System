@@ -429,7 +429,7 @@ export default function StudentCalendar() {
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <Page title="Student Calendar">
+    <Page title="Calendar View">
       <Box maxWidth={1200} mx="auto" mt={5} px={2}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Academic Calendar
