@@ -5,6 +5,7 @@ import LoadingScreen from "../components/LoadingScreen";
 // guards
 import AuthGuard from "../guards/AuthGuards";
 import GuestGuard from "../guards/GuestGuard";
+import Dashboard from "../pages/teacher/TeacherDashboardPage";
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) => {
@@ -74,7 +75,7 @@ export default function Router() {
         },
         {
           path : "notification/:id",
-          element: <DetailNotification />,
+          element: <ViewNotification />,
         },
         {
           path : "course",
@@ -108,6 +109,7 @@ export default function Router() {
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
         { path: "dashboard", element: <TeacherDashboardPage /> },
+        { path: "", element: <TeacherCoursePage /> },
         {
           path: "course",
           element: <TeacherCoursePage />,
@@ -122,7 +124,7 @@ export default function Router() {
         },
         {
           path : "notification/:id",
-          element: <CreateNotification />,
+          element: <ViewNotification />,
         },
         {
           path : "deadline/:id",
@@ -179,7 +181,7 @@ const Page404 = Loadable(lazy(() => import("../pages/Page404")));
 const ComingSoon = Loadable(lazy(() => import("../pages/ComingSoon")));
 const Maintenance = Loadable(lazy(() => import("../pages/Maintenance")));
 const FAQs = Loadable(lazy(() => import("../pages/Faqs")));
-
+const ViewNotification = Loadable(lazy(() => import("../pages/ViewNotification")));
 // STUDENT
 const StudentDashboardPage = Loadable(lazy(() => import("../pages/Student/StudentDashboardPage")))
 const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistrationPage")))

@@ -37,12 +37,12 @@ axiosInstance.interceptors.response.use(
         console.log("Access forbidden");
       } else if (status === 401) {
         // Redirect to the login page
-        if (!window.location.pathname.includes('login') && !window.location.pathname.includes('register')) {
-        window.location.href = "/auth/login";
-        }
+        // if (!window.location.pathname.includes('login') && !window.location.pathname.includes('register')) {
+        // window.location.href = "/auth/login";
+        // }
       } else if (status === 404) {
-        window.localStorage.removeItem("accessToken");
-        window.location.href = "/404";
+        // window.localStorage.removeItem("accessToken");
+        // window.location.href = "/404";
       } else if (status === 500) {
         // window.location.href = "/500";
       } else if (status === 503) {

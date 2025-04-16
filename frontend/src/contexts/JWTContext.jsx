@@ -57,14 +57,13 @@ function AuthProvider({ children }) {
     const initialize = async () => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
-        console.log('accessToken', accessToken);
         
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
 
           const response = await axiosInstance.get(`/auth/get-account-by-token?accessToken=${accessToken}`);
           const user = response.data;
-          console.log(response)
+          console.log(user);
           dispatch({
             type: 'INITIALIZE',
             payload: {
@@ -97,7 +96,6 @@ function AuthProvider({ children }) {
   }, []);
 
   const login = async (accessToken, user) => {
-    console.log(accessToken, user);
     setSession(accessToken);
     dispatch({
       type: 'LOGIN',

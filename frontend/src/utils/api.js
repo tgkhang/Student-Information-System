@@ -76,7 +76,13 @@ export const getFacultyListApi = (params = {}) => {
     params: queryParams,
   });
 }
-
+//NOTIFICATION 
+export const getNotificationListApi = () => {
+  return axiosInstance.get("/ThongBao");
+};
+export const getNotificationByIdApi = (id) => {
+  return axiosInstance.get(`/ThongBao/getNotiByID/${id}`);
+}
 
 //COURSE
 export const getCoursesListApi = (params = {}) => {
@@ -93,3 +99,6 @@ export const getCoursesListApi = (params = {}) => {
 }
 export const searchCourseApi = (query) =>
   axiosInstance.get(`/KhoaHoc/searchCourse`, { params: { query } });
+export const getCourseById = (id) => {
+  return axiosInstance.get(`/KhoaHoc/getCourse/${id}`);
+}

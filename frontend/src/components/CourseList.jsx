@@ -15,7 +15,7 @@ import {
   //Table,TableBody,TableCell, TableContainer, TableRow, TableHead, Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-
+// import { formatDate } from "../utils/dateUtils"; // Assuming you have a date utility function
 
 // Format date for display
 const formatDate = (dateString) => {
@@ -29,9 +29,11 @@ const formatDate = (dateString) => {
 };
 
 // CourseCard component: display individual course information
-const CourseCard = ({ course }) => {
+const CourseCard = ({ course, onClick  }) => {
+  console.log("CourseCard course:", course);
   return (
     <Card
+      onClick={onClick}
       sx={{
         mb: 2,
         boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
@@ -53,44 +55,44 @@ const CourseCard = ({ course }) => {
               color="primary"
               sx={{ fontWeight: "bold", fontSize: "1rem" }}
             >
-              {course.id} - {course.name.toUpperCase()}
+              {course?.MaKhoaHoc} - {course?.TenKhoaHoc.toUpperCase()}
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary">
-            Instructor: {course.instructor}
+            Instructor: {course?.GiangVienID?.HoTen}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {course.description}
+            {course?.MoTa}
           </Typography>
 
           {/*Course details*/}
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
             <Chip
               icon={<AccessTimeIcon fontSize="small" />}
-              label={`${formatDate(course.startDate)} - ${formatDate(
-                course.endDate
+              label={`${formatDate(course.NgayBatDau)} - ${formatDate(
+                course.NgayKetThuc
               )}`}
               size="small"
               sx={{ bgcolor: "#f0f7ff", color: "#0057b7" }}
             />
              <Chip 
               icon={<PersonIcon fontSize="small" />} 
-              label={course.assistantName || "No Assistant"} 
+              label={course?.TroGiangID?.HoTen || "No Assistant"} 
               size="small"
               sx={{ bgcolor: '#f5f5f5' }}
             />
             <Chip 
               icon={<PeopleIcon fontSize="small" />} 
-              label={`${course.registeredStudents}/${course.maxStudents} Students`} 
+              label={`${course.SoLuongSinhVienDangKy}/${course.SoLuongToiDa} Students`} 
               size="small"
               sx={{ bgcolor: '#f5f5f5' }}
             />
-            <Chip
+            {/* <Chip
               icon={<ClassIcon fontSize="small" />}
               label={`${course.credits} Credits`}
               size="small"
               sx={{ bgcolor: "#f5f5f5" }}
-            />
+            /> */}
           </Box>
         </Box>
       </CardContent>
@@ -99,22 +101,17 @@ const CourseCard = ({ course }) => {
 };
 
 // CourseList component to display all courses
-const CourseList = ({ courses, searchTerm, semester, year }) => {
+const CourseList = ({ courses, searchTerm, year }) => {
   // Filter courses based on search term and filters
   const filteredCourses = courses.filter((course) => {
     // Filter by search term (course name or ID)
     const matchesSearch = searchTerm
-      ? course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.id.toLowerCase().includes(searchTerm.toLowerCase())
-      : true;
-
-    // Filter by semester and year (basic)
-    const matchesSemester = semester
-      ? course.semester.includes(semester)
+      ? course?.TenKhoaHoc.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course?.MaKhoaHoc.toLowerCase().includes(searchTerm.toLowerCase())
       : true;
     const matchesYear = year ? course.semester.includes(year.toString()) : true;
 
-    return matchesSearch && matchesSemester && matchesYear;
+    return matchesSearch  && matchesYear;
   });
 
   return (
@@ -122,8 +119,8 @@ const CourseList = ({ courses, searchTerm, semester, year }) => {
       {filteredCourses.length > 0 ? (
         <Grid container spacing={2}>
           {filteredCourses.map((course) => (
-            <Grid item xs={12} key={course.id}>
-              <CourseCard course={course} />
+            <Grid item xs={12} key={course._id}>
+              <CourseCard course={course} onClick={() => { window.location.href = `/teacher/course/${course?.MaKhoaHoc}` }} />
             </Grid>
           ))}
         </Grid>
@@ -191,13 +188,6 @@ function CoursesListAndSearch({ courses }) {
                 </Typography>
                 {/* Both filters on the right */}
                 <Box sx={{ display: "flex", gap: 1 }}>
-                  <CustomSelect
-                    items={["Semester 1", "Semester 2", "Semester 3"]}
-                    label="Semester"
-                    id="semester-select"
-                    value={semester}
-                    onChange={(e) => setSemester(e.target.value)}
-                  />
 
                   <CustomSelect
                     items={[2020, 2021, 2022, 2023, 2024, 2025]}
@@ -234,7 +224,6 @@ function CoursesListAndSearch({ courses }) {
             <CourseList
               courses={courses || []}
               searchTerm={searchTerm}
-              semester={semester}
               year={year}
             />
           </CardContent>

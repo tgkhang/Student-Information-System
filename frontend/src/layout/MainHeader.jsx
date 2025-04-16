@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 
 // @mui
 import {
@@ -24,6 +24,8 @@ import useAuth from "../hooks/useAuth";
 import Logo from "../assets/Logo.svg";
 import NotificationList from "../components/Notifications";
 import ProfileMenu from "../components/ProfileMenu";
+// utils
+import { getNotificationListApi } from "../utils/api";
 
 const HeaderStyle = styled(AppBar)(({ theme }) => ({
   width: "100%",
@@ -44,7 +46,7 @@ export default function MainHeader() {
   const [anchorNotif, setAnchorNotif] = useState(null);
   const [openProfileMenu, setOpenProfileMenu] = useState(false);
   const [anchorProfile, setAnchorProfile] = useState(null);
-
+  const [notifications, setNotifications] = useState([]);
   const handleToggleNotifications = (event) => {
     setAnchorNotif(event.currentTarget);
     setOpenNotifications((prev) => !prev);
@@ -54,18 +56,30 @@ export default function MainHeader() {
   const handleCloseNotifications = () => {
     setOpenNotifications(false);
   };
-  const role = "student";
   const renderRoleIcon = () => {
-    if (role === "admin") {
+    if (user.role === "admin") {
       return <AdminPanelSettingsIcon sx={{ color: "white" }} />;
-    } else if (role === "teacher") {
+    } else if (user.role === "teacher") {
       return <SchoolIcon sx={{ color: "white" }} />;
-    } else if (role === "student") {
+    } else if (user.role === "student") {
       return <PersonIcon sx={{ color: "white" }} />;
     }
     return null;
   };
-
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await getNotificationListApi();
+        setNotifications(response.data);
+        const allRead = response.data.every(notification => notification?.isRead === true);
+        setHasNotifications(!allRead);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    }
+    fetchNotifications();
+  }, []);
   const handleToggleProfileMenu = (event) => {
     setAnchorProfile(event.currentTarget);
     setOpenProfileMenu((prev) => !prev);
@@ -95,7 +109,6 @@ export default function MainHeader() {
         >
           {isAuthenticated && (
             <Box sx={{ display: "flex", alignItems: "center", gap: "1em" }}>
-              {/* Notification Bell */}
               <ClickAwayListener onClickAway={handleCloseNotifications}>
                 <Box>
                   <IconButton
@@ -149,7 +162,7 @@ export default function MainHeader() {
                       '&::-webkit-scrollbar-thumb': { backgroundColor: "primary.main", borderRadius: '3px' },
                       '&::-webkit-scrollbar-thumb:hover': { backgroundColor: "primary.dark" },
                       }}>
-                      <NotificationList />
+                      <NotificationList notifications={notifications} role={user?.role}/>
                     </Paper>
                   </Popper>
                 </Box>
