@@ -45,7 +45,7 @@ export class UploadService {
   ): Promise<TaiLieu> {
     const khoaHoc = await this.khoaHocModel
       .findById(khoaHocId)
-      .populate('GiangVienID TroGiangID')
+      .populate('GiangVienID')
       .exec();
     if (!khoaHoc) {
       throw new NotFoundException(
@@ -54,13 +54,9 @@ export class UploadService {
     }
     if (role !== 'admin') {
       const giangVien = khoaHoc.GiangVienID as unknown as GiangVienDocument;
-      const troGiang = khoaHoc.TroGiangID as unknown as
-        | GiangVienDocument
-        | undefined;
 
       const isGiangVien = giangVien && giangVien.MaGV === username;
-      const isTroGiang = troGiang && troGiang.MaGV === username;
-      if (!isGiangVien && !isTroGiang) {
+      if (!isGiangVien) {
         throw new UnauthorizedException(
           'Bạn không có quyền upload tài liệu cho khóa học này',
         );
