@@ -10,13 +10,17 @@ export class CreateThongBaoDto {
   @IsNotEmpty()
   NoiDung: string;
 
-  @IsEnum(['GiangVien', 'SinhVien', 'Khoa', 'KhoaHoc'])
+  @IsEnum(['GiangVien', 'SinhVien', 'Khoa', 'KhoaHoc', 'NienKhoa'])
   @IsNotEmpty()
-  NhomGui: 'GiangVien' | 'SinhVien' | 'Khoa' | 'KhoaHoc';
+  NhomGui: 'GiangVien' | 'SinhVien' | 'Khoa' | 'KhoaHoc' | 'NienKhoa';
 
   @IsOptional()
   KhoaHocID?: Types.ObjectId;
 
   @IsOptional()
   KhoaID?: Types.ObjectId;
+
+  @IsOptional()
+   Khoa?: string;
+   
 }
