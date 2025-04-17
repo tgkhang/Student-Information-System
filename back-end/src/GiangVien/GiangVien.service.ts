@@ -13,6 +13,7 @@ import { KhoaHoc, KhoaHocDocument } from 'src/schemas/KhoaHoc.schema';
 
 @Injectable()
 export class GiangVienService {
+  uploadService: any;
   constructor(
     @InjectModel(GiangVien.name) private readonly giangVienModel: Model<GiangVienDocument>,
     private readonly authService: AuthService,
@@ -240,25 +241,3 @@ export class GiangVienService {
     return updatedGiangVien;
   }
 
-  async getCourses(id: string): Promise<KhoaHocDocument[]> {
-    // const giangVien = await this.giangVienModel.findOne({ MaGV: id }).exec();
-    const giangVien = await this.giangVienModel.findById(id).exec();
-    if (!giangVien) {
-      throw new NotFoundException('Không tìm thấy giảng viên.');
-    }
-    // const giangVienIdStr = (giangVien._id as Types.ObjectId).toString();
-    // console.log(giangVien._id);
-    const courses = await this.khoaHocModel
-      .find({
-        $or: [
-          { GiangVienID: id },
-          { TroGiangID: id },
-        ],
-      })
-      .populate('GiangVienID', 'HoTen MaGV')
-      .populate('TroGiangID', 'HoTen MaGV')
-      // .populate('SinhVienDangKy', 'HoTen MSSV')
-      .exec();
-    return courses;
-  }
-}

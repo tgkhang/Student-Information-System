@@ -179,14 +179,4 @@ export class GiangVienController {
     return { message: 'Đã đánh dấu thông báo là đã đọc.', data: updatedGiangVien };
   }
 
-  @Get('getCourses/:id')
-  @UseGuards(JWTAuthGuard)
-  @ApiOperation({ summary: 'Get courses taught by a teacher' })
-  @ApiParam({ name: 'id', description: 'Teacher ID' })
-  @ApiResponse({ status: 200, description: 'Returns list of courses' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getCourses(@Req() req: any, @Param('id') id: string) {
-    const courses = await this.GiangVienService.getCourses(id);
-    return { message: 'Danh sách khóa học của giảng viên.', data: courses };
-  }
-}
+

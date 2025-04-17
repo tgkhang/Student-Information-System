@@ -20,6 +20,11 @@ import { AddCourseDto } from 'src/KhoaHoc/dto/add-KhoaHoc.dto';
 
 import { GetCourseListDto } from './dto/getListCourse.dto';
 import { UpdateCourseDto } from './dto/updateCourse.dto';
+import { RateCourseDto } from './dto/rateCourse.dto';
+import { get } from 'mongoose';
+import { CreateDeadlineDto } from './dto/createDeadline.dto';
+import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
+import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
 
 @Controller('api/KhoaHoc')
 export class KhoaHocController {
@@ -148,6 +153,7 @@ export class KhoaHocController {
     @Param('MaKHoaHoc') MaKHoaHoc: string,
     @Req() req: any,
   ) {
+    // console.log("-----------------------------------");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const username = req.user.username;
     // console.log(studentId);
@@ -197,17 +203,124 @@ export class KhoaHocController {
       return { message: 'Danh sách tài liệu của khóa học', files };
   }
 
-    @Delete('removeFile/:khoaHocId/:taiLieuId')
-    @UseGuards(JWTAuthGuard)
-    async removeFile(@Req() req: any, @Param('khoaHocId') khoaHocId: string, @Param('taiLieuId') taiLieuId: string){
-        
-        try {
-            if (req.user.role !== "admin" && req.user.role !=="teacher")
-                throw new UnauthorizedException('Không có quyền thực hiện thao tác này')
-            const result = await this.khoaHocService.deleteFile(khoaHocId, taiLieuId, req.user);
-            return result;
-        } catch (error) {
-            return { message: error.message };
-        }
+  @Delete('removeFile/:khoaHocId/:taiLieuId')
+  @UseGuards(JWTAuthGuard)
+  async removeFile(@Req() req: any, @Param('khoaHocId') khoaHocId: string, @Param('taiLieuId') taiLieuId: string){
+      
+      try {
+          if (req.user.role !== "admin" && req.user.role !=="teacher")
+              throw new UnauthorizedException('Không có quyền thực hiện thao tác này')
+          const result = await this.khoaHocService.deleteFile(khoaHocId, taiLieuId, req.user);
+          return result;
+      } catch (error) {
+          return { message: error.message };
+      }
+  }
+
+  @Post('rate/:MaKhoaHoc')
+  @UseGuards(JWTAuthGuard)
+  @UsePipes(new ValidationPipe())
+  async rateCourse(@Param('MaKhoaHoc') MaKhoaHoc: string, @Body() rateCourseDto: RateCourseDto, @Req() req: any,) {
+    try{
+      if (req.user.role !== 'student') {
+        throw new UnauthorizedException('Chỉ sinh viên mới có thể đánh giá khóa học.');
+      }
+      const mssv = req.user.username;
+      const result = await this.khoaHocService.rateCourse(MaKhoaHoc, mssv, rateCourseDto);
+      return { message: 'Đánh giá khóa học thành công.', data: result };
     }
+    catch(error)
+    {
+      return error;
+    }
+    
+  }
+
+  @Get('listRatings/:MaKhoaHoc')
+  async getListCourseRatings(@Param('MaKhoaHoc') MaKhoaHoc: string) {
+    const result = await this.khoaHocService.getListCourseRatings(MaKhoaHoc);
+    return { message: 'Danh sách đánh giá khóa học.', data: result };
+  }
+
+  @Get('ratings/:MaKhoaHoc')
+  async getCourseRatings(@Param('MaKhoaHoc') MaKhoaHoc: string) {
+    return await this.khoaHocService.getCourseRatings(MaKhoaHoc);
+  }
+
+  @Post(':id/deadline')
+  @UseGuards(JWTAuthGuard)
+  @UsePipes(new ValidationPipe())
+  async createDeadline(@Param('id') khoaHocId: string, @Body() createDeadlineDto: CreateDeadlineDto, @Req() req: any) {
+    if (req.user.role !== 'admin' && req.user.role !== 'teacher') {
+      throw new UnauthorizedException('Không có quyền tạo deadline.');
+    }
+
+    const deadline = await this.khoaHocService.createDeadline(
+      khoaHocId,
+      createDeadlineDto,
+      req.user.username,
+      req.user.role,
+    );
+    return { message: 'Deadline created successfully', deadline };
+  }
+
+  @Put(':id/deadline/:deadlineId')
+  @UseGuards(JWTAuthGuard)
+  @UsePipes(new ValidationPipe())
+  async updateDeadline(@Param('id') khoaHocId: string, @Param('deadlineId') deadlineId: string, @Body() updateDeadlineDto: UpdateDeadlineDto, @Req() req: any) {
+    if (req.user.role !== 'admin' && req.user.role !== 'teacher') {
+      throw new UnauthorizedException('Không có quyền cập nhật deadline.');
+    }
+    const deadline = await this.khoaHocService.updateDeadline(
+      khoaHocId,
+      deadlineId,
+      updateDeadlineDto,
+      req.user.username,
+      req.user.role,
+    );
+    return { message: 'Deadline updated successfully', deadline };
+
+  }
+
+  @Post('addTeacherintoCourse/:id')
+  @UseGuards(JWTAuthGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async addTeacherintoCourse(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Body() body: AddTeacherintoCourseDto,
+  ) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (req.user.role !== 'admin')
+        throw new UnauthorizedException(
+          'Bạn không có quyền thực hiện thao tác này.',
+        );
+      const KhoaHoc = await this.khoaHocService.addTeacherintoCourse(id, body);
+      return { message: 'Giáo viên đã được thêm vào khóa học thành công!', KhoaHoc };
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return error;
+    }
+  }
+
+  @Delete('removeTeacher/:id')
+  @UseGuards(JWTAuthGuard)
+  @UsePipes(new ValidationPipe())
+  async removeTeacher(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Body() body: AddTeacherintoCourseDto,
+  ) {
+    try {
+      if (req.user.role !== 'admin')
+        throw new UnauthorizedException(
+          'Bạn không có quyền thực hiện thao tác này.',
+        );
+      const KhoaHoc = await this.khoaHocService.removeTeacher(id, body);
+      return { message: 'Giáo viên đã được xóa khỏi khóa học thành công!', KhoaHoc };
+    } catch (error) {
+      return error;
+    }
+  }
 }
