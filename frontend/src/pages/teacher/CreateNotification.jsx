@@ -47,7 +47,7 @@ export default function CreateNotification() {
 
   return (
     <Page title="Create Notification">
-      <Box maxWidth={800} mx="auto" mt={5}>
+      <Box maxWidth={800} mx="auto" mt={10}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Create Notification
         </Typography>

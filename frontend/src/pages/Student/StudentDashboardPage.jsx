@@ -48,7 +48,7 @@ import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import { useLocation, useNavigate } from "react-router-dom";
 import Page from "../../components/Page";
 
-const drawerWidth = 10;
+const drawerWidth = 0;
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -424,8 +424,8 @@ export default function Dashboard() {
   }, [location.search]);
 
   return (
-    <Page title="StudentDashboardPage">
-      <Box sx={{ display: "flex" }}>
+    <Page title="My Dashboard">
+      <Box sx={{ display: "flex", p: 1 }}>
 
         <Box
           component="main"

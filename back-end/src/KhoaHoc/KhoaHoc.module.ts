@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { KhoaHocService } from './KhoaHoc.service';
 import { KhoaHocController } from './KhoaHoc.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -26,8 +26,11 @@ import { LichHoc, LichHocSchema } from 'src/schemas/LichHoc.schema';
               secret: 'abc123',
               signOptions: { expiresIn: '1h' },
             }),
-    SinhVienModule,
-    GiangVienModule,
+    forwardRef(() => GiangVienModule),
+    forwardRef(() => SinhVienModule),
+
+    // SinhVienModule,
+    // GiangVienModule,
     UploadModule,
     AuthModule,
   ],

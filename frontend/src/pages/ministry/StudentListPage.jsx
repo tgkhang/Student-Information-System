@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Typography,
   Button,
@@ -17,12 +17,24 @@ import {
   Pagination,
   Grid,
   Stack,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 // components
 import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
-// utils
 import exportToExcel from "../../utils/exportToExcel";
+import { getStudentListApi, searchStudentApi } from "../../utils/api";
+
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  try {
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  } catch (e) {
+    return dateString;
+  }
+};
 
 const statuses = [
   "Đang học",
@@ -33,77 +45,288 @@ const statuses = [
 const courses = ["K63", "K64", "K65"]; // Ví dụ về các khóa học
 const majors = ["Công nghệ thông tin", "Kinh tế", "Cơ khí", "Xây dựng"]; // Ví dụ về chuyên ngành
 
-// Hàm tạo dữ liệu giả lập cho 100 sinh viên
-function generateStudents() {
-  const students = [];
-  for (let i = 1; i <= 100; i++) {
-    const student = {
-      id: `SV${i.toString().padStart(3, "0")}`,
-      name: `Sinh viên ${i}`,
-      dob: `199${i % 10}-0${(i % 12) + 1}-15`,
-      course: courses[i % courses.length],
-      major: majors[i % majors.length],
-      status: statuses[i % statuses.length],
-    };
-    students.push(student);
-  }
-  return students;
-}
-
 export default function StudentListPage() {
-  const students = useMemo(() => generateStudents(), []);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
 
-  // Trạng thái nhập liệu (chưa áp dụng)
+  // Pagination state
+  const [pageSize, setPageSize] = useState(10);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Sorting state
+  const [sortBy, setSortBy] = useState("mssv");
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  // Filter state
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterCourse, setFilterCourse] = useState("");
+  const [filterMajor, setFilterMajor] = useState("");
 
-  // Trạng thái áp dụng cho tìm kiếm và bộ lọc
-  const [appliedSearch, setAppliedSearch] = useState("");
-  const [appliedStatus, setAppliedStatus] = useState("");
-  const [appliedCourse, setAppliedCourse] = useState("");
+  // Search state
+  const [isSearchActive, setIsSearchActive] = useState(false); 
+  const [searchResults, setSearchResults] = useState([]);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const formatStudentData = useCallback((student) => {
+    if (!student) return null;
+    try {
+      return {
+        id: student.mssv || "",
+        name: student.HoTen || "",
+        dob: formatDate(student.NgaySinh || ""),
+        course: student.KhoaHoc || "",
+        major: student.ChuyenNganh || "",
+        status: student.TrangThai || "",
+      };
+    } catch (err) {
+      console.error("Error formatting student data:", err);
+      return null;
+    }
+  }, []);
 
-  // Khi nhấn nút Tìm kiếm, cập nhật trạng thái áp dụng và reset trang về 1
-  const handleSearch = () => {
-    setAppliedSearch(searchTerm);
-    setAppliedStatus(filterStatus);
-    setAppliedCourse(filterCourse);
-    setCurrentPage(1);
-  };
+  const fetchStudents = useCallback(
+    async (
+      page = pageNumber,
+      size = pageSize,
+      sort = sortBy,
+      order = sortOrder
+    ) => {
+      // Prevent multiple simultaneous requests
+      if (isFetching) {
+        console.log("Request already in progress, skipping");
+        return;
+      }
 
-  // Lọc danh sách sinh viên dựa trên trạng thái đã áp dụng (applied)
-  const filteredStudents = useMemo(() => {
-    return students.filter((student) => {
-      const matchesSearch =
-        student.name.toLowerCase().includes(appliedSearch.toLowerCase()) ||
-        student.id.toLowerCase().includes(appliedSearch.toLowerCase());
-      const matchesStatus = appliedStatus
-        ? student.status === appliedStatus
-        : true;
-      const matchesCourse = appliedCourse
-        ? student.course === appliedCourse
-        : true;
-      return matchesSearch && matchesStatus && matchesCourse;
-    });
-  }, [students, appliedSearch, appliedStatus, appliedCourse]);
+      try {
+        setIsFetching(true);
+        setLoading(true);
+        setError(null);
 
-  // Phân trang: 50 sinh viên mỗi trang
-  const pageSize = 50;
-  const pageCount = Math.ceil(filteredStudents.length / pageSize);
-  const displayedStudents = filteredStudents.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
+        // Call the API with the required parameters
+        const response = await getStudentListApi({
+          page,
+          size,
+          sort,
+          order,
+        });
+
+        if (
+          response?.data &&
+          response.data?.data &&
+          Array.isArray(response.data.data)
+        ) {
+          // Update total records and pages for pagination
+          setTotalRecords(response.data.total || 0);
+          const newTotalPages = Math.max(
+            1,
+            Math.ceil((response.data.total || 0) / size)
+          );
+          setTotalPages(newTotalPages);
+
+          // Format student data for display
+          const formattedStudents = response.data.data
+            .map(formatStudentData)
+            .filter(Boolean); // Filter out any null results
+
+          setStudents(formattedStudents);
+          setIsSearchActive(false);
+          setError(null);
+        } else {
+          setError("API response format is unexpected");
+          setStudents([]);
+          setTotalPages(1);
+          setTotalRecords(0);
+        }
+      } catch (err) {
+        console.error("Error fetching student data:", err);
+        setError(
+          `Không thể tải dữ liệu sinh viên: ${err.message || "Unknown error"}`
+        );
+        setStudents([]);
+        setTotalPages(1);
+        setTotalRecords(0);
+      } finally {
+        setLoading(false);
+        setInitialLoading(false);
+        setIsFetching(false);
+      }
+    },
+    [pageNumber, pageSize, sortBy, sortOrder, formatStudentData, isFetching]
   );
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
+  const searchStudents = useCallback(
+    async (searchValue) => {
+      // Prevent multiple simultaneous requests
+      if (isFetching) {
+        console.log("Request already in progress, skipping");
+        return;
+      }
+
+      if (!searchValue || !searchValue.trim()) {
+        setError("Vui lòng nhập thông tin để tìm kiếm");
+        return;
+      }
+
+      try {
+        setIsFetching(true);
+        setLoading(true);
+        setError(null);
+
+        const response = await searchStudentApi(searchValue.trim());
+
+        if (response?.data) {
+          // Check if the API response is an array or a single object
+          const studentData = Array.isArray(response.data) 
+            ? response.data 
+            : [response.data];
+            
+          // Format all students data
+          const formattedStudents = studentData
+            .map(formatStudentData)
+            .filter(Boolean);
+
+          if (formattedStudents.length > 0) {
+            setStudents(formattedStudents);
+            setTotalRecords(formattedStudents.length);
+            setTotalPages(1);
+            setIsSearchActive(true);
+          } else {
+            setError("Không tìm thấy sinh viên phù hợp");
+            setStudents([]);
+            setIsSearchActive(true);
+          }
+        } else {
+          setError("Không tìm thấy sinh viên");
+          setStudents([]);
+          setIsSearchActive(true);
+        }
+      } catch (err) {
+        console.error("Error searching students:", err);
+        if (err.response?.status === 404) {
+          setError(`Không tìm thấy sinh viên với từ khóa: ${searchValue}`);
+        } else {
+          setError(
+            `Lỗi tìm kiếm: ${
+              err.response?.data?.message || err.message || "Unknown error"
+            }`
+          );
+        }
+
+        setStudents([]);
+        setIsSearchActive(true);
+      } finally {
+        setLoading(false);
+        setIsFetching(false);
+      }
+    },
+    [formatStudentData, isFetching]
+  );
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  // Handle page change
+  const handlePageChange = useCallback(
+    (event, value) => {
+      // Prevent page change if another request is in progress
+      if (isFetching) return;
+
+      if (isSearchActive) {
+        setIsSearchActive(false);
+        setSearchTerm("");
+        setPageNumber(value);
+        fetchStudents(value, pageSize, sortBy, sortOrder);
+      } else {
+        setPageNumber(value);
+        fetchStudents(value, pageSize, sortBy, sortOrder);
+      }
+    },
+    [isSearchActive, pageSize, sortBy, sortOrder, fetchStudents, isFetching]
+  );
+
+  // Handle sort change
+  const handleSortChange = useCallback(
+    (field) => {
+      // Prevent sort change if another request is in progress
+      if (isFetching || isSearchActive) return;
+
+      const newOrder = field === sortBy && sortOrder === "asc" ? "desc" : "asc";
+      setSortBy(field);
+      setSortOrder(newOrder);
+      fetchStudents(pageNumber, pageSize, field, newOrder);
+    },
+    [
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortOrder,
+      fetchStudents,
+      isFetching,
+      isSearchActive,
+    ]
+  );
+
+  // Handle search
+  const handleSearch = useCallback(() => {
+    // Prevent search if another request is in progress
+    if (isFetching) return;
+    searchStudents(searchTerm);
+  }, [searchTerm, searchStudents, isFetching]);
+
+  // Handle clear search
+  const handleClearSearch = useCallback(() => {
+    // Prevent clearing if another request is in progress
+    if (isFetching) return;
+    setSearchTerm("");
+    setFilterStatus("");
+    setFilterCourse("");
+    setFilterMajor(""); 
+    setIsSearchActive(false);
+    setPageNumber(1);
+    fetchStudents(1, pageSize, sortBy, sortOrder);
+  }, [pageSize, sortBy, sortOrder, fetchStudents, isFetching]);
+
+  // Filter students based on search and filters
+  const filteredStudents = useMemo(() => {
+    try {
+      if (isSearchActive) return students;
+
+      if (!Array.isArray(students)) {
+        return [];
+      }
+
+      return students.filter((student) => {
+        if (!student) return false;
+
+        const matchesSearch =
+          !searchTerm ||
+          (student.name?.toLowerCase() || "").includes(
+            searchTerm.toLowerCase()
+          ) ||
+          (student.id?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+
+        const matchesStatus = !filterStatus || student.status === filterStatus;
+        const matchesCourse = !filterCourse || student.course === filterCourse;
+        const matchesMajor = !filterMajor || student.major === filterMajor;
+
+        return matchesSearch && matchesStatus && matchesCourse && matchesMajor;
+      });
+    } catch (err) {
+      console.error("Error in filteredStudents:", err);
+      return [];
+    }
+  }, [students, searchTerm, filterStatus, filterCourse, filterMajor, isSearchActive]);
 
   return (
     <Page title="Student List">
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ mt: 10 }}>
         <Box sx={{ my: 4 }}>
           <Stack
             direction="row"
@@ -111,12 +334,14 @@ export default function StudentListPage() {
             alignItems="center"
           >
             <Typography variant="h4" gutterBottom>
-              Danh sách sinh viên
+              Danh sách sinh viên {isSearchActive && "- Kết quả tìm kiếm"}
             </Typography>
             <Button
               color="success"
               variant="contained"
-              disabled={filteredStudents.length === 0}
+              disabled={
+                !filteredStudents || filteredStudents.length === 0 || loading
+              }
               onClick={() =>
                 exportToExcel(
                   [
@@ -135,20 +360,29 @@ export default function StudentListPage() {
                     student.major,
                     student.status,
                   ])
-                )}
+                )
+              }
               startIcon={<Iconify icon={"eva:download-fill"} />}
             >
               Xuất Excel
             </Button>
           </Stack>
+
           <Box sx={{ mb: 2 }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={3}>
                 <TextField
                   fullWidth
                   label="Tìm kiếm theo tên hoặc mã sinh viên"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Nhập tên hoặc mã số sinh viên"
+                  disabled={loading}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter" && !loading) {
+                      handleSearch();
+                    }
+                  }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "8px",
@@ -156,13 +390,14 @@ export default function StudentListPage() {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={2}>
                 <FormControl fullWidth>
                   <InputLabel>Tình trạng học</InputLabel>
                   <Select
                     value={filterStatus}
                     label="Tình trạng học"
                     onChange={(e) => setFilterStatus(e.target.value)}
+                    disabled={loading || isSearchActive}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "8px",
@@ -178,13 +413,14 @@ export default function StudentListPage() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={2}>
                 <FormControl fullWidth>
                   <InputLabel>Khóa</InputLabel>
                   <Select
                     value={filterCourse}
                     label="Khóa"
                     onChange={(e) => setFilterCourse(e.target.value)}
+                    disabled={loading || isSearchActive}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "8px",
@@ -201,56 +437,174 @@ export default function StudentListPage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={2}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSearch}
-                >
-                  Tìm kiếm
-                </Button>
+                <FormControl fullWidth>
+                  <InputLabel>Chuyên ngành</InputLabel>
+                  <Select
+                    value={filterMajor}
+                    label="Chuyên ngành"
+                    onChange={(e) => setFilterMajor(e.target.value)}
+                    disabled={loading || isSearchActive}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "8px",
+                      },
+                    }}
+                  >
+                    <MenuItem value="">Tất cả</MenuItem>
+                    {majors.map((major) => (
+                      <MenuItem key={major} value={major}>
+                        {major}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSearch}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      "Tìm kiếm"
+                    )}
+                  </Button>
+                  {(isSearchActive ||
+                    searchTerm ||
+                    filterStatus ||
+                    filterCourse ||
+                    filterMajor) && (
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleClearSearch}
+                      disabled={loading}
+                    >
+                      <Iconify icon={"eva:close-fill"} />
+                    </Button>
+                  )}
+                </Stack>
               </Grid>
             </Grid>
           </Box>
-          {/* Bảng hiển thị danh sách sinh viên */}
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Mã sinh viên</TableCell>
-                <TableCell>Họ tên</TableCell>
-                <TableCell>Ngày sinh</TableCell>
-                <TableCell>Khóa học</TableCell>
-                <TableCell>Chuyên ngành</TableCell>
-                <TableCell>Tình trạng học</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {displayedStudents.map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell>{student.id}</TableCell>
-                  <TableCell>{student.name}</TableCell>
-                  <TableCell>{student.dob}</TableCell>
-                  <TableCell>{student.course}</TableCell>
-                  <TableCell>{student.major}</TableCell>
-                  <TableCell>{student.status}</TableCell>
-                </TableRow>
-              ))}
-              {displayedStudents.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    Không tìm thấy sinh viên nào.
-                  </TableCell>
-                </TableRow>
+
+          {isSearchActive && (
+            <Alert
+              severity="info"
+              sx={{ mb: 2 }}
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={handleClearSearch}
+                  disabled={loading}
+                >
+                  Quay lại danh sách
+                </Button>
+              }
+            >
+              {students.length > 0
+                ? `Hiển thị ${students.length} kết quả cho từ khóa: "${searchTerm}"`
+                : `Không tìm thấy sinh viên với từ khóa: "${searchTerm}"`}
+            </Alert>
+          )}
+
+          {initialLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", my: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          ) : (
+            <>
+              {loading && (
+                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                  <CircularProgress size={30} />
+                </Box>
               )}
-            </TableBody>
-          </Table>
-          {/* Phân trang */}
-          {pageCount > 1 && (
+
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      onClick={() => handleSortChange("mssv")}
+                      sx={{ cursor: !isSearchActive ? "pointer" : "default" }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        Mã sinh viên
+                        {sortBy === "mssv" && !isSearchActive && (
+                          <Iconify
+                            icon={
+                              sortOrder === "asc"
+                                ? "eva:arrow-up-fill"
+                                : "eva:arrow-down-fill"
+                            }
+                            sx={{ ml: 0.5, width: 16, height: 16 }}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell
+                      onClick={() => handleSortChange("HoTen")}
+                      sx={{ cursor: !isSearchActive ? "pointer" : "default" }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        Họ tên
+                        {sortBy === "HoTen" && !isSearchActive && (
+                          <Iconify
+                            icon={
+                              sortOrder === "asc"
+                                ? "eva:arrow-up-fill"
+                                : "eva:arrow-down-fill"
+                            }
+                            sx={{ ml: 0.5, width: 16, height: 16 }}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>Ngày sinh</TableCell>
+                    <TableCell>Khóa học</TableCell>
+                    <TableCell>Chuyên ngành</TableCell>
+                    <TableCell>Tình trạng học</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {!loading && filteredStudents.length > 0
+                    ? filteredStudents.map((student, index) => (
+                        <TableRow key={student.id || `student-${index}`}>
+                          <TableCell>{student.id}</TableCell>
+                          <TableCell>{student.name}</TableCell>
+                          <TableCell>{student.dob}</TableCell>
+                          <TableCell>{student.course}</TableCell>
+                          <TableCell>{student.major}</TableCell>
+                          <TableCell>{student.status}</TableCell>
+                        </TableRow>
+                      ))
+                    : !loading && (
+                        <TableRow>
+                          <TableCell colSpan={6} align="center">
+                            Không có dữ liệu sinh viên
+                          </TableCell>
+                        </TableRow>
+                      )}
+                </TableBody>
+              </Table>
+            </>
+          )}
+          {!isSearchActive && totalPages > 1 && !loading && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <Pagination
-                count={pageCount}
-                page={currentPage}
+                count={totalPages}
+                page={pageNumber}
                 onChange={handlePageChange}
+                disabled={loading}
                 variant="outlined"
                 shape="rounded"
                 color="primary"

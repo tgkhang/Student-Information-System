@@ -5,6 +5,7 @@ import LoadingScreen from "../components/LoadingScreen";
 // guards
 import AuthGuard from "../guards/AuthGuards";
 import GuestGuard from "../guards/GuestGuard";
+import Dashboard from "../pages/teacher/TeacherDashboardPage";
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) => {
@@ -65,7 +66,7 @@ export default function Router() {
           element: <StudentClassRegistrationPage />,
         },
         {
-          path: "classAndAssignment",
+          path: "schedule",
           element: <StudentClassesAndAssignmentsPage />,
         },
         {
@@ -74,7 +75,7 @@ export default function Router() {
         },
         {
           path : "notification/:id",
-          element: <DetailNotification />,
+          element: <ViewNotification />,
         },
         {
           path : "course",
@@ -108,6 +109,7 @@ export default function Router() {
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
         { path: "dashboard", element: <TeacherDashboardPage /> },
+        { path: "", element: <TeacherCoursePage /> },
         {
           path: "course",
           element: <TeacherCoursePage />,
@@ -122,7 +124,7 @@ export default function Router() {
         },
         {
           path : "notification/:id",
-          element: <CreateNotification />,
+          element: <ViewNotification />,
         },
         {
           path : "deadline/:id",
@@ -140,7 +142,7 @@ export default function Router() {
       ],
     },
     {
-      path: "ministry",
+      path: "admin",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
         { path: "studentList", element: <StudentListPage /> },
@@ -164,7 +166,6 @@ const Login = Loadable(lazy(() => import("../pages/authentication/Login")));
 const ForgotPassword = Loadable(lazy(() => import("../pages/authentication/ForgotPassword")));
 const ResetPassword = Loadable(lazy(() => import("../pages/authentication/ResetPassword")));
 
-
 // MAINLAYOUT
 const MainLayout = Loadable(lazy(() => import("../layout/MainLayout")));
 
@@ -180,8 +181,7 @@ const Page404 = Loadable(lazy(() => import("../pages/Page404")));
 const ComingSoon = Loadable(lazy(() => import("../pages/ComingSoon")));
 const Maintenance = Loadable(lazy(() => import("../pages/Maintenance")));
 const FAQs = Loadable(lazy(() => import("../pages/Faqs")));
-
-
+const ViewNotification = Loadable(lazy(() => import("../pages/ViewNotification")));
 // STUDENT
 const StudentDashboardPage = Loadable(lazy(() => import("../pages/Student/StudentDashboardPage")))
 const StudentClassRegistrationPage = Loadable(lazy(() => import("../pages/Student/StudentClassRegistrationPage")))
@@ -205,6 +205,7 @@ const CreateNotification = Loadable(lazy(() => import("../pages/teacher/CreateNo
 const CreateDeadline = Loadable(lazy(() => import("../pages/teacher/CreateDeadline")))
 const UploadMaterials = Loadable(lazy(() => import("../pages/teacher/UpLoadMaterial")))
 const CreateQuiz = Loadable(lazy(() => import("../pages/teacher/CreateQuiz")))
+
 // MINISTRY
 const StudentListPage = Loadable(
   lazy(() => import("../pages/ministry/StudentListPage"))

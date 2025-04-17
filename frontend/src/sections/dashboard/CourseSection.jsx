@@ -398,7 +398,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
   );
 };
 
-const CourseSection = ({isTeacherMode}) => {
+const CourseSection = ({isTeacherMode, course}) => {
   console.log('isTeacherMode', isTeacherMode);
   return (
     <Paper elevation={0} sx={moodleStyles.mainContainer}>

@@ -44,7 +44,7 @@ import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { useLocation, useNavigate } from "react-router-dom";
 import Page from "../../components/Page";
 
-const drawerWidth = 10;
+const drawerWidth = 0;
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -367,8 +367,8 @@ export default function StudentClassesAndAssignmentsPage() {
   }, [location.search]);
 
   return (
-    <Page title="StudentClassesAndAssignmentsPage">
-      <Box sx={{ display: "flex" }}>
+    <Page title="My Schedule">
+      <Box sx={{ display: "flex", p: 1 }}>
 
         <Box
           component="main"

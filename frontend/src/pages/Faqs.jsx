@@ -2,7 +2,14 @@
 import { styled } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
 // components
-import Page from '../components/Page';
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Page from "../components/Page";
+
+import { guestDefaultContainer, guestContainerHomeParts, guestContainerImageHome,
+        guestBlueButton, guestWhiteButton, guestBlueStairsCard,
+        guestTitle, guestSpanStrong } from "../assets/styles/guest";
+
 import { FaqsHero, FaqsList, FaqsForm } from '../sections/faqs';
 
 // ----------------------------------------------------------------------
@@ -20,7 +27,11 @@ export default function Faqs() {
 
   return (
     <Page title="Faqs">
-      <RootStyle>
+
+      <Header />
+
+      <Container {...guestDefaultContainer}>
+
         <FaqsHero />
 
         <Container sx={{ mb: 10, position: 'relative' }}>
@@ -38,7 +49,11 @@ export default function Faqs() {
             </Grid>
           </Grid>
         </Container>
-      </RootStyle>
+      
+      </Container>
+
+      <Footer />
+
     </Page>
   );
 }

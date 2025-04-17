@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Page from "../../components/Page";
 
 import Logo from "../../assets/Logo.svg";
+import { ChevronLeft } from "@mui/icons-material";
 
 import {
   guestContainerLogin,
@@ -96,9 +97,9 @@ export default function ForgotPassword() {
     <Page title="Forgot Password">
       <BackgroundCircles></BackgroundCircles>
 
-      <Typography
+      <Box
         component="a"
-        href="/home"
+        href="/"
         sx={{
           position: "fixed",
           top: "0.25em",
@@ -108,10 +109,12 @@ export default function ForgotPassword() {
           color: "primary.main",
           fontSize: "3.5rem",
           textDecoration: "none",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        &lt;
-      </Typography>
+        <ChevronLeft fontSize="inherit" />
+      </Box>
 
       <Container {...guestContainerLogin}>
         <motion.div
@@ -167,24 +170,24 @@ export default function ForgotPassword() {
                 </Typography>
               </Box>
               <Typography sx={guestLoginSection}>
-                Please type your email in the box below and we will send you a
-                recovery link.
+                Please type your username in the box below and we will send you a
+                recovery link to your linked email.
               </Typography>
             </Box>
 
             <form onSubmit={handleSubmit(onSubmit)} style={guestContainerLoginSubsection}>
               <TextField
-                placeholder="Enter your email"
-                {...register("email")}
+                placeholder="Enter your username"
+                {...register("username")}
                 fullWidth
                 variant="outlined"
                 size="small"
                 InputProps={{
                   sx: { borderRadius: "2em", fontSize: "0.8rem" },
                 }}
-                label="Email"
-                error={!!errors.email} // Check if there is an error with the email
-                helperText={errors.email?.message} // Show error message if any
+                label="Username"
+                error={!!errors.username}
+                helperText={errors.username?.message}
                 InputLabelProps={{
                   sx: {
                     fontSize: "0.8rem",

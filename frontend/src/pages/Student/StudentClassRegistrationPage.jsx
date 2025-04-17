@@ -37,8 +37,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import Page from "../../components/Page";
 
-
-const drawerWidth = 10;
+const drawerWidth = 0;
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -270,8 +269,8 @@ export default function StudentClassRegistrationPage() {
   };
 
   return (
-    <Page title="StudentClassRegistrationPage">
-      <Box sx={{ display: "flex" }}>
+    <Page title="Class Registration">
+      <Box sx={{ display: "flex", p:1 }}>
 
         <Box
           component="main"

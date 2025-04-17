@@ -86,7 +86,7 @@ export default function MainSideBar({ isOpenSidebar, onToggleSidebar }) {
         }}
       >
         <Avatar 
-          src={user?.avatar || undefined} 
+          src={user?.avatar} 
           alt={user?.name || "User Avatar"}
           sx={{ 
             width: 40, 

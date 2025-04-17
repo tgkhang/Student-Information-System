@@ -1,32 +1,33 @@
 "use client";
-
-import * as React from "react";
 import Page from "../../components/Page";
-import TeacherNavigationDrawer from "./TeacherNavigationDrawer";
 import {
   Box,
   Typography,
   //Table,TableBody,TableCell, TableContainer, TableRow, TableHead, Paper,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import {CourseList,CustomSelect,CoursesListAndSearch} from "../../components/CourseList";
-import classesData from "../mockdata/courseData";
-//import PropTypes from "prop-types";
-
-
-// Add PropTypes validation
-// CustomSelect.propTypes = {
-//   items: PropTypes.array,
-//   label: PropTypes.string,
-//   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-//   onChange: PropTypes.func,
-//   id: PropTypes.string,
-//   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-//   required: PropTypes.bool,
-// };
+import {CoursesListAndSearch} from "../../components/CourseList";
+import { getListCourses, getTeacherInfo } from "../../utils/api";
+import { useEffect, useState } from "react";
+import useAuth from "../../hooks/useAuth";
 
 
 export default function CoursePage() {
+  const [courses, setCourses] = useState([]);
+  const { user } = useAuth();
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await getTeacherInfo(user.username);
+        const response = await getListCourses(res.data._id);
+        setCourses(response.data.data);
+        console.log("Courses data:", response.data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
   return (
     <Page title="StudentClassRegistrationPage">
       <Box sx={{ display: "flex" }}>
@@ -41,8 +42,6 @@ export default function CoursePage() {
               }),
             marginLeft: 0,
             width: "100%",
-            // marginLeft: isDrawerOpen ? `${drawerWidth}px` : 0,
-            // width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
           }}
         >
           <Typography
@@ -56,7 +55,7 @@ export default function CoursePage() {
             Courses
           </Typography>
 
-          <CoursesListAndSearch courses={classesData} />
+          <CoursesListAndSearch courses={courses} />
         </Box>
       </Box>
     </Page>

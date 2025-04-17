@@ -9,14 +9,16 @@ import { AuthService } from 'src/auth/auth.service';
 import { GiangVien, GiangVienDocument } from 'src/schemas/GiangVien.schema';
 import { UpdateGiangVienDto } from './dto/update-giangvien.dto';
 import { GetTeacherListDto } from './dto/getListGiangVien.dto';
+import { KhoaHoc, KhoaHocDocument } from 'src/schemas/KhoaHoc.schema';
 
 @Injectable()
 export class GiangVienService {
   uploadService: any;
   constructor(
-    @InjectModel(GiangVien.name)
-    private readonly giangVienModel: Model<GiangVienDocument>,
+    @InjectModel(GiangVien.name) private readonly giangVienModel: Model<GiangVienDocument>,
     private readonly authService: AuthService,
+    @InjectModel(KhoaHoc.name) private readonly khoaHocModel: Model<KhoaHocDocument>,
+
   ) {}
 
   async getAll() {
@@ -30,6 +32,7 @@ export class GiangVienService {
       .exec();
     return giangVien;
   }
+
 
   async getTeacherList(query: GetTeacherListDto) {
     const { pageSize, pageNumber, sortBy, sortOrder } = query;
@@ -57,6 +60,16 @@ export class GiangVienService {
     };
   }
 
+  async getTeacherById(id: string): Promise<GiangVienDocument|null> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID giảng viên không hợp lệ.');
+    }
+    const giangVien = await this.giangVienModel.findById(id).exec();
+    if (!giangVien) {
+      throw new NotFoundException('Không tìm thấy giảng viên.');
+    }
+    return giangVien;
+  }
   async addTeacher(
     MaGV: string,
     HoTen: string,
@@ -228,5 +241,3 @@ export class GiangVienService {
     return updatedGiangVien;
   }
 
-
-}

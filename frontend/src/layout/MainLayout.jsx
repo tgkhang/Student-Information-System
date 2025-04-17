@@ -6,7 +6,8 @@ import { Box } from "@mui/material";
 //
 import MainHeader from "./MainHeader";
 import MainSideBar from "./MainSideBar";
-
+import MainRightSidebar from "./MainRightSidebar";
+import useAuth from "../hooks/useAuth";
 // ----------------------------------------------------------------------
 
 const MainStyle = styled("main")(({ theme }) => ({
@@ -24,7 +25,7 @@ const MainStyle = styled("main")(({ theme }) => ({
 
 export default function MainLayout() {
   const [isCollapse, setCollapse] = useState(true);
-
+  const { user } = useAuth();
   return (
     <Box
       sx={{
@@ -38,9 +39,12 @@ export default function MainLayout() {
         isOpenSidebar={isCollapse}
         onToggleSidebar={() => setCollapse(!isCollapse)}
       />
-      <MainStyle sx={{ height: "calc(100vh - 64px)", marginTop: "64px" }}>
+
+      <MainStyle sx={{ height: "calc(100vh - 64px)"}}>
         <Outlet />
       </MainStyle>
+      {user && user.role === "student" && ( <MainRightSidebar/>)}
+
     </Box>
   );
 }

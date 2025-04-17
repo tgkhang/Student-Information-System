@@ -16,6 +16,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
+import { ChevronLeft } from "@mui/icons-material";
 // components
 import Page from "../../components/Page";
 import Logo from "../../assets/Logo.svg";
@@ -27,7 +28,8 @@ import {
   guestLoginSection,
   guestRoundBlueButton,
 } from "../../assets/styles/guest";
-
+import { loginApi} from "../../utils/api";
+import { useSnackbar } from "notistack"
 // ----------------------------------------------------------------------
 
 export function BackgroundCircles() {
@@ -82,11 +84,9 @@ export function BackgroundCircles() {
 
 const loginSchema = Yup.object().shape({
   username: Yup.string()
-    .required("Username is required")
-    .min(4, "Username must be at least 4 characters"),
+    .required("Username is required"),
   password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+    .required("Password is required"),
 });
 
 // ----------------------------------------------------------------------
@@ -94,6 +94,7 @@ const loginSchema = Yup.object().shape({
 export default function Login() {
   const isDesktop = useResponsive("up", "lg");
   const { login } = useContext(AuthContext);
+  const { enqueueSnackbar } = useSnackbar();
   const {
     register,
     handleSubmit,
@@ -106,31 +107,42 @@ export default function Login() {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Login data:", data);
-    login(data.username, data.password);
+  const onSubmit = async (data) => {
+    try {
+      const response = await loginApi({username: data.username, password: data.password});
+      console.log("Login response:", response);
+        console.log("Login successful:", response.data);
+        login(response.data.accessToken, response.data.user);
+        window.location.href = `/${response.data.user.role}`;
+    } catch (error) {
+      enqueueSnackbar(error.response.data.message, { variant: "error" });
+      console.error("Login error:", error);
+      // Handle error (e.g., show a notification)
+    }
   };
 
   return (
     <Page title="Login">
       <BackgroundCircles></BackgroundCircles>
 
-      <Typography
+      <Box
         component="a"
-        href="/home"
+        href="/"
         sx={{
           position: "fixed",
           top: "0.25em",
           right: "0.75em",
           zIndex: 10,
           fontWeight: 600,
-          color: "white",
+          color: "primary.lighter",
           fontSize: "3.5rem",
           textDecoration: "none",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        &lt;
-      </Typography>
+        <ChevronLeft fontSize="inherit" />
+      </Box>
 
       <Container {...guestContainerLogin}>
         <motion.div
@@ -218,6 +230,7 @@ export default function Login() {
                 />
 
                 <TextField
+                  type="password"
                   placeholder="Enter your password"
                   {...register("password")}
                   fullWidth
