@@ -88,8 +88,10 @@ export default function AdminCreateNotificationPage() {
         setCourseLoading(true);
         try {
           const coursesResponse = await getCoursesListApi({
-            page: 1,
-            size: 100,
+            pageSize: 100,
+            pageNumber: 1,
+            sortBy: "id",
+            sortOrder: "asc",
           });
           
           if (coursesResponse?.data?.data) {
