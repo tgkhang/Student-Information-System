@@ -10,10 +10,6 @@ if (process.env.NODE_ENV !== 'production') {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  app.enableCors({
-    origin: 'http://localhost:5173',
-    credentials: true,
-  });
   app.use(cookieParser());
    // Cấu hình Swagger
    const config = new DocumentBuilder()

@@ -165,14 +165,4 @@ export class SinhVienController {
     const updatedSinhVien = await this.sinhVienService.markNotiAsRead(mssv, thongBaoId);
     return { message: 'Đã đánh dấu thông báo là đã đọc.', data: updatedSinhVien };
   }
-
-  @Get('getCourses/:id')
-  @UseGuards(JWTAuthGuard)
-  async getCourses(@Req() req: any, @Param('id') id: string) {
-
-    // const MaGV = req.user.username;
-    // console.log(MaGV);
-    const courses = await this.sinhVienService.getCourses(id);
-    return { message: 'Danh sách khóa học của sinh viên.', data: courses };
-  }
 }
