@@ -84,6 +84,9 @@ export const getNotificationListApi = () => {
 export const getNotificationByIdApi = (id) => {
   return axiosInstance.get(`/ThongBao/getNotiByID/${id}`);
 }
+export const createNotificationApi = (data) => {
+  return axiosInstance.post("/ThongBao/addNoti", data);
+}
 
 //COURSE
 export const getCoursesListApi = (params = {}) => {
