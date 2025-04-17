@@ -114,7 +114,7 @@ export default function UploadMaterials() {
 
   return (
     <Page title="Upload Teaching Materials">
-      <Box maxWidth={800} mx="auto" mt={5}>
+      <Box maxWidth={800} mx="auto" sx={{ mt: 8,}}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Upload Teaching Materials
         </Typography>

@@ -1,3 +1,4 @@
+import { data } from "react-router-dom";
 import axiosInstance from "./axios";
 
 // authentication
@@ -101,4 +102,7 @@ export const searchCourseApi = (query) =>
   axiosInstance.get(`/KhoaHoc/searchCourse`, { params: { query } });
 export const getCourseById = (id) => {
   return axiosInstance.get(`/KhoaHoc/getCourse/${id}`);
+}
+export const createDeadline = (id, data) => {
+  return axiosInstance.post(`/KhoaHoc/${id}/deadline`, data);
 }
