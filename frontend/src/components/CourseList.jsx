@@ -55,7 +55,7 @@ const CourseCard = ({ course, onClick  }) => {
               color="primary"
               sx={{ fontWeight: "bold", fontSize: "1rem" }}
             >
-              {course?.MaKhoaHoc} - {course?.TenKhoaHoc.toUpperCase()}
+              {course?.id} - {course?.name.toUpperCase()}
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary">
