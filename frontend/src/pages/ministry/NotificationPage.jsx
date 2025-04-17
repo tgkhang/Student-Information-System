@@ -14,7 +14,7 @@ export default function NotificationPage() {
   };
   return (
     <Page title="NotificationPage">
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex"}}>
         <Box
           component="main"
           sx={{
