@@ -11,14 +11,37 @@ import { UpdateSinhVienDto } from './dto/update-sinhvien.dto';
 import { GetListStudentDto } from './dto/getList-sinhvien.dto';
 import * as XLSX from 'xlsx';
 import { AuthService } from 'src/auth/auth.service';
+import { KhoaHoc, KhoaHocDocument } from 'src/schemas/KhoaHoc.schema';
 
 @Injectable()
 export class SinhVienService {
   constructor(
     @InjectModel(SinhVien.name) private sinhVienModel: Model<SinhVienDocument>,
     private readonly authService: AuthService,
+    @InjectModel(KhoaHoc.name) private readonly khoaHocModel: Model<KhoaHocDocument>,
   ) {}
 
+  async getCourses(id: string): Promise<KhoaHocDocument[]> {
+    const sinhVien = await this.sinhVienModel.findById(id).exec();
+
+    if (!sinhVien) {
+      throw new NotFoundException('Không tìm thấy sinh viên.');
+    }
+    // const giangVienIdStr = (giangVien._id as Types.ObjectId).toString();
+    // console.log(giangVien._id);
+    const courses = await this.khoaHocModel
+      .find({
+        $or: [
+          { SinhVienDangKy: id },
+        ],
+      })
+      .populate('GiangVienID', 'HoTen MaGV')
+      // .populate('SinhVienDangKy', 'HoTen MSSV')
+      .exec();
+    return courses;
+  }
+
+  
   async addStudent(createSinhVienDto: CreateSinhVienDto): Promise<SinhVien> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { role, ...sinhVienData } = createSinhVienDto;
@@ -222,15 +245,6 @@ export class SinhVienService {
     );
   }
 
-  async addNotiToStudentsInNienKhoa(
-    NienKhoa: string,
-    thongBaoId: Types.ObjectId,
-  ): Promise<void> {
-    await this.sinhVienModel.updateMany(
-      { Khoa: NienKhoa },
-      { $push: { ThongBao: { thongBaoId, isRead: false } } },
-    );
-  }
 
   async removeNotiFromAll(thongBaoId: string): Promise<void> {
     await this.sinhVienModel.updateMany(

@@ -100,6 +100,15 @@ export class SinhVienController {
     return this.sinhVienService.updateStudent(mssv, updateSinhVienDto);
   }
 
+  @Get('getCourses/:id')
+   @UseGuards(JWTAuthGuard)
+   async getCourses(@Req() req: any, @Param('id') id: string) {
+ 
+     // const MaGV = req.user.username;
+     // console.log(MaGV);
+     const courses = await this.sinhVienService.getCourses(id);
+     return { message: 'Danh sách khóa học của sinh viên.', data: courses };
+   }
   @Get('get_student/:mssv')
   @UseGuards(JWTAuthGuard)
   getStudent(@Param('mssv') mssv: string, @Request() req: any) {

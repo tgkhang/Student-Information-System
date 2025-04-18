@@ -85,6 +85,16 @@ export class GiangVienController {
     return { message: 'Giảng viên đã được thêm thành công!', newGiaoVien };
   }
 
+  @Get('getCourses/:id')
+   @UseGuards(JWTAuthGuard)
+   async getCourses(@Req() req: any, @Param('id') id: string) {
+ 
+     // const MaGV = req.user.username;
+     // console.log(MaGV);
+     const courses = await this.GiangVienService.getCourses(id);
+     return { message: 'Danh sách khóa học của giảng viên.', data: courses };
+   }
+   
   @Delete('deleteTeacher/:MaGV')
   @UseGuards(JWTAuthGuard)
   async deleteTeacher(@Req() req: any, @Param('MaGV') MaGV: string) {
