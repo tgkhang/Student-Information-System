@@ -168,7 +168,7 @@ export default function CreateQuiz() {
 
   return (
     <Page title="Create Quiz">
-      <Box maxWidth={800} mx="auto" mt={5}>
+      <Box maxWidth={800} mx="auto" mt={8}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Create Quiz
         </Typography>

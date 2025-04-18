@@ -38,11 +38,11 @@ export class ThongBaoService {
 
     switch (createThongBaoDto.NhomGui) {
       case 'NienKhoa':
-        if (!isAdmin)
-          throw new UnauthorizedException('Chỉ admin mới có thể gửi thông báo đến học sinh thuộc khóa này.');
-        if (!createThongBaoDto.Khoa) throw new BadRequestException('Thiếu khoa.');
-        await this.sinhVienService.addNotiToStudentsInNienKhoa(createThongBaoDto.Khoa, thongBaoId);
-        break;
+         if (!isAdmin)
+           throw new UnauthorizedException('Chỉ admin mới có thể gửi thông báo đến học sinh thuộc khóa này.');
+         if (!createThongBaoDto.Khoa) throw new BadRequestException('Thiếu khoa.');
+         await this.sinhVienService.addNotiToStudentsInNienKhoa(createThongBaoDto.Khoa, thongBaoId);
+         break;
       case 'SinhVien':
         if (!isAdmin)
           throw new UnauthorizedException(
@@ -74,8 +74,8 @@ export class ThongBaoService {
           throw new UnauthorizedException(
             'Chỉ admin mới có thể gửi thông báo đến sinh viên và giáo viên trong khoa.',
           );
-        if (!createThongBaoDto.KhoaID) throw new BadRequestException('Thiếu khoa.');
-        await Promise.all([
+          if (!createThongBaoDto.KhoaID) throw new BadRequestException('Thiếu khoa.');
+          await Promise.all([
           this.sinhVienService.addNotiToKhoa(
             createThongBaoDto.KhoaID,
             thongBaoId,

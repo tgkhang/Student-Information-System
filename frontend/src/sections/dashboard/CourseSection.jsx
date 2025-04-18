@@ -20,11 +20,13 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   Chip,
-  Divider,
+  Tab,
+  Tabs,
+  Card,
+  CardContent,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import LinkIcon from '@mui/icons-material/Link';
@@ -32,8 +34,14 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import QuizIcon from '@mui/icons-material/Quiz';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import { useNavigate } from 'react-router-dom';
 
 import ConfirmationDialog from '../../components/ConfirmationDialog';
+
 // Custom styles for Moodle-like appearance
 const moodleStyles = {
   accordion: {
@@ -127,11 +135,42 @@ const moodleStyles = {
     margin: '8px',
     textTransform: 'none',
   },
+  actionCard: {
+    marginTop: '16px',
+    backgroundColor: '#f5f9ff',
+    borderRadius: '8px',
+  },
+  actionButton: {
+    textTransform: 'none',
+  },
+  tabPanel: {
+    padding: '16px',
+  },
+  resourceTypeChip: {
+    marginRight: '8px',
+    marginBottom: '8px',
+  },
+  deadlineChip: {
+    backgroundColor: '#ff9800',
+    color: 'white',
+  },
+  quizChip: {
+    backgroundColor: '#9c27b0',
+    color: 'white',
+  },
+  documentChip: {
+    backgroundColor: '#2196f3',
+    color: 'white',
+  },
+  linkChip: {
+    backgroundColor: '#4caf50',
+    color: 'white',
+  },
 };
 
 const getResourceIcon = (type) => {
   switch (type) {
-    case 'pdf':
+    case 'document':
       return <InsertDriveFileIcon />;
     case 'video':
       return <YouTubeIcon />;
@@ -143,26 +182,52 @@ const getResourceIcon = (type) => {
       return <NotificationsIcon />;
     case 'quiz':
       return <QuizIcon />;
+    case 'deadline':
+      return <ScheduleIcon />;
     default:
       return <DescriptionIcon />;
   }
-}
+};
 
-const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
-  const [items, setItems] = useState([
-    { id: 1, content: 'Tài liệu giới thiệu khóa học', type: 'pdf' },
-    { id: 2, content: 'Video bài giảng tuần 1', type: 'video' },
-    { id: 3, content: 'Bài tập thực hành', type: 'assignment' },
-    { id: 4, content: 'Liên kết tham khảo', type: 'link' }
-  ]);
+
+const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType }) => {
+  const navigate = useNavigate();
+  
+  // Default items based on section type
+  const defaultItems = {
+    'lectures': [
+      { id: 1, content: 'Course Introduction Materials', type: 'document', dueDate: null },
+      { id: 2, content: 'Week 1 Lecture Video', type: 'video', dueDate: null },
+      { id: 3, content: 'Week 2 Reading Materials', type: 'document', dueDate: null }
+    ],
+    'assignments': [
+      { id: 1, content: 'Midterm Quiz', type: 'quiz', dueDate: '2025-05-15' },
+      { id: 2, content: 'Group Project Submission', type: 'deadline', dueDate: '2025-05-20' },
+      { id: 3, content: 'Weekly Practice Quiz', type: 'quiz', dueDate: '2025-04-25' }
+    ],
+    'references': [
+      { id: 1, content: 'Additional Learning Resources', type: 'link', url: 'https://example.com/resources' },
+      { id: 2, content: 'Recommended Reading List', type: 'link', url: 'https://example.com/reading' },
+      { id: 3, content: 'Academic Papers Collection', type: 'link', url: 'https://example.com/papers' }
+    ]
+  };
+  
+  const [items, setItems] = useState(defaultItems[sectionType] || []);
   
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [newItemText, setNewItemText] = useState('');
-  const [newItemType, setNewItemType] = useState('link');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  
+  // New item states
+  const [newItemText, setNewItemText] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
+  const [tabValue, setTabValue] = useState(0);
+  const [dueDate, setDueDate] = useState('');
+  
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
   
   const handleDeleteClick = (item) => {
     setItemToDelete(item);
@@ -174,33 +239,230 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
     setDeleteDialogOpen(false);
   };
   
-  const handleAddItem = () => {
-    if (newItemText.trim()) {
-      const newId = Math.max(...items.map(item => item.id), 0) + 1;
-      setItems([...items, { id: newId, content: newItemText, type: newItemType, url: linkUrl }]);
-      setNewItemText('');
-      setLinkUrl('');
-      setAddDialogOpen(false);
-    }
-  };
-  
   const handleAddLink = () => {
     if (newItemText.trim() && linkUrl.trim()) {
       const newId = Math.max(...items.map(item => item.id), 0) + 1;
       setItems([...items, { id: newId, content: newItemText, type: 'link', url: linkUrl }]);
-      setNewItemText('');
-      setLinkUrl('');
-      setAddDialogOpen(false);
+      resetForm();
     }
   };
   
-  const handleAddResource = (type) => {
+  const handleAddDocument = () => {
     if (newItemText.trim()) {
       const newId = Math.max(...items.map(item => item.id), 0) + 1;
-      setItems([...items, { id: newId, content: newItemText, type: type }]);
-      setNewItemText('');
-      setAddDialogOpen(false);
+      setItems([...items, { id: newId, content: newItemText, type: 'document' }]);
+      resetForm();
     }
+  };
+  
+  const handleAddDeadline = () => {
+    if (newItemText.trim() && dueDate) {
+      const newId = Math.max(...items.map(item => item.id), 0) + 1;
+      setItems([...items, { id: newId, content: newItemText, type: 'deadline', dueDate: dueDate }]);
+      resetForm();
+    }
+  };
+  
+  const resetForm = () => {
+    setNewItemText('');
+    setLinkUrl('');
+    setDueDate('');
+    setAddDialogOpen(false);
+  };
+  
+  const navigateToQuizCreation = () => {
+    // Navigate to quiz creation page
+    navigate('/create-quiz');
+  };
+  
+  const navigateToDeadlineCreation = () => {
+    // Navigate to deadline creation page
+    navigate('/create-deadline');
+  };
+  
+  // Check if this section should show specific types of content
+  const getAddDialog = () => {
+    if (sectionType === 'lectures') {
+      return (
+        <Dialog
+          open={addDialogOpen}
+          onClose={() => setAddDialogOpen(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Add New Material</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Document Title"
+              fullWidth
+              variant="outlined"
+              value={newItemText}
+              onChange={(e) => setNewItemText(e.target.value)}
+            />
+            
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+              <Button
+                variant="contained"
+                startIcon={<CloudUploadIcon />}
+                sx={{ mr: 2 }}
+                onClick={handleAddDocument}
+              >
+                Upload Document
+              </Button>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+      );
+    } else if (sectionType === 'references') {
+      return (
+        <Dialog
+          open={addDialogOpen}
+          onClose={() => setAddDialogOpen(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Add New Reference Link</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Link Title"
+              fullWidth
+              variant="outlined"
+              value={newItemText}
+              onChange={(e) => setNewItemText(e.target.value)}
+            />
+            
+            <TextField
+              margin="dense"
+              label="URL"
+              fullWidth
+              variant="outlined"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              placeholder="https://..."
+              InputProps={{
+                startAdornment: <LinkIcon color="action" sx={{ mr: 1 }} />,
+              }}
+              sx={{ mt: 2 }}
+            />
+            
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+              <Button
+                variant="contained"
+                startIcon={<LinkIcon />}
+                onClick={handleAddLink}
+                disabled={!newItemText.trim() || !linkUrl.trim()}
+              >
+                Add Link
+              </Button>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+      );
+    } else if (sectionType === 'assignments') {
+      return (
+        <Dialog
+          open={addDialogOpen}
+          onClose={() => setAddDialogOpen(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Add New Assignment</DialogTitle>
+          <DialogContent>
+            <Tabs value={tabValue} onChange={handleTabChange} centered sx={{ mb: 2 }}>
+              <Tab label="Quiz" />
+              <Tab label="Deadline" />
+            </Tabs>
+            
+            {tabValue === 0 && (
+              <Box sx={{ p: 1, textAlign: 'center' }}>
+                <Typography variant="body1" gutterBottom>
+                  Create a new quiz for your students
+                </Typography>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  startIcon={<QuizIcon />}
+                  onClick={navigateToQuizCreation}
+                  sx={{ mt: 2 }}
+                >
+                  Go to Quiz Creation
+                </Button>
+              </Box>
+            )}
+            
+            {tabValue === 1 && (
+              <Box sx={{ p: 1 }}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  label="Assignment Title"
+                  fullWidth
+                  variant="outlined"
+                  value={newItemText}
+                  onChange={(e) => setNewItemText(e.target.value)}
+                />
+                
+                <TextField
+                  margin="dense"
+                  label="Due Date"
+                  type="date"
+                  fullWidth
+                  variant="outlined"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  sx={{ mt: 2 }}
+                />
+                
+                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
+                  <Button
+                    variant="contained"
+                    startIcon={<EventNoteIcon />}
+                    onClick={handleAddDeadline}
+                    disabled={!newItemText.trim() || !dueDate}
+                  >
+                    Add Simple Deadline
+                  </Button>
+                  
+                  <Button
+                    variant="outlined"
+                    startIcon={<NoteAddIcon />}
+                    onClick={navigateToDeadlineCreation}
+                  >
+                    Advanced Deadline Setup
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+      );
+    }
+  };
+  
+  const formatDueDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
   };
   
   return (
@@ -248,10 +510,16 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
                 {getResourceIcon(item.type)}
               </ListItemIcon>
               <ListItemText 
-                primary={item.content} 
-                primaryTypographyProps={{
-                  style: item.type === 'link' ? { textDecoration: 'underline' } : {}
-                }}
+                primary={
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography
+                      style={item.type === 'link' ? { marginRight: '8px' } : {}}
+                    >
+                      {item.content}
+                    </Typography>
+                  </Box>
+                }
+                secondary={item.dueDate && `Due: ${formatDueDate(item.dueDate)}`}
               />
               
               {isTeacherMode && (
@@ -276,163 +544,109 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor}) => {
           ))}
         </List>
         
-        {isTeacherMode && (
-          <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-            <Button 
-              startIcon={<AddIcon />} 
-              variant="contained" 
-              size="small"
-              onClick={() => setAddDialogOpen(true)}
-              sx={moodleStyles.addButton}
-            >
-              Thêm tài liệu mới
-            </Button>
-          </Box>
-        )}
       </AccordionDetails>
       
+      {/* Delete Confirmation Dialog */}
       <ConfirmationDialog 
-        title={"Xác nhận xóa"} 
-        message={"Bạn có chắc chắn muốn xóa tài liệu này?"} 
+        title={"Confirm Delete"} 
+        message={"Are you sure you want to delete this item?"} 
         open={deleteDialogOpen} 
         onClose={() => setDeleteDialogOpen(false)} 
         onConfirm={handleConfirmDelete} 
       />
       
-      {/* Add Item Dialog - Redesigned */}
-      <Dialog
-        open={addDialogOpen}
-        onClose={() => setAddDialogOpen(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Thêm tài liệu mới</DialogTitle>
-        <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Tên tài liệu"
-              fullWidth
-              variant="outlined"
-              value={newItemText}
-              onChange={(e) => setNewItemText(e.target.value)}
-            />
-          </Box>
-          
-          {/* Link Section */}
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              Thêm đường liên kết:
-            </Typography>
-            <TextField
-              margin="dense"
-              label="Nhập URL"
-              fullWidth
-              variant="outlined"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              placeholder="https://..."
-              InputProps={{
-                startAdornment: <LinkIcon color="action" sx={{ mr: 1 }} />,
-              }}
-            />
-            
-            <Button 
-              variant="contained" 
-              color="primary" 
-              fullWidth 
-              sx={{ mt: 1 }}
-              disabled={!newItemText.trim() || !linkUrl.trim()}
-              onClick={handleAddLink}
-            >
-              Thêm liên kết
-            </Button>
-          </Box>
-          
-          {/* Divider */}
-          <Box sx={moodleStyles.dividerContainer}>
-            <Divider sx={moodleStyles.divider} />
-            <Typography variant="body2" sx={moodleStyles.dividerText}>HOẶC</Typography>
-            <Divider sx={moodleStyles.divider} />
-          </Box>
-          
-          {/* Resource Buttons */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              variant="outlined"
-              startIcon={<InsertDriveFileIcon />}
-              sx={moodleStyles.uploadButton}
-              disabled={!newItemText.trim()}
-              onClick={() => handleAddResource('pdf')}
-            >
-              Tải tài liệu PDF
-            </Button>
-            
-            <Button
-              variant="outlined"
-              startIcon={<QuizIcon />}
-              sx={moodleStyles.uploadButton}
-              disabled={!newItemText.trim()}
-              onClick={() => handleAddResource('quiz')}
-            >
-              Tạo trắc nghiệm
-            </Button>
-            
-            <Button
-              variant="outlined"
-              startIcon={<AssignmentIcon />}
-              sx={moodleStyles.uploadButton}
-              disabled={!newItemText.trim()}
-              onClick={() => handleAddResource('assignment')}
-            >
-              Tạo bài nộp
-            </Button>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setAddDialogOpen(false)}>Hủy</Button>
-        </DialogActions>
-      </Dialog>
+      {/* Add Different Types of Content Based on Section */}
+      {getAddDialog()}
     </Accordion>
   );
 };
 
 const CourseSection = ({isTeacherMode, course}) => {
-  console.log('isTeacherMode', isTeacherMode);
   return (
     <Paper elevation={0} sx={moodleStyles.mainContainer}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight="bold">Nội dung khóa học</Typography>
+        <Typography variant="h5" fontWeight="bold">Course Content</Typography>
       </Box>
       
-      <CollapsibleSection 
-        title="Thông tin chung" 
-        icon={<Typography variant="h6">📢</Typography>}
-        isTeacherMode={isTeacherMode}
-        sectionColor="#e3f2fd" 
-      />
+      {isTeacherMode && (
+        <Card sx={moodleStyles.actionCard}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Quick Actions</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Manage your course materials, assignments, and references
+            </Typography>
+            
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Button 
+                variant="outlined" 
+                startIcon={<QuizIcon />}
+                sx={moodleStyles.actionButton}
+                onClick={() => window.location.href = `/teacher/createQuiz/${course?.MaKhoaHoc}`}
+              >
+                Create New Quiz
+              </Button>
+              
+              <Button 
+                variant="outlined" 
+                startIcon={<ScheduleIcon />}
+                sx={moodleStyles.actionButton}
+                onClick={() => window.location.href = `/teacher/deadline/${course?._id}`}
+              >
+                Set New Deadline
+              </Button>
+              
+              <Button 
+                variant="outlined" 
+                startIcon={<CloudUploadIcon />}
+                sx={moodleStyles.actionButton}
+                onClick={() => window.location.href = `/teacher/upload/${course?.MaKhoaHoc}`}
+              >
+                Upload Document
+              </Button>
+              
+              <Button 
+                variant="outlined" 
+                startIcon={<LinkIcon />}
+                sx={moodleStyles.actionButton}
+                onClick={() => window.location.href = '/add-reference'}
+              >
+                Add Reference Link
+              </Button>
+              <Button 
+                variant="outlined" 
+                startIcon={<LinkIcon />}
+                sx={moodleStyles.actionButton}
+                onClick={() => window.location.href = `/teacher/create-notification/${course?.MaKhoaHoc}`}
+              >
+                Add Reference Link
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
       
-      <CollapsibleSection 
-        title="Bài giảng và tài liệu" 
-        icon={<Typography variant="h6">📚</Typography>}
-        isTeacherMode={isTeacherMode}
-        sectionColor="#e8f5e9" 
-      />
-      
-      <CollapsibleSection 
-        title="Bài tập và dự án" 
-        icon={<Typography variant="h6">✏️</Typography>}  
-        isTeacherMode={isTeacherMode}
-        sectionColor="#fff8e1" 
-      />
-      
-      <CollapsibleSection 
-        title="Tài liệu tham khảo" 
-        icon={<Typography variant="h6">📋</Typography>}
-        isTeacherMode={isTeacherMode}
-        sectionColor="#f3e5f5" 
-      />
+      <Box sx={{ mt: 3 }}>
+        <CollapsibleSection 
+          title="Lectures and Materials" 
+          isTeacherMode={isTeacherMode}
+          sectionColor="#e8f5e9"
+          sectionType="lectures"
+        />
+        
+        <CollapsibleSection 
+          title="Assignments and Projects" 
+          isTeacherMode={isTeacherMode}
+          sectionColor="#fff8e1"
+          sectionType="assignments"
+        />
+        
+        <CollapsibleSection 
+          title="Reference Materials" 
+          isTeacherMode={isTeacherMode}
+          sectionColor="#f3e5f5"
+          sectionType="references" 
+        />
+      </Box>
     </Paper>
   );
 };

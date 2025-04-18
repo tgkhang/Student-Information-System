@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -14,6 +15,7 @@ import dayjs from "dayjs";
 import Page from "../../components/Page";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useSnackbar } from "notistack";
+import { createDeadline } from "../../utils/api"; 
 
 export default function CreateDeadline() {
   const [title, setTitle] = useState("");
@@ -22,7 +24,7 @@ export default function CreateDeadline() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errors, setErrors] = useState({ title: false, endTime: false });
   const { enqueueSnackbar } = useSnackbar();
-
+  const { id } = useParams();
   const handleSubmit = () => {
     const hasError = title.trim() === "" || endTime.isBefore(startTime);
     setErrors({
@@ -43,12 +45,13 @@ export default function CreateDeadline() {
     setDialogOpen(true);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     enqueueSnackbar("Deadline created successfully!", { variant: "success" });
     console.log("Deadline Title:", title);
     console.log("Start:", startTime.format());
     console.log("End:", endTime.format());
-
+    const response = await createDeadline(id, {MoTa: title, NgayBatDau: startTime, NgayHetHan: endTime} );
+    console.log("Response:", response.data);
     setDialogOpen(false);
     setTitle("");
     setStartTime(dayjs());
@@ -57,7 +60,7 @@ export default function CreateDeadline() {
 
   return (
     <Page title="Create Deadline">
-      <Box maxWidth={800} mx="auto" mt={5}>
+      <Box maxWidth={800} mx="auto" mt={8}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Create Deadline
         </Typography>

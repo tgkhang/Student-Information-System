@@ -137,5 +137,4 @@ export class GiangVienController {
     const updatedGiangVien = await this.GiangVienService.markNotiAsRead(MaGV, thongBaoId);
     return { message: 'Đã đánh dấu thông báo là đã đọc.', data: updatedGiangVien };
   }
-
 }

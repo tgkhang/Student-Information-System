@@ -212,6 +212,15 @@ export class SinhVienService {
       { $push: { ThongBao: { thongBaoId, isRead: false } } },
     );
   }
+  async addNotiToStudentsInNienKhoa(
+    NienKhoa: string,
+    thongBaoId: Types.ObjectId,
+  ): Promise<void> {
+    await this.sinhVienModel.updateMany(
+      { Khoa: NienKhoa },
+      { $push: { ThongBao: { thongBaoId, isRead: false } } },
+    );
+  }
 
   async addNotiToStudentsInNienKhoa(
     NienKhoa: string,

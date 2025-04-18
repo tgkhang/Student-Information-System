@@ -1,3 +1,4 @@
+import { data } from "react-router-dom";
 import axiosInstance from "./axios";
 
 // authentication
@@ -83,6 +84,9 @@ export const getNotificationListApi = () => {
 export const getNotificationByIdApi = (id) => {
   return axiosInstance.get(`/ThongBao/getNotiByID/${id}`);
 }
+export const createNotificationApi = (data) => {
+  return axiosInstance.post("/ThongBao/addNoti", data);
+}
 
 //COURSE
 export const getCoursesListApi = (params = {}) => {
@@ -101,4 +105,7 @@ export const searchCourseApi = (query) =>
   axiosInstance.get(`/KhoaHoc/searchCourse`, { params: { query } });
 export const getCourseById = (id) => {
   return axiosInstance.get(`/KhoaHoc/getCourse/${id}`);
+}
+export const createDeadline = (id, data) => {
+  return axiosInstance.post(`/KhoaHoc/${id}/deadline`, data);
 }
