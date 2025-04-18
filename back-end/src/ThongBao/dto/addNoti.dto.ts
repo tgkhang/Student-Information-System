@@ -21,6 +21,5 @@ export class CreateThongBaoDto {
   KhoaID?: Types.ObjectId;
 
   @IsOptional()
-   Khoa?: string;
-   
+  Khoa?: string;
 }

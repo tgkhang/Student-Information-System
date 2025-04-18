@@ -55,7 +55,7 @@ export class AuthController {
     );
 
     const { accessToken } = await this.authService.generateTokens(user, res);
-    return res.json({ accessToken, user });
+    return res.json({ accessToken });
   }
 
   /**
