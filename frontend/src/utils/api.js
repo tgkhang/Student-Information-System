@@ -61,6 +61,10 @@ export const getTeacherByIdApi = (id) =>{
   return axiosInstance.get(`/GiangVien/getTeacher/${id}`);
 }
 
+export const addTeacherApi = (teacherData) =>{
+  return axiosInstance.post("/GiangVien/addTeacher", teacherData);
+}
+
 export const searchTeacherApi = (query) =>
   axiosInstance.get(`/GiangVien/searchTeacher`, { params: { query } });
 
