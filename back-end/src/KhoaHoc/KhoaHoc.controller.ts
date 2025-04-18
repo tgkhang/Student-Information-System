@@ -33,7 +33,6 @@ export class KhoaHocController {
   @UseGuards(JWTAuthGuard)
   async getCourse(@Param('MaKhoaHoc') MaKhoaHoc: string) {
     try {
-      console.log('Mã khóa học: ', MaKhoaHoc);
       // const KhoaHoc = await this.khoaHocService.getCourse(MaKhoaHoc);
       const KhoaHoc = await this.khoaHocService.getCourse(MaKhoaHoc);
       if (!KhoaHoc) throw new BadRequestException('Không tìm thấy khóa học.');

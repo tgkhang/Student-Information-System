@@ -33,9 +33,10 @@ export const updateStudentApi = (mssv, updateData) =>
   axiosInstance.put(`/sinhvien/update_student/${mssv}`, updateData);
 
 export const deleteStudentApi = (mssv) => 
-  axiosInstance.delete(`/sinhvien/delete_student/${mssv}`)
+  axiosInstance.delete(`/sinhvien/delete_student/${mssv}`);
 
-
+export const getStudentNoti = () => {axiosInstance.get("/sinhvien/getStudentNoti")};
+export const markStudentNotiAsRead = (id) => { axiosInstance.post(`/sinhvien/markNotiAsRead/${id}`) };
 //teacher
 export const getTeacherInfo = (id) => 
   axiosInstance.get(`/giangvien/getTeacher/${id}`);
@@ -63,6 +64,8 @@ export const getTeacherByIdApi = (id) =>{
 export const searchTeacherApi = (query) =>
   axiosInstance.get(`/GiangVien/searchTeacher`, { params: { query } });
 
+export const getTeacherNoti = () => {axiosInstance.get("/GiangVien/getTeacherNoti")};
+export const markTeacherNotiAsRead = (id) => { axiosInstance.post(`/GiangVien/markNotiAsRead/${id}`) };
 
 //FACULTY
 export const getFacultyListApi = (params = {}) => {

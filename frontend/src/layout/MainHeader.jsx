@@ -25,7 +25,7 @@ import Logo from "../assets/Logo.svg";
 import NotificationList from "../components/Notifications";
 import ProfileMenu from "../components/ProfileMenu";
 // utils
-import { getNotificationListApi } from "../utils/api";
+import { getNotificationListApi, getTeacherNoti, getStudentNoti, markStudentNotiAsRead, markTeacherNotiAsRead } from "../utils/api";
 
 const HeaderStyle = styled(AppBar)(({ theme }) => ({
   width: "100%",
@@ -69,17 +69,31 @@ export default function MainHeader() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await getNotificationListApi();
+        if (user.role === "student") {
+          const response = await getStudentNoti();
         setNotifications(response.data);
         const allRead = response.data.every(notification => notification?.isRead === true);
         setHasNotifications(!allRead);
-        console.log(response.data);
+        }
+        else if (user.role === "teacher") {
+          const response = await getTeacherNoti();
+          console.log(response)
+        setNotifications(response.data);
+        const allRead = response.data.every(notification => notification?.isRead === true);
+        setHasNotifications(!allRead);
+        }
+        else {
+          const response = await getNotificationListApi();
+        setNotifications(response.data);
+        const allRead = response.data.every(notification => notification?.isRead === true);
+        setHasNotifications(!allRead);
+        }
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
     }
     fetchNotifications();
-  }, []);
+  }, [user]);
   const handleToggleProfileMenu = (event) => {
     setAnchorProfile(event.currentTarget);
     setOpenProfileMenu((prev) => !prev);
@@ -89,6 +103,25 @@ export default function MainHeader() {
   const handleCloseProfileMenu = () => {
     setOpenProfileMenu(false);
   };
+
+  const markAsRead = async (id) => {
+    if (user?.role === "student") {
+      await markStudentNotiAsRead(id);
+      const updated = notifications.map((noti) =>
+        noti._id === id ? { ...noti, isRead: true } : noti
+      );
+      setNotifications(updated);
+      setHasNotifications(!updated.every((n) => n?.isRead));
+    }
+    else if (user?.role === "teacher") {
+      await markTeacherNotiAsRead(id);
+      const updated = notifications.map((noti) =>
+        noti._id === id ? { ...noti, isRead: true } : noti
+      );
+      setNotifications(updated);
+      setHasNotifications(!updated.every((n) => n?.isRead));
+    }
+  }
 
   return (
     <HeaderStyle position="fixed">
@@ -162,7 +195,7 @@ export default function MainHeader() {
                       '&::-webkit-scrollbar-thumb': { backgroundColor: "primary.main", borderRadius: '3px' },
                       '&::-webkit-scrollbar-thumb:hover': { backgroundColor: "primary.dark" },
                       }}>
-                      <NotificationList notifications={notifications} role={user?.role}/>
+                      <NotificationList notifications={notifications} role={user?.role} markAsRead={markAsRead}/>
                     </Paper>
                   </Popper>
                 </Box>

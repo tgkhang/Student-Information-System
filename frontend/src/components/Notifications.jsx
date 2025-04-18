@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Box, Typography, Badge } from "@mui/material";
 
-export default function NotificationList({notifications, role}) {
+export default function NotificationList({notifications, role, markAsRead}) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {notifications.map((notif) => (
         <Box
           key={notif._id}
+          onMouseEnter={() => markAsRead(notif._id)}
           onClick={() => window.location.href = `/${role}/notification/${notif._id}`}
           sx={{
             display: "flex",
