@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Typography,
   Button,
@@ -19,13 +19,21 @@ import {
   AccordionSummary,
   AccordionDetails,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Snackbar,
+  Alert,
+  IconButton,
 } from "@mui/material";
 // components
 import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
 // utils
 import exportToExcel from "../../utils/exportToExcel";
-import { getTeacherListApi, getFacultyListApi } from "../../utils/api";
+import {  getTeacherListApi, getFacultyListApi,deleteTeacherApi,} from "../../utils/api";
 
 const statuses = ["Đang công tác", "Nghỉ hưu", "Nghỉ phép", "Nghỉ việc"];
 
@@ -64,18 +72,16 @@ export default function LecturerListPage() {
   // UI state
   const [expandedDept, setExpandedDept] = useState(null);
 
-  // Map faculty IDs to faculty names
-  const facultyMap = {};
-  faculties.forEach((faculty) => {
-    facultyMap[faculty._id] = {
-      id: faculty._id,
-      code: faculty.MaKhoa,
-      name: faculty.TenKhoa,
-    };
-  });
+  // Delete functionality
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [teacherToDelete, setTeacherToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   // Fetch data
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       // Fetch faculty list
@@ -106,11 +112,98 @@ export default function LecturerListPage() {
       setError("Failed to load data. Please try again later.");
       setLoading(false);
     }
-  };
+  }, [page, pageSize]);
 
   useEffect(() => {
     fetchData();
-  }, [page, pageSize]);
+  }, [fetchData]);
+
+  // Delete teacher function - fixed to use correct variables and refresh logic
+  const deleteTeacher = useCallback(
+    async (teacherId) => {
+      if (!teacherId) {
+        setSnackbarMessage("Mã giảng viên không hợp lệ");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+        return;
+      }
+
+      try {
+        setDeleteLoading(true);
+
+        // Call the delete API
+        await deleteTeacherApi(teacherId);
+
+        // Show success message
+        setSnackbarMessage(`Đã xóa giảng viên ${teacherId} thành công`);
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+
+        // Refresh data
+        fetchData();
+      } catch (err) {
+        console.error(`Error deleting teacher ${teacherId}:`, err);
+
+        // Handle deletion error
+        const errorMessage =
+          err.response?.data?.message || err.message || "Unknown error";
+        setSnackbarMessage(`Không thể xóa giảng viên: ${errorMessage}`);
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      } finally {
+        setDeleteLoading(false);
+        setDeleteDialogOpen(false);
+        setTeacherToDelete(null);
+      }
+    },
+    [fetchData]
+  );
+
+  const handleDeleteClick = useCallback((teacher) => {
+    setTeacherToDelete(teacher);
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (teacherToDelete) {
+      deleteTeacher(teacherToDelete.id);
+    }
+  }, [teacherToDelete, deleteTeacher]);
+
+  // Handle delete dialog close
+  const handleDeleteDialogClose = useCallback(() => {
+    setDeleteDialogOpen(false);
+    setTeacherToDelete(null);
+  }, []);
+
+  // Handle snackbar close
+  const handleSnackbarClose = useCallback(() => {
+    setSnackbarOpen(false);
+  }, []);
+
+  // Handle clear search/filters
+  const handleClearSearch = useCallback(() => {
+    setSearchTerm("");
+    setFilterStatus("");
+    setFilterDepartment("");
+    setFilterTitle("");
+    setAppliedSearch("");
+    setAppliedStatus("");
+    setAppliedDepartment("");
+    setAppliedTitle("");
+    setPage(1);
+    fetchData();
+  }, [fetchData]);
+
+  // Map faculty IDs to faculty names
+  const facultyMap = {};
+  faculties.forEach((faculty) => {
+    facultyMap[faculty._id] = {
+      id: faculty._id,
+      code: faculty.MaKhoa,
+      name: faculty.TenKhoa,
+    };
+  });
 
   // Process lecturer data to include faculty name
   const processedLecturers = lecturers.map((lecturer) => {
@@ -123,7 +216,7 @@ export default function LecturerListPage() {
       department: faculty.name,
       departmentId: lecturer.KhoaID,
       position: lecturer.ChucVu || "Giáo viên",
-      status: lecturer.Stattus ||"Đang công tác",
+      status: lecturer.Status || "Đang công tác",
       academicTitle: lecturer.TrinhDo || "Chưa cập nhật",
       specialization: "Chưa cập nhật",
       dob: lecturer.NgaySinh
@@ -191,7 +284,6 @@ export default function LecturerListPage() {
 
   // Group filtered lecturers by department
   const groupedLecturers = groupLecturersByDepartment(filteredLecturers);
-  console.log(groupedLecturers);
 
   // Khi nhấn nút Tìm kiếm, cập nhật trạng thái áp dụng và reset trang về 1
   const handleSearch = () => {
@@ -246,7 +338,7 @@ export default function LecturerListPage() {
 
   return (
     <Page title="Lecturer List">
-      <Container maxWidth="lg"  sx={{ mt: 10 }}>
+      <Container maxWidth="lg" sx={{ mt: 10 }}>
         <Box sx={{ my: 4 }}>
           <Stack
             direction="row"
@@ -257,38 +349,54 @@ export default function LecturerListPage() {
             <Typography variant="h4" gutterBottom>
               Danh sách giảng viên
             </Typography>
-            <Button
-              color="success"
-              variant="contained"
-              disabled={filteredLecturers.length === 0 || loading}
-              onClick={() =>
-                exportToExcel(
-                  [
-                    "Mã giảng viên",
-                    "Họ tên",
-                    "Ngày sinh",
-                    "Khoa",
-                    "Chức vụ",
-                    "Tình trạng",
-                    "Học hàm/học vị",
-                    "Chuyên ngành",
-                  ],
-                  filteredLecturers.map((lecturer) => [
-                    lecturer.id,
-                    lecturer.name,
-                    lecturer.dob,
-                    lecturer.department,
-                    lecturer.position,
-                    lecturer.status,
-                    lecturer.academicTitle,
-                    lecturer.specialization,
-                  ])
-                )
-              }
-              startIcon={<Iconify icon={"eva:download-fill"} />}
-            >
-              Xuất Excel
-            </Button>
+            <Stack direction="row" spacing={2}>
+              {(appliedSearch ||
+                appliedStatus ||
+                appliedDepartment ||
+                appliedTitle) && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleClearSearch}
+                  startIcon={<Iconify icon="eva:refresh-outline" />}
+                  disabled={loading}
+                >
+                  Làm mới
+                </Button>
+              )}
+              <Button
+                color="success"
+                variant="contained"
+                disabled={filteredLecturers.length === 0 || loading}
+                onClick={() =>
+                  exportToExcel(
+                    [
+                      "Mã giảng viên",
+                      "Họ tên",
+                      "Ngày sinh",
+                      "Khoa",
+                      "Chức vụ",
+                      "Tình trạng",
+                      "Học hàm/học vị",
+                      "Chuyên ngành",
+                    ],
+                    filteredLecturers.map((lecturer) => [
+                      lecturer.id,
+                      lecturer.name,
+                      lecturer.dob,
+                      lecturer.department,
+                      lecturer.position,
+                      lecturer.status,
+                      lecturer.academicTitle,
+                      lecturer.specialization,
+                    ])
+                  )
+                }
+                startIcon={<Iconify icon={"eva:download-fill"} />}
+              >
+                Xuất Excel
+              </Button>
+            </Stack>
           </Stack>
 
           <Box sx={{ mb: 4 }}>
@@ -451,8 +559,25 @@ export default function LecturerListPage() {
                                   : "none",
                               boxShadow:
                                 lecturer.position !== "Giáo viên" ? 3 : 1,
+                              position: "relative",
                             }}
                           >
+                            {/* Delete button */}
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => handleDeleteClick(lecturer)}
+                              disabled={deleteLoading}
+                              sx={{
+                                position: "absolute",
+                                top: 8,
+                                right: 8,
+                                zIndex: 1,
+                              }}
+                            >
+                              <Iconify icon="eva:trash-2-outline" />
+                            </IconButton>
+
                             <Box sx={{ pl: 2, pt: 2, pb: 2 }}>
                               <Avatar
                                 src={lecturer.avatar}
@@ -552,6 +677,58 @@ export default function LecturerListPage() {
               )}
         </Box>
       </Container>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteDialogClose}
+        aria-labelledby="delete-dialog-title"
+      >
+        <DialogTitle id="delete-dialog-title">
+          Xác nhận xóa giảng viên
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc chắn muốn xóa giảng viên {teacherToDelete?.name} (Mã GV:{" "}
+            {teacherToDelete?.id})? Hành động này không thể hoàn tác.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteDialogClose} color="primary">
+            Hủy
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+            disabled={deleteLoading}
+            startIcon={
+              deleteLoading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : null
+            }
+          >
+            {deleteLoading ? "Đang xóa..." : "Xác nhận xóa"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar for operation feedback */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Page>
   );
 }
