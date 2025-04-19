@@ -19,12 +19,23 @@ import {
   Stack,
   CircularProgress,
   Alert,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Snackbar,
 } from "@mui/material";
 // components
 import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
 import exportToExcel from "../../utils/exportToExcel";
-import { getStudentListApi, searchStudentApi } from "../../utils/api";
+import {
+  getStudentListApi,
+  searchStudentApi,
+  deleteStudentApi,
+} from "../../utils/api";
 
 const formatDate = (dateString) => {
   if (!dateString) return "";
@@ -69,8 +80,16 @@ export default function StudentListPage() {
   const [filterMajor, setFilterMajor] = useState("");
 
   // Search state
-  const [isSearchActive, setIsSearchActive] = useState(false); 
+  const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+
+  // Delete functionality
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const formatStudentData = useCallback((student) => {
     if (!student) return null;
@@ -181,10 +200,10 @@ export default function StudentListPage() {
 
         if (response?.data) {
           // Check if the API response is an array or a single object
-          const studentData = Array.isArray(response.data) 
-            ? response.data 
+          const studentData = Array.isArray(response.data)
+            ? response.data
             : [response.data];
-            
+
           // Format all students data
           const formattedStudents = studentData
             .map(formatStudentData)
@@ -226,6 +245,77 @@ export default function StudentListPage() {
     },
     [formatStudentData, isFetching]
   );
+
+  const deleteStudent = useCallback(
+    async (studentId) => {
+      if (!studentId) {
+        setSnackbarMessage("Mã sinh viên không hợp lệ");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+        return;
+      }
+
+      try {
+        setDeleteLoading(true);
+
+        const response = await deleteStudentApi(studentId);
+
+        setSnackbarMessage(`Đã xóa sinh viên ${studentId} thành công`);
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+
+        if (isSearchActive) {
+          handleClearSearch();
+        } else {
+          // Refresh current page
+          fetchStudents(pageNumber, pageSize, sortBy, sortOrder);
+        }
+      } catch (err) {
+        console.error(`Error deleting student ${studentId}:`, err);
+
+        // Handle deletion error
+        const errorMessage =
+          err.response?.data?.message || err.message || "Unknown error";
+        setSnackbarMessage(`Không thể xóa sinh viên: ${errorMessage}`);
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      } finally {
+        setDeleteLoading(false);
+        setDeleteDialogOpen(false);
+        setStudentToDelete(null);
+      }
+    },
+    [
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortOrder,
+      fetchStudents,
+      isSearchActive,
+    ]
+  );
+
+  const handleDeleteClick = useCallback((student) => {
+    setStudentToDelete(student);
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (studentToDelete) {
+      deleteStudent(studentToDelete.id);
+    }
+  }, [studentToDelete, deleteStudent]);
+
+  // Handle delete dialog close
+  const handleDeleteDialogClose = useCallback(() => {
+    setDeleteDialogOpen(false);
+    setStudentToDelete(null);
+  }, []);
+
+  // Handle snackbar close
+  const handleSnackbarClose = useCallback(() => {
+    setSnackbarOpen(false);
+  }, []);
 
   // Initial data fetch
   useEffect(() => {
@@ -287,7 +377,7 @@ export default function StudentListPage() {
     setSearchTerm("");
     setFilterStatus("");
     setFilterCourse("");
-    setFilterMajor(""); 
+    setFilterMajor("");
     setIsSearchActive(false);
     setPageNumber(1);
     fetchStudents(1, pageSize, sortBy, sortOrder);
@@ -322,7 +412,14 @@ export default function StudentListPage() {
       console.error("Error in filteredStudents:", err);
       return [];
     }
-  }, [students, searchTerm, filterStatus, filterCourse, filterMajor, isSearchActive]);
+  }, [
+    students,
+    searchTerm,
+    filterStatus,
+    filterCourse,
+    filterMajor,
+    isSearchActive,
+  ]);
 
   return (
     <Page title="Student List">
@@ -573,6 +670,7 @@ export default function StudentListPage() {
                     <TableCell>Khóa học</TableCell>
                     <TableCell>Chuyên ngành</TableCell>
                     <TableCell>Tình trạng học</TableCell>
+                    <TableCell align="center">Thao tác</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -585,6 +683,16 @@ export default function StudentListPage() {
                           <TableCell>{student.course}</TableCell>
                           <TableCell>{student.major}</TableCell>
                           <TableCell>{student.status}</TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => handleDeleteClick(student)}
+                              disabled={deleteLoading}
+                            >
+                              <Iconify icon="eva:trash-2-outline" />
+                            </IconButton>
+                          </TableCell>
                         </TableRow>
                       ))
                     : !loading && (
@@ -618,6 +726,58 @@ export default function StudentListPage() {
           )}
         </Box>
       </Container>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteDialogClose}
+        aria-labelledby="delete-dialog-title"
+      >
+        <DialogTitle id="delete-dialog-title">
+          Xác nhận xóa sinh viên
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc chắn muốn xóa sinh viên {studentToDelete?.name} (MSSV:{" "}
+            {studentToDelete?.id})? Hành động này không thể hoàn tác.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteDialogClose} color="primary">
+            Hủy
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+            disabled={deleteLoading}
+            startIcon={
+              deleteLoading ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : null
+            }
+          >
+            {deleteLoading ? "Đang xóa..." : "Xác nhận xóa"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar for operation feedback */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Page>
   );
 }
