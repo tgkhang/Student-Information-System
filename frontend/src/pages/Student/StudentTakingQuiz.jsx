@@ -214,11 +214,14 @@ export default function StudentTakingQuiz() {
   };
 
   return (
-    <Box maxWidth={1200} mx="auto" mt={4} pb={5}>
+    <Box maxWidth={1200} mx="auto" mt="64px" p={3}>
       <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
         <Stack spacing={2}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h5" fontWeight={700}>
+            <Typography
+              variant="h5" fontWeight={700}
+              sx={{color: "primary.main"}}
+            >
               {quizData.title}
             </Typography>
             <Box display="flex" alignItems="center" gap={1}>
@@ -240,8 +243,8 @@ export default function StudentTakingQuiz() {
               sx={{ height: 8, borderRadius: 1 }}
             />
             <Box display="flex" justifyContent="space-between" mt={1}>
-              <Typography variant="body2">Progress</Typography>
-              <Typography variant="body2" fontWeight={600}>
+              <Typography variant="body1">Progress</Typography>
+              <Typography variant="body1" fontWeight={600}>
                 {answeredCount}/{quizData.questions.length} questions answered
               </Typography>
             </Box>
@@ -309,7 +312,7 @@ export default function StudentTakingQuiz() {
                 Question {currentQuestionIndex + 1} 
                 {currentQuestion.type === "multiple" && " (Multiple Choice)"}
               </Typography>
-              <Typography variant="body2" fontWeight={500}>
+              <Typography variant="body1" fontWeight={500}>
                 {currentQuestion.points} points
               </Typography>
             </Box>
@@ -425,7 +428,10 @@ export default function StudentTakingQuiz() {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained">
+          <Button
+            variant="contained"
+            href="/student/dashboard"
+          >
             Back to Dashboard
           </Button>
         </DialogActions>

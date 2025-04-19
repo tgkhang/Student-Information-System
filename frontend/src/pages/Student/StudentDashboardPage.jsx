@@ -589,7 +589,7 @@ export default function Dashboard() {
                           >
                             JD
                           </Avatar>
-                          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                          <Typography variant="h3" sx={{ fontWeight: "700" }}>
                             {studentProfile.name}
                           </Typography>
                           <Typography variant="body1" color="text.secondary">
@@ -614,7 +614,8 @@ export default function Dashboard() {
                               secondary={studentProfile.id}
                               primaryTypographyProps={{
                                 variant: "body2",
-                                color: "text.secondary",
+                                fontWeight: 500,
+                                color: "secondary.main",
                               }}
                               secondaryTypographyProps={{
                                 variant: "body1",
@@ -631,7 +632,8 @@ export default function Dashboard() {
                               secondary={studentProfile.email}
                               primaryTypographyProps={{
                                 variant: "body2",
-                                color: "text.secondary",
+                                fontWeight: 500,
+                                color: "secondary.main",
                               }}
                               secondaryTypographyProps={{
                                 variant: "body1",
@@ -648,7 +650,8 @@ export default function Dashboard() {
                               secondary={studentProfile.phone}
                               primaryTypographyProps={{
                                 variant: "body2",
-                                color: "text.secondary",
+                                fontWeight: 500,
+                                color: "secondary.main",
                               }}
                               secondaryTypographyProps={{
                                 variant: "body1",
@@ -665,7 +668,8 @@ export default function Dashboard() {
                               secondary={studentProfile.dob}
                               primaryTypographyProps={{
                                 variant: "body2",
-                                color: "text.secondary",
+                                fontWeight: 500,
+                                color: "secondary.main",
                               }}
                               secondaryTypographyProps={{
                                 variant: "body1",
@@ -682,7 +686,8 @@ export default function Dashboard() {
                               secondary={studentProfile.gender}
                               primaryTypographyProps={{
                                 variant: "body2",
-                                color: "text.secondary",
+                                fontWeight: 500,
+                                color: "secondary.main",
                               }}
                               secondaryTypographyProps={{
                                 variant: "body1",
@@ -700,7 +705,7 @@ export default function Dashboard() {
                     <Card elevation={0} sx={{ borderRadius: 2, mb: 3 }}>
                       <CardContent>
                         <Typography
-                          variant="h6"
+                          variant="h4"
                           sx={{
                             fontWeight: "bold",
                             mb: 2,
@@ -722,7 +727,8 @@ export default function Dashboard() {
                                   secondary={studentProfile.program}
                                   primaryTypographyProps={{
                                     variant: "body2",
-                                    color: "text.secondary",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
                                   }}
                                   secondaryTypographyProps={{
                                     variant: "body1",
@@ -739,7 +745,8 @@ export default function Dashboard() {
                                   secondary={studentProfile.enrollmentYear}
                                   primaryTypographyProps={{
                                     variant: "body2",
-                                    color: "text.secondary",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
                                   }}
                                   secondaryTypographyProps={{
                                     variant: "body1",
@@ -756,7 +763,8 @@ export default function Dashboard() {
                                   secondary={studentProfile.advisor}
                                   primaryTypographyProps={{
                                     variant: "body2",
-                                    color: "text.secondary",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
                                   }}
                                   secondaryTypographyProps={{
                                     variant: "body1",
@@ -777,7 +785,8 @@ export default function Dashboard() {
                                   secondary={summaryData.gpa}
                                   primaryTypographyProps={{
                                     variant: "body2",
-                                    color: "text.secondary",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
                                   }}
                                   secondaryTypographyProps={{
                                     variant: "body1",
@@ -794,7 +803,8 @@ export default function Dashboard() {
                                   secondary={studentProfile.expectedGraduation}
                                   primaryTypographyProps={{
                                     variant: "body2",
-                                    color: "text.secondary",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
                                   }}
                                   secondaryTypographyProps={{
                                     variant: "body1",
@@ -811,7 +821,8 @@ export default function Dashboard() {
                                   secondary={`${summaryData.completedCredits}/${summaryData.totalCredits}`}
                                   primaryTypographyProps={{
                                     variant: "body2",
-                                    color: "text.secondary",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
                                   }}
                                   secondaryTypographyProps={{
                                     variant: "body1",
@@ -828,7 +839,7 @@ export default function Dashboard() {
                     <Card elevation={0} sx={{ borderRadius: 2 }}>
                       <CardContent>
                         <Typography
-                          variant="h6"
+                          variant="h4"
                           sx={{
                             fontWeight: "bold",
                             mb: 2,
@@ -848,7 +859,8 @@ export default function Dashboard() {
                               secondary={studentProfile.address}
                               primaryTypographyProps={{
                                 variant: "body2",
-                                color: "text.secondary",
+                                fontWeight: 500,
+                                color: "secondary.main",
                               }}
                               secondaryTypographyProps={{
                                 variant: "body1",
@@ -865,7 +877,8 @@ export default function Dashboard() {
                               secondary={studentProfile.email}
                               primaryTypographyProps={{
                                 variant: "body2",
-                                color: "text.secondary",
+                                fontWeight: 500,
+                                color: "secondary.main",
                               }}
                               secondaryTypographyProps={{
                                 variant: "body1",
@@ -882,7 +895,8 @@ export default function Dashboard() {
                               secondary={studentProfile.phone}
                               primaryTypographyProps={{
                                 variant: "body2",
-                                color: "text.secondary",
+                                fontWeight: 500,
+                                color: "secondary.main",
                               }}
                               secondaryTypographyProps={{
                                 variant: "body1",

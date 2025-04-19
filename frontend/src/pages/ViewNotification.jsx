@@ -43,14 +43,14 @@ export default function ViewNotification() {
     : "";
 
   return (
-    <Page title="View Notification">
-      <Box maxWidth={800} mx="auto" mt={8}>
+    <Page title="View Notifications">
+      <Box maxWidth={800} mx="auto" mt="64px" p={2}>
         <Typography 
           variant="h4" 
           fontWeight={700} 
           gutterBottom 
           sx={{ 
-            mb: 3,
+            mb: 3, mt: 2,
             textAlign: "center",
             color: "primary.main"
           }}
@@ -134,9 +134,9 @@ export default function ViewNotification() {
               </Box>
             </Stack>
           ) : (
-            <Box sx={{ textAlign: "center", py: 4 }}>
-              <Typography color="error">
-                Failed to load notification or notification not found
+            <Box sx={{ textAlign: "center" }}>
+              <Typography color="error" sx={{fontStyle: "italic", fontWeight: 500}}>
+                Failed to load notification or notification not found.
               </Typography>
             </Box>
           )}

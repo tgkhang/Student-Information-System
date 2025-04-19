@@ -204,8 +204,15 @@ export default function StudentAttemptQuiz() {
 
   return (
     <Page title="Quiz Details">
-      <Box maxWidth={800} mx="auto" mt={5}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+      <Box maxWidth={900} mx="auto" mt="64px" p={3} pb={4}>
+        <Typography
+          variant="h4"
+          fontWeight={700}
+          sx={{
+            color: "primary.main",
+            mb: 2
+          }}
+        >
           Quiz Details
         </Typography>
 
@@ -213,21 +220,28 @@ export default function StudentAttemptQuiz() {
           sx={{ 
             p: 2, 
             mb: 3, 
-            backgroundColor: "primary.light", 
+            backgroundColor: "primary.lighter", 
             fontWeight: "bold",
             fontSize: "1.1rem",
             borderRadius: 2 
           }}
         >
-          <Stack direction="column" spacing={1}>
-            <Typography variant="h6" fontWeight={700}>
+          <Stack direction="column" spacing={1.5}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+                color: "primary.main",
+                py: 0.5
+              }}
+            >
               {quiz.name}
             </Typography>
             <Divider />
-            <Typography>
+            <Typography sx={{pt: 1}}>
               <strong>Start Time:</strong> {quiz.startTime.format("MM/DD/YYYY HH:mm:ss")}
             </Typography>
-            <Typography>
+            <Typography sx={{pb: 1}}>
               <strong>End Time:</strong> {quiz.endTime.format("MM/DD/YYYY HH:mm:ss")}
             </Typography>
             {renderTimeInfo()}
@@ -237,7 +251,7 @@ export default function StudentAttemptQuiz() {
         {renderQuizStatus()}
 
         <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-          <Typography variant="h6" fontWeight={600} mb={2}>
+          <Typography variant="h5" fontWeight={600} mb={2}>
             Quiz Information
           </Typography>
           
@@ -248,7 +262,9 @@ export default function StudentAttemptQuiz() {
               </ListItemIcon>
               <ListItemText 
                 primary="Number of Questions" 
-                secondary={`${quiz.questionCount} questions`} 
+                secondary={`${quiz.questionCount} questions`}
+                primaryTypographyProps={{ variant:"body1" }}
+                secondaryTypographyProps={{ variant:"body1", color: "text.secondary" }}
               />
             </ListItem>
             
@@ -258,13 +274,15 @@ export default function StudentAttemptQuiz() {
               </ListItemIcon>
               <ListItemText 
                 primary="Time Limit" 
-                secondary={`${quiz.timeLimit} minutes`} 
+                secondary={`${quiz.timeLimit} minutes`}
+                primaryTypographyProps={{ variant:"body1" }}
+                secondaryTypographyProps={{ variant:"body1", color: "text.secondary" }}
               />
             </ListItem>
           </List>
           
           <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" color="text.secondary" mb={2}>
+            <Typography variant="body1" color="secondary.dark" mb={2}>
               <strong>Important Note:</strong> Once you start the quiz, the system will record your time.
               If you leave the page or close the browser, your submission may be marked as incomplete.
             </Typography>
@@ -287,11 +305,13 @@ export default function StudentAttemptQuiz() {
             <Typography gutterBottom>
               Are you sure you want to start the quiz <strong>{quiz.name}</strong>?
             </Typography>
-            <Typography variant="body2" color="warning.main" sx={{ mt: 1 }}>
-              Note: The system will record your start time immediately. If you exit during the quiz,
+            <Typography variant="body1" color="secondary.main"
+              sx={{ mt: 1, fontStyle: "italic" }}
+            >
+              <strong>Note:</strong> The system will record your start time immediately. If you exit during the quiz,
               the system may flag this as cheating behavior and will not save your results.
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
+            <Typography variant="body1" sx={{ mt: 1 }}>
               Time limit: <strong>{quiz.timeLimit} minutes</strong>
             </Typography>
           </>

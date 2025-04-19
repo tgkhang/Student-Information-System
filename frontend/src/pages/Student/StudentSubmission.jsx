@@ -42,7 +42,7 @@ export default function StudentSubmission() {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile && selectedFile.size > FILE_SIZE_LIMIT_MB * 1024 * 1024) {
-      enqueueSnackbar(`File vượt quá giới hạn ${FILE_SIZE_LIMIT_MB}MB.`, { variant: "error" });
+      enqueueSnackbar(`File exceeded the limit of ${FILE_SIZE_LIMIT_MB}MB.`, { variant: "error" });
       return;
     }
     setFile(selectedFile);
@@ -50,14 +50,14 @@ export default function StudentSubmission() {
 
   const handleSubmit = () => {
     setSubmittedAt(dayjs());
-    enqueueSnackbar("Nộp bài thành công!", { variant: "success" });
+    enqueueSnackbar("Submission successful!", { variant: "success" });
     setConfirmSubmit(false);
   };
-
+  
   const handleRemove = () => {
     setFile(null);
     setSubmittedAt(null);
-    enqueueSnackbar("Đã xóa bài nộp.", { variant: "info" });
+    enqueueSnackbar("Submission deleted.", { variant: "info" });
     setConfirmRemove(false);
   };
 
@@ -74,16 +74,19 @@ export default function StudentSubmission() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    enqueueSnackbar("Đang tải file về...", { variant: "info" });
+    enqueueSnackbar("File downloading...", { variant: "info" });
   };
 
   const renderTimeInfo = () => {
     if (hasSubmitted) {
       const early = deadline.diff(submittedAt, "minute");
+      const minutes = Math.abs(early);
+      const minuteLabel = minutes === 1 ? "minute" : "minutes";
+  
       return (
         <Chip
-          label={`Bạn đã nộp ${
-            early > 0 ? `sớm ${early} phút` : `trễ ${Math.abs(early)} phút`
+          label={`Your submission is ${
+            early > 0 ? `${minutes} ${minuteLabel} early` : `${minutes} ${minuteLabel} late`
           }`}
           color={early >= 0 ? "success" : "error"}
           sx={{ mt: 1 }}
@@ -95,24 +98,30 @@ export default function StudentSubmission() {
       const lateBy = dayjs.duration(now.diff(deadline)).humanize();
       return (
         <Typography color="error" fontWeight="bold" sx={{ mt: 1 }}>
-          Đã trễ hạn {lateBy}. Hệ thống không còn nhận tài liệu.
+          Submission is overdue by {lateBy}. The system no longer accepts files.
         </Typography>
       );
     }
 
     const remaining = dayjs.duration(deadline.diff(now));
+
+    const formatTimeUnit = (value, unit) => {
+      const rounded = Math.floor(value);
+      return `${rounded} ${rounded === 1 ? unit : unit + "s"}`;
+    };
+
     const remainingText =
       remaining.asDays() >= 1
-        ? `${Math.floor(remaining.asDays())} ngày`
+        ? formatTimeUnit(remaining.asDays(), "day")
         : remaining.asHours() >= 1
-        ? `${Math.floor(remaining.asHours())} giờ`
+        ? formatTimeUnit(remaining.asHours(), "hour")
         : remaining.asMinutes() >= 1
-        ? `${Math.floor(remaining.asMinutes())} phút`
-        : `${Math.floor(remaining.asSeconds())} giây`;
+        ? formatTimeUnit(remaining.asMinutes(), "minute")
+        : formatTimeUnit(remaining.asSeconds(), "second");
 
     return (
       <Typography color="primary" fontWeight="bold" sx={{ mt: 1 }}>
-        Còn lại: {remainingText}
+        Time Remaining: {remainingText}
       </Typography>
     );
   };
@@ -170,7 +179,7 @@ export default function StudentSubmission() {
             <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
               <UploadFileIcon color="success" />
               <Typography fontWeight="bold">
-                File đã chọn: {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+                Uploaded file: {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
               </Typography>
               <IconButton 
                 size="small" 
@@ -186,10 +195,10 @@ export default function StudentSubmission() {
             <Box>
               <UploadFileIcon sx={{ fontSize: 40, color: "text.secondary", mb: 1 }} />
               <Typography>
-                Kéo thả hoặc bấm để chọn file
+                Drag and drop or click to choose file
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                (Dung lượng tối đa: {FILE_SIZE_LIMIT_MB}MB)
+              <Typography variant="body1" color="text.secondary">
+                (Maximum file size: {FILE_SIZE_LIMIT_MB}MB)
               </Typography>
             </Box>
           )}
@@ -227,7 +236,7 @@ export default function StudentSubmission() {
               display: "flex",
               alignItems: "center",
             }}>
-              <Typography variant="body2" sx={{ mr: 1 }}>Click để tải về</Typography>
+              <Typography variant="body1" sx={{ mr: 1 }}>Click to download</Typography>
               <DownloadIcon />
             </Box>
           </Stack>
@@ -238,9 +247,14 @@ export default function StudentSubmission() {
 
   return (
     <Page title="Submit Assignment">
-      <Box maxWidth={800} mx="auto" mt={5}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          Nộp bài tập
+      <Box maxWidth={800} mx="auto" mt="64px" p={2}>
+        <Typography
+          variant="h4" gutterBottom
+          sx={{
+            fontWeight: 700, color: "primary.main", mt: 1
+          }}
+        >
+          Submission
         </Typography>
 
         <Paper 
@@ -271,7 +285,7 @@ export default function StudentSubmission() {
                   onClick={() => setConfirmRemove(true)}
                   startIcon={<DeleteIcon />}
                 >
-                  Xóa bài nộp
+                  Delete submission
                 </Button>
               ) : (
                 <Button
@@ -280,7 +294,7 @@ export default function StudentSubmission() {
                   disabled={!file || isOverdue}
                   onClick={() => setConfirmSubmit(true)}
                 >
-                  Nộp bài
+                  Submit
                 </Button>
               )}
             </Box>
@@ -293,12 +307,12 @@ export default function StudentSubmission() {
         open={confirmSubmit}
         onClose={() => setConfirmSubmit(false)}
         onConfirm={handleSubmit}
-        title="Xác nhận nộp bài"
+        title="Confirm Submission"
         message={
           <>
-            Bạn có chắc chắn muốn nộp bài với file: <strong>{file?.name}</strong>?
+            Are you sure you want to submit the file: <strong>{file?.name}</strong>?
             <br />
-            Sau khi nộp, bạn vẫn có thể xóa và nộp lại trong thời gian cho phép.
+            After submitting, you can still delete and resubmit within the allowed time.
           </>
         }
       />
@@ -308,8 +322,8 @@ export default function StudentSubmission() {
         open={confirmRemove}
         onClose={() => setConfirmRemove(false)}
         onConfirm={handleRemove}
-        title="Xác nhận xóa bài"
-        message="Bạn có chắc chắn muốn xóa bài nộp hiện tại?"
+        title="Confirm Deletion"
+        message="Are you sure you want to delete your current submission?"
       />
     </Page>
   );

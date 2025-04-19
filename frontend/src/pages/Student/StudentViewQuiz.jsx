@@ -138,8 +138,10 @@ export default function QuizResult() {
   };
 
   return (
-    <Box maxWidth={800} mx="auto" mt={5} pb={5}>
-      <Typography variant="h4" fontWeight={700} gutterBottom mb={3}>
+    <Box maxWidth={900} mx="auto" mt="64px" p={2} mb={5}>
+      <Typography
+        variant="h4" fontWeight={700} gutterBottom my={3}
+        sx={{color: "primary.main"}}>
         {quizData.title}
       </Typography>
 
@@ -150,10 +152,10 @@ export default function QuizResult() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography variant="body1" fontWeight={500}>
+            <Typography variant="body2" fontWeight={500}>
               Submission Time:
             </Typography>
-            <Typography variant="body1">{quizData.submissionTime}</Typography>
+            <Typography variant="body2">{quizData.submissionTime}</Typography>
           </Box>
 
           <Divider />
@@ -163,10 +165,15 @@ export default function QuizResult() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography variant="body1" fontWeight={500}>
+            <Typography variant="body2" fontWeight={500}>
               Score:
             </Typography>
-            <Typography variant="body1" fontWeight={700}>
+            <Typography variant="body2"
+              sx={{
+                fontWeight: 700,
+                color: "primary.main"
+              }}
+            >
               {quizData.score !== null
                 ? `${quizData.score}/${quizData.totalPoints}`
                 : "Score is not available"}
@@ -175,7 +182,7 @@ export default function QuizResult() {
         </Stack>
       </Paper>
 
-      <Stack spacing={4}>
+      <Stack spacing={4} sx={{mb: 4}}>
         {quizData.questions.map((question, index) => (
           <Paper key={question.id} elevation={2} sx={{ p: 3 }}>
             <Box display="flex" justifyContent="space-between" mb={2}>
@@ -381,7 +388,7 @@ export default function QuizResult() {
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
                   Explanation:
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body1">
                   {question.explanation}
                 </Typography>
               </Box>
