@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import {useEffect, useState} from "react";
 import {
   Box,
   Table,
@@ -18,33 +18,22 @@ import {
   Chip,
   TextField,
   InputAdornment,
-  IconButton,
-  Tooltip,
   Tabs,
   Tab,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
-  Badge,
   styled,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import DownloadIcon from "@mui/icons-material/Download";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ScheduleIcon from "@mui/icons-material/Schedule";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-import { useLocation, useNavigate } from "react-router-dom";
 import Page from "../../components/Page";
 
-const drawerWidth = 0;
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -143,108 +132,17 @@ const registeredClassesData = [
   },
 ];
 
-// Assignments data
-const assignmentsData = [
-  {
-    id: "A1-CS302",
-    title: "Algorithm Analysis Report",
-    course: "CS302 - Advanced Algorithms",
-    dueDate: "2024-05-15T23:59:00",
-    status: "pending",
-    grade: null,
-    maxGrade: 100,
-    submitted: false,
-    priority: "high",
-  },
-  {
-    id: "A2-CS302",
-    title: "Sorting Algorithms Implementation",
-    course: "CS302 - Advanced Algorithms",
-    dueDate: "2024-05-10T23:59:00",
-    status: "submitted",
-    grade: null,
-    maxGrade: 100,
-    submitted: true,
-    submittedDate: "2024-05-09T14:30:00",
-    priority: "medium",
-  },
-  {
-    id: "A1-MATH401",
-    title: "Matrix Operations Problem Set",
-    course: "MATH401 - Linear Algebra",
-    dueDate: "2024-05-20T23:59:00",
-    status: "pending",
-    grade: null,
-    maxGrade: 50,
-    submitted: false,
-    priority: "medium",
-  },
-  {
-    id: "A1-ENG205",
-    title: "Technical Documentation Draft",
-    course: "ENG205 - Technical Writing",
-    dueDate: "2024-05-05T23:59:00",
-    status: "graded",
-    grade: 92,
-    maxGrade: 100,
-    submitted: true,
-    submittedDate: "2024-05-04T18:45:00",
-    priority: "low",
-  },
-  {
-    id: "A2-MATH401",
-    title: "Eigenvalues and Eigenvectors Quiz",
-    course: "MATH401 - Linear Algebra",
-    dueDate: "2024-04-30T23:59:00",
-    status: "graded",
-    grade: 85,
-    maxGrade: 100,
-    submitted: true,
-    submittedDate: "2024-04-30T22:15:00",
-    priority: "low",
-  },
-];
-
 export default function StudentClassesAndAssignmentsPage() {
-  const location = useLocation();
-  const navigate = useNavigate();
 
-  // Get tab from URL query parameter
-  const getTabFromUrl = () => {
-    const searchParams = new URLSearchParams(location.search);
-    const tabParam = searchParams.get("tab");
-    return tabParam ? Number.parseInt(tabParam, 10) : 0;
-  };
-
-  const [value, setValue] = React.useState(getTabFromUrl());
-  const [semester, setSemester] = React.useState("2");
-  const [year, setYear] = React.useState("2024");
-  const [isDrawerOpen, setDrawerOpen] = React.useState(true);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [assignmentFilter, setAssignmentFilter] = React.useState("all");
-
-  // Update URL when tab changes
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    navigate(
-      `/student/classAndAssignment${newValue > 0 ? `?tab=${newValue}` : ""}`
-    );
-  };
-
+  const [semester, setSemester] = useState("2");
+  const [year, setYear] = useState("2024");
+  const [searchTerm, setSearchTerm] = useState("");
   const handleSemesterChange = (event) => {
     setSemester(event.target.value);
   };
 
   const handleYearChange = (event) => {
     setYear(event.target.value);
-  };
-
-  const handleAssignmentFilterChange = (event) => {
-    setAssignmentFilter(event.target.value);
-  };
-
-  const toggleDrawer = () => {
-    setDrawerOpen(!isDrawerOpen);
   };
 
   const handleSearchChange = (event) => {
@@ -258,23 +156,6 @@ export default function StudentClassesAndAssignmentsPage() {
       classItem.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       classItem.teacher.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Filter assignments based on filter and search term
-  const filteredAssignments = assignmentsData.filter((assignment) => {
-    const matchesSearch =
-      assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      assignment.course.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (assignmentFilter === "all") return matchesSearch;
-    if (assignmentFilter === "pending")
-      return assignment.status === "pending" && matchesSearch;
-    if (assignmentFilter === "submitted")
-      return assignment.status === "submitted" && matchesSearch;
-    if (assignmentFilter === "graded")
-      return assignment.status === "graded" && matchesSearch;
-
-    return matchesSearch;
-  });
 
   // Get status color
   const getStatusColor = (status) => {
@@ -294,77 +175,8 @@ export default function StudentClassesAndAssignmentsPage() {
     }
   };
 
-  // Get priority color
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case "high":
-        return "error";
-      case "medium":
-        return "warning";
-      case "low":
-        return "success";
-      default:
-        return "default";
-    }
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  // Check if assignment is due soon (within 3 days)
-  const isDueSoon = (dueDate) => {
-    const now = new Date();
-    const due = new Date(dueDate);
-    const diffTime = due - now;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 3 && diffDays >= 0;
-  };
-
-  // Check if assignment is overdue
-  const isOverdue = (dueDate) => {
-    const now = new Date();
-    const due = new Date(dueDate);
-    return now > due && dueDate;
-  };
-
-  // Get time remaining text
-  const getTimeRemaining = (dueDate) => {
-    const now = new Date();
-    const due = new Date(dueDate);
-    const diffTime = due - now;
-
-    if (diffTime < 0) return "Overdue";
-
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor(
-      (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-
-    if (diffDays > 0) {
-      return `${diffDays} day${diffDays > 1 ? "s" : ""} left`;
-    } else {
-      return `${diffHours} hour${diffHours > 1 ? "s" : ""} left`;
-    }
-  };
-
   // Count pending assignments
-  const pendingAssignmentsCount = assignmentsData.filter(
-    (a) => a.status === "pending"
-  ).length;
-
-  // Update tab when URL changes
-  React.useEffect(() => {
-    setValue(getTabFromUrl());
-  }, [location.search]);
+  const pendingAssignmentsCount = 0
 
   return (
     <Page title="My Schedule">
@@ -381,8 +193,8 @@ export default function StudentClassesAndAssignmentsPage() {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
               }),
-            marginLeft: isDrawerOpen ? `${drawerWidth}px` : 0,
-            width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
+            marginLeft: 0,
+            width: "100%",
             backgroundColor: "#f5f5f5",
             minHeight: "calc(100vh - 64px)",
           }}
@@ -457,16 +269,7 @@ export default function StudentClassesAndAssignmentsPage() {
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Next Due:{" "}
-                    {pendingAssignmentsCount > 0
-                      ? formatDate(
-                          assignmentsData
-                            .filter((a) => a.status === "pending")
-                            .sort(
-                              (a, b) =>
-                                new Date(a.dueDate) - new Date(b.dueDate)
-                            )[0].dueDate
-                        )
-                      : "None"}
+                    {"None"}
                   </Typography>
                 </CardContent>
               </Card>
@@ -477,9 +280,8 @@ export default function StudentClassesAndAssignmentsPage() {
             <CardContent>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  aria-label="classes and assignments tabs"
+                  value={0}
+                  aria-label="classes tabs"
                   sx={{
                     "& .MuiTab-root": {
                       fontWeight: 500, 
@@ -495,28 +297,11 @@ export default function StudentClassesAndAssignmentsPage() {
                   }}
                 >
                   <Tab label="My Classes" {...a11yProps(0)} />
-                  <Tab
-                    label={
-                      <Badge
-                        badgeContent={pendingAssignmentsCount}
-                        color="error"
-                        sx={{
-                          "& .MuiBadge-badge": {
-                            right: -4,
-                            top: -5
-                          },
-                        }}
-                      >
-                        Assignments
-                      </Badge>
-                    }
-                    {...a11yProps(1)}
-                  />
                 </Tabs>
               </Box>
 
               {/* My Classes Tab */}
-              <TabPanel value={value} index={0}>
+              <TabPanel value={0} index={0}>
                 <Box
                   sx={{
                     display: "flex",
@@ -662,217 +447,6 @@ export default function StudentClassesAndAssignmentsPage() {
                               >
                                 {row.progress}%
                               </Typography>
-                            </Box>
-                          </TableCell>
-                        </StyledTableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </TabPanel>
-
-              {/* Assignments Tab */}
-              <TabPanel value={value} index={1}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 3,
-                  }}
-                >
-                  <Box sx={{ display: "flex", gap: 2 }}>
-                    <FormControl sx={{ minWidth: 150 }} size="small">
-                      <InputLabel id="assignment-filter-label">
-                        Filter
-                      </InputLabel>
-                      <Select
-                        labelId="assignment-filter-label"
-                        id="assignment-filter"
-                        value={assignmentFilter}
-                        label="Filter"
-                        onChange={handleAssignmentFilterChange}
-                      >
-                        <MenuItem value="all">All Assignments</MenuItem>
-                        <MenuItem value="pending">Pending</MenuItem>
-                        <MenuItem value="submitted">Submitted</MenuItem>
-                        <MenuItem value="graded">Graded</MenuItem>
-                      </Select>
-                    </FormControl>
-
-                    <TextField
-                      placeholder="Search assignments..."
-                      size="small"
-                      value={searchTerm}
-                      onChange={handleSearchChange}
-                      sx={{ width: 200 }}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon color="primary" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Box>
-
-                  <Button
-                    variant="outlined"
-                    startIcon={<FilterListIcon />}
-                    size="small"
-                  >
-                    More Filters
-                  </Button>
-                </Box>
-
-                <TableContainer
-                  component={Paper}
-                  elevation={0}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <Table sx={{ minWidth: 650 }}>
-                    <TableHead>
-                      <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.04)" }}>
-                        <TableCell>Assignment</TableCell>
-                        <TableCell>Course</TableCell>
-                        <TableCell>Due Date</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell align="center">Grade</TableCell>
-                        <TableCell>Priority</TableCell>
-                        <TableCell align="center">Actions</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {filteredAssignments.map((row) => (
-                        <StyledTableRow key={row.id}>
-                          <TableCell sx={{ fontWeight: "medium" }}>
-                            {row.title}
-                          </TableCell>
-                          <TableCell>{row.course}</TableCell>
-                          <TableCell>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <AccessTimeIcon
-                                fontSize="small"
-                                sx={{
-                                  mr: 1,
-                                  color: isOverdue(row.dueDate)
-                                    ? "error.main"
-                                    : isDueSoon(row.dueDate)
-                                    ? "warning.main"
-                                    : "text.secondary",
-                                }}
-                              />
-                              <Box>
-                                <Typography variant="body2">
-                                  {formatDate(row.dueDate)}
-                                </Typography>
-                                {row.status === "pending" && (
-                                  <Typography
-                                    variant="caption"
-                                    sx={{
-                                      color: isOverdue(row.dueDate)
-                                        ? "error.main"
-                                        : isDueSoon(row.dueDate)
-                                        ? "warning.main"
-                                        : "text.secondary",
-                                      fontWeight:
-                                        isOverdue(row.dueDate) ||
-                                        isDueSoon(row.dueDate)
-                                          ? "bold"
-                                          : "normal",
-                                    }}
-                                  >
-                                    {getTimeRemaining(row.dueDate)}
-                                  </Typography>
-                                )}
-                              </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              label={
-                                row.status === "pending"
-                                  ? "Pending"
-                                  : row.status === "submitted"
-                                  ? "Submitted"
-                                  : "Graded"
-                              }
-                              color={getStatusColor(row.status)}
-                              size="small"
-                              sx={{ fontWeight: "medium" }}
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            {row.grade !== null ? (
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  fontWeight: "bold",
-                                  color:
-                                    row.grade >= 80
-                                      ? "success.main"
-                                      : row.grade >= 60
-                                      ? "warning.main"
-                                      : "error.main",
-                                }}
-                              >
-                                {row.grade}/{row.maxGrade}
-                              </Typography>
-                            ) : (
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                --/{row.maxGrade}
-                              </Typography>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              icon={
-                                row.priority === "high" ? (
-                                  <PriorityHighIcon />
-                                ) : null
-                              }
-                              label={
-                                row.priority.charAt(0).toUpperCase() +
-                                row.priority.slice(1)
-                              }
-                              color={getPriorityColor(row.priority)}
-                              size="small"
-                              variant="outlined"
-                              sx={{ fontWeight: "medium" }}
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                gap: 1,
-                              }}
-                            >
-                              <Tooltip title="View Details">
-                                <IconButton size="small" color="primary">
-                                  <VisibilityIcon fontSize="small" />
-                                </IconButton>
-                              </Tooltip>
-
-                              {row.status === "pending" && (
-                                <Tooltip title="Submit Assignment">
-                                  <IconButton size="small" color="success">
-                                    <CloudUploadIcon fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-
-                              {row.status !== "pending" && (
-                                <Tooltip title="View Attachment">
-                                  <IconButton size="small" color="info">
-                                    <AttachFileIcon fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
                             </Box>
                           </TableCell>
                         </StyledTableRow>

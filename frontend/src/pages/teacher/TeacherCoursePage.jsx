@@ -20,7 +20,6 @@ export default function CoursePage() {
         const res = await getTeacherInfo(user.username);
         const response = await getListCourses(res.data._id);
         setCourses(response.data.data);
-        console.log("Courses data:", response.data);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
@@ -55,7 +54,7 @@ export default function CoursePage() {
             Courses
           </Typography>
 
-          <CoursesListAndSearch courses={courses} />
+          <CoursesListAndSearch courses={courses} isTeacher/>
         </Box>
       </Box>
     </Page>

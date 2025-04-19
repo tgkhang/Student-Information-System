@@ -1,4 +1,4 @@
-import React from "react";
+import {useEffect, useState} from "react";
 import { Box, Typography, Chip, Card, CardContent, Grid } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PersonIcon from "@mui/icons-material/Person";
@@ -30,7 +30,6 @@ const formatDate = (dateString) => {
 
 // CourseCard component: display individual course information
 const CourseCard = ({ course, onClick  }) => {
-  console.log("CourseCard course:", course);
   return (
     <Card
       onClick={onClick}
@@ -55,7 +54,7 @@ const CourseCard = ({ course, onClick  }) => {
               color="primary"
               sx={{ fontWeight: "bold", fontSize: "1rem" }}
             >
-              {course?.MaKhoaHoc} - {course?.TenKhoaHoc.toUpperCase()}
+              {course?.MaKhoaHoc} - {course?.TenKhoaHoc?.toUpperCase()}
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary">
@@ -101,26 +100,33 @@ const CourseCard = ({ course, onClick  }) => {
 };
 
 // CourseList component to display all courses
-const CourseList = ({ courses, searchTerm, year }) => {
-  // Filter courses based on search term and filters
-  const filteredCourses = courses.filter((course) => {
-    // Filter by search term (course name or ID)
-    const matchesSearch = searchTerm
-      ? course?.TenKhoaHoc.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course?.MaKhoaHoc.toLowerCase().includes(searchTerm.toLowerCase())
-      : true;
-    const matchesYear = year ? course.NgayBatDau.includes(year.toString()) : true;
+const CourseList = ({ courses, searchTerm, year, isTeacher }) => {
+  console.log("Courses:", courses);
+  var filteredCourses = Array.isArray(courses)
+  ? courses.filter((course) => {
+      const matchesSearch = searchTerm
+        ? course?.TenKhoaHoc?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+          course?.MaKhoaHoc?.toLowerCase().includes(searchTerm?.toLowerCase())
+        : true;
 
-    return matchesSearch  && matchesYear;
-  });
+      const matchesYear = year ? course?.NgayBatDau?.includes(year.toString()) : true;
 
+      return matchesSearch && matchesYear;
+    })
+  : [];
+
+  console.log("Filtered courses:", filteredCourses);
   return (
     <Box>
       {filteredCourses.length > 0 ? (
         <Grid container spacing={2}>
           {filteredCourses.map((course) => (
             <Grid item xs={12} key={course._id}>
-              <CourseCard course={course} onClick={() => { window.location.href = `/teacher/course/${course?.MaKhoaHoc}` }} />
+              <CourseCard course={course}  onClick={() => {
+    isTeacher
+      ? window.location.href = `/teacher/course/${course?.MaKhoaHoc}`
+      : window.location.href = `/student/course/${course?.MaKhoaHoc}`;
+  }} />
             </Grid>
           ))}
         </Grid>
@@ -135,11 +141,10 @@ const CourseList = ({ courses, searchTerm, year }) => {
   );
 };
 
-function CoursesListAndSearch({ courses }) {
-  //component for a course list + filter semester and search bar
-  const [semester, setSemester] = React.useState("");
-  const [year, setYear] = React.useState("");
-  const [searchTerm, setSearchTerm] = React.useState("");
+function CoursesListAndSearch({ courses, isTeacher = false }) {
+  console.log("CoursesListAndSearch courses:", courses);
+  const [year, setYear] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -225,6 +230,7 @@ function CoursesListAndSearch({ courses }) {
               courses={courses || []}
               searchTerm={searchTerm}
               year={year}
+              isTeacher={isTeacher}
             />
           </CardContent>
         </Card>

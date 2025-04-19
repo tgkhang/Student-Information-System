@@ -41,6 +41,15 @@ export const deleteStudentApi = (mssv) =>
 
 export const getStudentNoti = () => {axiosInstance.get("/sinhvien/getStudentNoti")};
 export const markStudentNotiAsRead = (id) => { axiosInstance.post(`/sinhvien/markNotiAsRead/${id}`) };
+export const getListCoursesByStudent = (mssv) => {
+  return axiosInstance.get(`/sinhvien/getCourses/${mssv}`);
+}
+export const getStudentInfo = (mssv) => {
+  return axiosInstance.get(`/sinhvien/get_student/${mssv}`);  
+}
+export const getScheduleForStudent = (mssv) => {
+  return axiosInstance.get(`/Lichhoc/get_schedulebyMSSV/${mssv}`);
+}
 //teacher
 export const getTeacherInfo = (id) => 
   axiosInstance.get(`/giangvien/getTeacher/${id}`);

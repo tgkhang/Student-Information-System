@@ -1,5 +1,6 @@
 "use client";
-import * as React from "react";
+import {useEffect, useState } from "react";
+import useAuth from "../../hooks/useAuth";
 import Page from "../../components/Page";
 import {
   Box,
@@ -7,10 +8,26 @@ import {
   //Table,TableBody,TableCell, TableContainer, TableRow, TableHead, Paper,
 } from "@mui/material";
 import {CoursesListAndSearch} from "../../components/CourseList";
-import classesData from "../mockdata/courseData";
+import { getListCoursesByStudent, getStudentInfo } from "../../utils/api";
 
 
 export default function StudentCoursePage() {  
+  const [classesData, setClassesData] = useState([]);
+  const { user } = useAuth();
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const response = await getStudentInfo(user.username);
+        const courses = await getListCoursesByStudent(response.data._id);
+        setClassesData(courses.data.data);
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+      }
+    };
+
+    fetchClasses();
+  }
+  , []);
     return (
       <Page title="My Courses">
         <Box sx={{ display: "flex", p: 1, mt: "64px" }}>
