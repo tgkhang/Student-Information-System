@@ -59,7 +59,7 @@ const CourseCard = ({ course, onClick  }) => {
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary">
-            Instructor: {course?.GiangVienID?.HoTen}
+            Instructor: {course?.instructor?.HoTen}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {course?.MoTa}
@@ -69,8 +69,8 @@ const CourseCard = ({ course, onClick  }) => {
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
             <Chip
               icon={<AccessTimeIcon fontSize="small" />}
-              label={`${formatDate(course.NgayBatDau)} - ${formatDate(
-                course.NgayKetThuc
+              label={`${formatDate(course.startDate)} - ${formatDate(
+                course.endDate
               )}`}
               size="small"
               sx={{ bgcolor: "#f0f7ff", color: "#0057b7" }}
@@ -83,16 +83,16 @@ const CourseCard = ({ course, onClick  }) => {
             />
             <Chip 
               icon={<PeopleIcon fontSize="small" />} 
-              label={`${course.SoLuongSinhVienDangKy}/${course.SoLuongToiDa} Students`} 
+              label={`${course.registeredStudents}/${course.maxStudents} Students`} 
               size="small"
               sx={{ bgcolor: '#f5f5f5' }}
             />
-            {/* <Chip
+           <Chip
               icon={<ClassIcon fontSize="small" />}
               label={`${course.credits} Credits`}
               size="small"
               sx={{ bgcolor: "#f5f5f5" }}
-            /> */}
+            /> 
           </Box>
         </Box>
       </CardContent>

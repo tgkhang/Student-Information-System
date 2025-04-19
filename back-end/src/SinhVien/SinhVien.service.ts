@@ -73,7 +73,7 @@ export class SinhVienService {
       const email = `${sinhVienData.mssv}@student.hcmus.edu.vn`;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       const password = sinhVienData.mssv.toString();
-      const role = 'Student';
+      const role = 'student';
       console.log(password);
       await this.authService.register(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument

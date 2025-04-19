@@ -122,8 +122,8 @@ export default function LecturerListPage() {
       name: lecturer.HoTen,
       department: faculty.name,
       departmentId: lecturer.KhoaID,
-      position: lecturer.ChucVu || "Thành viên",
-      status: "Đang công tác",
+      position: lecturer.ChucVu || "Giáo viên",
+      status: lecturer.Stattus ||"Đang công tác",
       academicTitle: lecturer.TrinhDo || "Chưa cập nhật",
       specialization: "Chưa cập nhật",
       dob: lecturer.NgaySinh
@@ -154,7 +154,7 @@ export default function LecturerListPage() {
         const positionOrder = {
           "Trưởng khoa": 1,
           "Phó khoa": 2,
-          "Thành viên": 3,
+          "Giáo viên": 3,
         };
 
         const aPosition = positionOrder[a.position] || 999;
@@ -191,6 +191,7 @@ export default function LecturerListPage() {
 
   // Group filtered lecturers by department
   const groupedLecturers = groupLecturersByDepartment(filteredLecturers);
+  console.log(groupedLecturers);
 
   // Khi nhấn nút Tìm kiếm, cập nhật trạng thái áp dụng và reset trang về 1
   const handleSearch = () => {
@@ -449,7 +450,7 @@ export default function LecturerListPage() {
                                   ? "1px solid #0288d1"
                                   : "none",
                               boxShadow:
-                                lecturer.position !== "Thành viên" ? 3 : 1,
+                                lecturer.position !== "Giáo viên" ? 3 : 1,
                             }}
                           >
                             <Box sx={{ pl: 2, pt: 2, pb: 2 }}>

@@ -9,6 +9,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: 'http://localhost:5173',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(cookieParser());
    // Cấu hình Swagger
