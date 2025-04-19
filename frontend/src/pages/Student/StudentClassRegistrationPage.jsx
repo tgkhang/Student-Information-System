@@ -314,7 +314,7 @@ export default function StudentClassRegistrationPage() {
           {/* Summary Cards */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid item xs={12} md={4}>
-              <Card elevation={0} sx={{ borderRadius: 2 }}>
+              <Card elevation={0} sx={{ borderRadius: 2, minHeight: "170px" }}>
                 <CardContent>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                     <EventIcon color="primary" sx={{ mr: 1 }} />
@@ -332,7 +332,7 @@ export default function StudentClassRegistrationPage() {
               </Card>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Card elevation={0} sx={{ borderRadius: 2 }}>
+              <Card elevation={0} sx={{ borderRadius: 2, minHeight: "170px" }}>
                 <CardContent>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                     <CreditCardIcon color="primary" sx={{ mr: 1 }} />
@@ -367,7 +367,7 @@ export default function StudentClassRegistrationPage() {
               </Card>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Card elevation={0} sx={{ borderRadius: 2 }}>
+              <Card elevation={0} sx={{ borderRadius: 2, minHeight: "170px" }}>
                 <CardContent>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                     <LibraryBooksIcon color="primary" sx={{ mr: 1 }} />

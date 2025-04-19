@@ -430,12 +430,20 @@ export default function StudentCalendar() {
 
   return (
     <Page title="Calendar View">
-      <Box maxWidth={1200} mx="auto" mt={5} px={2}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          Academic Calendar
+      <Box maxWidth={1200} mx="auto" sx={{mt: 10, p: 2}}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            color: "primary.main",
+            mb: 4,
+          }}
+        >
+          Calendar View
         </Typography>
 
-        <Paper elevation={3} sx={{ p: 3, overflow: "hidden" }}>
+        <Paper elevation={3} sx={{ p: 3, overflow: "hidden", mb: 3 }}>
           {/* Calendar Header */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Button onClick={handlePreviousMonth}>&lt; Previous</Button>

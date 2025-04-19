@@ -13,11 +13,11 @@ import classesData from "../mockdata/courseData";
 export default function StudentCoursePage() {  
     return (
       <Page title="My Courses">
-        <Box sx={{ display: "flex", p: 1 }}>
+        <Box sx={{ display: "flex", p: 1, mt: "64px" }}>
           <Box
             component="main"
             sx={{
-              p: 3,
+              p: 1,
               transition: (theme) =>
                 theme.transitions.create(["margin", "width"], {
                   easing: theme.transitions.easing.easeOut,
@@ -29,7 +29,7 @@ export default function StudentCoursePage() {
               // width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
             }}
           >
-            <CoursesListAndSearch courses={classesData} />
+            <CoursesListAndSearch courses={classesData}/>
           </Box>
         </Box>
       </Page>

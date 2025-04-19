@@ -541,6 +541,9 @@ export default function Dashboard() {
                   onChange={handleChange}
                   aria-label="dashboard tabs"
                   sx={{
+                    "& .MuiTab-root": {
+                      fontWeight: 500, 
+                    },
                     "& .MuiTabs-indicator": {
                       backgroundColor: "primary.main",
                       height: 3,

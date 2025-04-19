@@ -115,7 +115,7 @@ const CourseList = ({ courses, searchTerm, year }) => {
   });
 
   return (
-    <Box sx={{ mt: 2 }}>
+    <Box>
       {filteredCourses.length > 0 ? (
         <Grid container spacing={2}>
           {filteredCourses.map((course) => (

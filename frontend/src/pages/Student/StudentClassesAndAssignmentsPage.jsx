@@ -481,6 +481,9 @@ export default function StudentClassesAndAssignmentsPage() {
                   onChange={handleChange}
                   aria-label="classes and assignments tabs"
                   sx={{
+                    "& .MuiTab-root": {
+                      fontWeight: 500, 
+                    },
                     "& .MuiTabs-indicator": {
                       backgroundColor: "primary.main",
                       height: 3,
@@ -497,6 +500,12 @@ export default function StudentClassesAndAssignmentsPage() {
                       <Badge
                         badgeContent={pendingAssignmentsCount}
                         color="error"
+                        sx={{
+                          "& .MuiBadge-badge": {
+                            right: -4,
+                            top: -5
+                          },
+                        }}
                       >
                         Assignments
                       </Badge>
@@ -555,7 +564,7 @@ export default function StudentClassesAndAssignmentsPage() {
                       size="small"
                       value={searchTerm}
                       onChange={handleSearchChange}
-                      sx={{ width: 200 }}
+                      sx={{ minWidth: "400px" }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
