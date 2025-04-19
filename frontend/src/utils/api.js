@@ -74,6 +74,9 @@ export const searchTeacherApi = (query) =>
 
 export const getTeacherNoti = () => {axiosInstance.get("/GiangVien/getTeacherNoti")};
 export const markTeacherNotiAsRead = (id) => { axiosInstance.post(`/GiangVien/markNotiAsRead/${id}`) };
+export const deleteTeacherApi = (id) => {
+  return axiosInstance.delete(`/GiangVien/deleteTeacher/${id}`);
+}
 
 //FACULTY
 export const getFacultyListApi = (params = {}) => {
