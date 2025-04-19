@@ -34,7 +34,6 @@ export default function Dashboard() {
       try {
         const response = await getTeacherInfo(user.username);
         setProfile(response.data);
-        console.log("Teacher profile data:", response.data);
       } catch (error) {
         console.error("Error fetching teacher info:", error);
       }

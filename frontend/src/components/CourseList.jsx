@@ -55,11 +55,11 @@ const CourseCard = ({ course, onClick  }) => {
               color="primary"
               sx={{ fontWeight: "bold", fontSize: "1rem" }}
             >
-              {course?.id} - {course?.name.toUpperCase()}
+              {course?.MaKhoaHoc} - {course?.TenKhoaHoc.toUpperCase()}
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary">
-            Instructor: {course?.instructor?.HoTen}
+            Instructor: {course?.GiangVienID[0]?.HoTen}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {course?.MoTa}
@@ -69,8 +69,8 @@ const CourseCard = ({ course, onClick  }) => {
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
             <Chip
               icon={<AccessTimeIcon fontSize="small" />}
-              label={`${formatDate(course.startDate)} - ${formatDate(
-                course.endDate
+              label={`${formatDate(course?.NgayBatDau)} - ${formatDate(
+                course?.NgayKetThuc
               )}`}
               size="small"
               sx={{ bgcolor: "#f0f7ff", color: "#0057b7" }}
@@ -83,13 +83,13 @@ const CourseCard = ({ course, onClick  }) => {
             />
             <Chip 
               icon={<PeopleIcon fontSize="small" />} 
-              label={`${course.registeredStudents}/${course.maxStudents} Students`} 
+              label={`${course?.SoLuongSinhVienDangKy}/${course?.SoLuongToiDa} Students`} 
               size="small"
               sx={{ bgcolor: '#f5f5f5' }}
             />
            <Chip
               icon={<ClassIcon fontSize="small" />}
-              label={`${course.credits} Credits`}
+              label={`${course?.SoTinChi} Credits`}
               size="small"
               sx={{ bgcolor: "#f5f5f5" }}
             /> 
@@ -109,7 +109,7 @@ const CourseList = ({ courses, searchTerm, year }) => {
       ? course?.TenKhoaHoc.toLowerCase().includes(searchTerm.toLowerCase()) ||
         course?.MaKhoaHoc.toLowerCase().includes(searchTerm.toLowerCase())
       : true;
-    const matchesYear = year ? course.semester.includes(year.toString()) : true;
+    const matchesYear = year ? course.NgayBatDau.includes(year.toString()) : true;
 
     return matchesSearch  && matchesYear;
   });

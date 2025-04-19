@@ -14,7 +14,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(cookieParser());
    // Cấu hình Swagger
    const config = new DocumentBuilder()

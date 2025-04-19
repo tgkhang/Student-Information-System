@@ -12,7 +12,6 @@ export default function DetailCourse() {
       try {
         const response = await getCourseById(id);
         setCourse(response.data);
-        console.log("Course data:", response.data);
       } catch (error) {
         console.error("Error fetching course:", error);
       }

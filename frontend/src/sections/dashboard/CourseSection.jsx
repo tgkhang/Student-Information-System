@@ -190,9 +190,8 @@ const getResourceIcon = (type) => {
 };
 
 
-const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType }) => {
-  const navigate = useNavigate();
-  
+const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, course }) => {
+  console.log(course)
   // Default items based on section type
   const defaultItems = {
     'lectures': [
@@ -216,18 +215,9 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType })
   
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   
-  // New item states
-  const [newItemText, setNewItemText] = useState('');
-  const [linkUrl, setLinkUrl] = useState('');
-  const [tabValue, setTabValue] = useState(0);
-  const [dueDate, setDueDate] = useState('');
   
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
   
   const handleDeleteClick = (item) => {
     setItemToDelete(item);
@@ -237,222 +227,6 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType })
   const handleConfirmDelete = () => {
     setItems(items.filter(item => item.id !== itemToDelete.id));
     setDeleteDialogOpen(false);
-  };
-  
-  const handleAddLink = () => {
-    if (newItemText.trim() && linkUrl.trim()) {
-      const newId = Math.max(...items.map(item => item.id), 0) + 1;
-      setItems([...items, { id: newId, content: newItemText, type: 'link', url: linkUrl }]);
-      resetForm();
-    }
-  };
-  
-  const handleAddDocument = () => {
-    if (newItemText.trim()) {
-      const newId = Math.max(...items.map(item => item.id), 0) + 1;
-      setItems([...items, { id: newId, content: newItemText, type: 'document' }]);
-      resetForm();
-    }
-  };
-  
-  const handleAddDeadline = () => {
-    if (newItemText.trim() && dueDate) {
-      const newId = Math.max(...items.map(item => item.id), 0) + 1;
-      setItems([...items, { id: newId, content: newItemText, type: 'deadline', dueDate: dueDate }]);
-      resetForm();
-    }
-  };
-  
-  const resetForm = () => {
-    setNewItemText('');
-    setLinkUrl('');
-    setDueDate('');
-    setAddDialogOpen(false);
-  };
-  
-  const navigateToQuizCreation = () => {
-    // Navigate to quiz creation page
-    navigate('/create-quiz');
-  };
-  
-  const navigateToDeadlineCreation = () => {
-    // Navigate to deadline creation page
-    navigate('/create-deadline');
-  };
-  
-  // Check if this section should show specific types of content
-  const getAddDialog = () => {
-    if (sectionType === 'lectures') {
-      return (
-        <Dialog
-          open={addDialogOpen}
-          onClose={() => setAddDialogOpen(false)}
-          fullWidth
-          maxWidth="sm"
-        >
-          <DialogTitle>Add New Material</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Document Title"
-              fullWidth
-              variant="outlined"
-              value={newItemText}
-              onChange={(e) => setNewItemText(e.target.value)}
-            />
-            
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-              <Button
-                variant="contained"
-                startIcon={<CloudUploadIcon />}
-                sx={{ mr: 2 }}
-                onClick={handleAddDocument}
-              >
-                Upload Document
-              </Button>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
-          </DialogActions>
-        </Dialog>
-      );
-    } else if (sectionType === 'references') {
-      return (
-        <Dialog
-          open={addDialogOpen}
-          onClose={() => setAddDialogOpen(false)}
-          fullWidth
-          maxWidth="sm"
-        >
-          <DialogTitle>Add New Reference Link</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Link Title"
-              fullWidth
-              variant="outlined"
-              value={newItemText}
-              onChange={(e) => setNewItemText(e.target.value)}
-            />
-            
-            <TextField
-              margin="dense"
-              label="URL"
-              fullWidth
-              variant="outlined"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              placeholder="https://..."
-              InputProps={{
-                startAdornment: <LinkIcon color="action" sx={{ mr: 1 }} />,
-              }}
-              sx={{ mt: 2 }}
-            />
-            
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-              <Button
-                variant="contained"
-                startIcon={<LinkIcon />}
-                onClick={handleAddLink}
-                disabled={!newItemText.trim() || !linkUrl.trim()}
-              >
-                Add Link
-              </Button>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
-          </DialogActions>
-        </Dialog>
-      );
-    } else if (sectionType === 'assignments') {
-      return (
-        <Dialog
-          open={addDialogOpen}
-          onClose={() => setAddDialogOpen(false)}
-          fullWidth
-          maxWidth="sm"
-        >
-          <DialogTitle>Add New Assignment</DialogTitle>
-          <DialogContent>
-            <Tabs value={tabValue} onChange={handleTabChange} centered sx={{ mb: 2 }}>
-              <Tab label="Quiz" />
-              <Tab label="Deadline" />
-            </Tabs>
-            
-            {tabValue === 0 && (
-              <Box sx={{ p: 1, textAlign: 'center' }}>
-                <Typography variant="body1" gutterBottom>
-                  Create a new quiz for your students
-                </Typography>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  startIcon={<QuizIcon />}
-                  onClick={navigateToQuizCreation}
-                  sx={{ mt: 2 }}
-                >
-                  Go to Quiz Creation
-                </Button>
-              </Box>
-            )}
-            
-            {tabValue === 1 && (
-              <Box sx={{ p: 1 }}>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  label="Assignment Title"
-                  fullWidth
-                  variant="outlined"
-                  value={newItemText}
-                  onChange={(e) => setNewItemText(e.target.value)}
-                />
-                
-                <TextField
-                  margin="dense"
-                  label="Due Date"
-                  type="date"
-                  fullWidth
-                  variant="outlined"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  sx={{ mt: 2 }}
-                />
-                
-                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<EventNoteIcon />}
-                    onClick={handleAddDeadline}
-                    disabled={!newItemText.trim() || !dueDate}
-                  >
-                    Add Simple Deadline
-                  </Button>
-                  
-                  <Button
-                    variant="outlined"
-                    startIcon={<NoteAddIcon />}
-                    onClick={navigateToDeadlineCreation}
-                  >
-                    Advanced Deadline Setup
-                  </Button>
-                </Box>
-              </Box>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
-          </DialogActions>
-        </Dialog>
-      );
-    }
   };
   
   const formatDueDate = (dateString) => {
@@ -554,9 +328,6 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType })
         onClose={() => setDeleteDialogOpen(false)} 
         onConfirm={handleConfirmDelete} 
       />
-      
-      {/* Add Different Types of Content Based on Section */}
-      {getAddDialog()}
     </Accordion>
   );
 };
@@ -565,7 +336,7 @@ const CourseSection = ({isTeacherMode, course}) => {
   return (
     <Paper elevation={0} sx={moodleStyles.mainContainer}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight="bold">Course Content</Typography>
+        <Typography variant="h5" fontWeight="bold">{course?.MaKhoaHoc} - {course?.TenKhoaHoc}</Typography>
       </Box>
       
       {isTeacherMode && (
@@ -631,6 +402,7 @@ const CourseSection = ({isTeacherMode, course}) => {
           isTeacherMode={isTeacherMode}
           sectionColor="#e8f5e9"
           sectionType="lectures"
+          course={course}
         />
         
         <CollapsibleSection 
@@ -638,6 +410,7 @@ const CourseSection = ({isTeacherMode, course}) => {
           isTeacherMode={isTeacherMode}
           sectionColor="#fff8e1"
           sectionType="assignments"
+          course={course}
         />
         
         <CollapsibleSection 
@@ -645,6 +418,7 @@ const CourseSection = ({isTeacherMode, course}) => {
           isTeacherMode={isTeacherMode}
           sectionColor="#f3e5f5"
           sectionType="references" 
+          course={course}
         />
       </Box>
     </Paper>
