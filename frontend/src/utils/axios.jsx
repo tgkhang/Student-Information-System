@@ -8,11 +8,17 @@ const axiosInstance = axios.create({
 // Add a request interceptor to set the Authorization header for JWT
 axiosInstance.interceptors.request.use(
   (config) => {
-    config.headers = {
-      "Content-Type": "application/json",
-    };
-
     const accessToken = localStorage.getItem("accessToken");
+
+    // Only set Content-Type to application/json if not sending FormData
+    if (
+      config.data &&
+      typeof config.data === "object" &&
+      !(config.data instanceof FormData)
+    ) {
+      config.headers["Content-Type"] = "application/json";
+    }
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }

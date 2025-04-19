@@ -26,6 +26,10 @@ export const searchStudentApi = (query) =>
   axiosInstance.get(`/sinhvien/search_student`, { params: { query } });
 
 
+export const importStudentApi = (formData) => {
+  return axiosInstance.post("/sinhvien/import", formData);
+};
+
 export const addStudentApi = (studentData) => 
   axiosInstance.post("/sinhvien/add_student", studentData);
 

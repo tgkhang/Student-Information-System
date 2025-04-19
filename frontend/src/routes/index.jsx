@@ -5,7 +5,6 @@ import LoadingScreen from "../components/LoadingScreen";
 // guards
 import AuthGuard from "../guards/AuthGuards";
 import GuestGuard from "../guards/GuestGuard";
-import Dashboard from "../pages/teacher/TeacherDashboardPage";
 // ----------------------------------------------------------------------
 
 const Loadable = (Component) => {
@@ -153,7 +152,7 @@ export default function Router() {
         { path: "notification", element: <NotificationPage /> },
         { path: "createBroadcastNotification", element: <AdminCreateNotificationPage /> },
         { path: "addCourse", element: <CourseAddingPage /> },
-        { path: "addStudent", element: <AddStudentPage />},
+        { path: "addStudent", element: <ImportStudentPage/>},
         { path: "addTeacher", element: <AddTeacherPage /> },
       ],
     },
@@ -223,5 +222,5 @@ const AdminCoursePage = Loadable(lazy(() => import("../pages/ministry/AdminCours
 const NotificationPage = Loadable(lazy(() => import("../pages/ministry/NotificationPage")));
 const AdminCreateNotificationPage = Loadable(lazy(() => import("../pages/ministry/CreateNotificationPage")));
 const CourseAddingPage = Loadable(lazy(() => import("../pages/ministry/CourseAddingPage")));
-const AddStudentPage = Loadable(lazy(() => import("../pages/ministry/AddStudentPage")));
+const ImportStudentPage = Loadable(lazy(() => import("../pages/ministry/ImportStudentPage")));
 const AddTeacherPage = Loadable(lazy(() => import("../pages/ministry/AddTeacherPage")));
