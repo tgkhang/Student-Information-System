@@ -33,22 +33,16 @@ export class LichService {
       .find({ SinhVienDangKy: { $in: [sinhVienID] } })
       .exec();
 
-    if (!khoaHocs || khoaHocs.length === 0) {
-      throw new NotFoundException('Sinh viên chưa đăng ký khóa học nào');
-    }
     const khoaHocIDs = khoaHocs.map((khoaHoc) => khoaHoc._id);
-
+    const deadlines = khoaHocs.flatMap((khoaHoc) => khoaHoc.Deadlines);
     const baiKiemTras = await this.BaiKiemTraModel.find({
       KhoaHocID: { $in: khoaHocIDs },
     }).exec();
 
-    if (!baiKiemTras || baiKiemTras.length === 0) {
-      throw new NotFoundException('Không tìm thấy bài kiểm tra nào');
-    }
     const ghichu = await this.LichModel.find({ SinhVienID: sinhVienID }).exec();
 
     return {
-      khoaHocs,
+      deadlines,
       baiKiemTras,
       ghichu,
     };
