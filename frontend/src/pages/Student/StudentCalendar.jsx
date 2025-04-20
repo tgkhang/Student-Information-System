@@ -54,7 +54,8 @@ export default function StudentCalendar() {
     // Fetch calendar data from API
     const fetchCalendarData = async () => {
       try {
-        const response = await getCalendar(user.mssv);
+        const response = await getCalendar(user.username);
+        console.log("Fetched calendar data:", response.data);
         setCalendarEvents(response.data);
       } catch (error) {
         console.error("Error fetching calendar data:", error);

@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import {useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -47,7 +47,8 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import { useLocation, useNavigate } from "react-router-dom";
 import Page from "../../components/Page";
-
+import { getStudentInfo } from "../../utils/api";
+import useAuth from "../../hooks/useAuth";
 const drawerWidth = 0;
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -319,7 +320,7 @@ const subjectScoresData = [
 export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const { user } = useAuth();
   // Get tab from URL query parameter
   const getTabFromUrl = () => {
     const searchParams = new URLSearchParams(location.search);
@@ -327,15 +328,26 @@ export default function Dashboard() {
     return tabParam ? Number.parseInt(tabParam, 10) : 0;
   };
 
-  const [value, setValue] = React.useState(getTabFromUrl());
-  const [semester, setSemester] = React.useState("");
-  const [year, setYear] = React.useState("");
-  const [isDrawerOpen, setDrawerOpen] = React.useState(true);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [selectedSubject, setSelectedSubject] = React.useState(
+  const [value, setValue] = useState(getTabFromUrl());
+  const [semester, setSemester] = useState("");
+  const [year, setYear] = useState("");
+  const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState(
     subjectScoresData[0]?.subjectId || ""
   );
-
+  useEffect(() => {
+    const fetchStudentInfo = async () => {
+      try {
+        const response = await getStudentInfo(user.username);
+        // Handle the response data as needed
+        console.log("Student Info:", response.data);
+      } catch (error) {
+        console.error("Error fetching student info:", error);
+      }
+    };
+    fetchStudentInfo();
+  }, [user]);
   // Update URL when tab changes
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -419,7 +431,7 @@ export default function Dashboard() {
   };
 
   // Update tab when URL changes
-  React.useEffect(() => {
+  useEffect(() => {
     setValue(getTabFromUrl());
   }, [location.search]);
 
