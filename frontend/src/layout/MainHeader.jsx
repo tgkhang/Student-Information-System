@@ -16,9 +16,6 @@ import {
 import { styled } from "@mui/material/styles";
 // icons
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import SchoolIcon from "@mui/icons-material/School";
-import PersonIcon from "@mui/icons-material/Person";
 // context
 import useAuth from "../hooks/useAuth";
 import Logo from "../assets/Logo.svg";
@@ -56,34 +53,17 @@ export default function MainHeader() {
   const handleCloseNotifications = () => {
     setOpenNotifications(false);
   };
-  const renderRoleIcon = () => {
-    if (user.role === "admin") {
-      return <AdminPanelSettingsIcon sx={{ color: "white" }} />;
-    } else if (user.role === "teacher") {
-      return <SchoolIcon sx={{ color: "white" }} />;
-    } else if (user.role === "student") {
-      return <PersonIcon sx={{ color: "white" }} />;
-    }
-    return null;
-  };
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        if (user.role === "student") {
+        if (user?.role === "student") {
           const response = await getStudentNoti();
         setNotifications(response.data);
         const allRead = response.data.every(notification => notification?.isRead === true);
         setHasNotifications(!allRead);
         }
-        else if (user.role === "teacher") {
+        else if (user?.role === "teacher") {
           const response = await getTeacherNoti();
-          console.log(response)
-        setNotifications(response.data);
-        const allRead = response.data.every(notification => notification?.isRead === true);
-        setHasNotifications(!allRead);
-        }
-        else {
-          const response = await getNotificationListApi();
         setNotifications(response.data);
         const allRead = response.data.every(notification => notification?.isRead === true);
         setHasNotifications(!allRead);

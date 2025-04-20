@@ -63,7 +63,6 @@ function AuthProvider({ children }) {
 
           const response = await axiosInstance.get(`/auth/get-account-by-token?accessToken=${accessToken}`);
           const user = response.data;
-          console.log(user);
           dispatch({
             type: 'INITIALIZE',
             payload: {

@@ -39,8 +39,8 @@ export const updateStudentApi = (mssv, updateData) =>
 export const deleteStudentApi = (mssv) => 
   axiosInstance.delete(`/sinhvien/delete_student/${mssv}`);
 
-export const getStudentNoti = () => {axiosInstance.get("/sinhvien/getStudentNoti")};
-export const markStudentNotiAsRead = (id) => { axiosInstance.post(`/sinhvien/markNotiAsRead/${id}`) };
+export const getStudentNoti = () => {return axiosInstance.get("/sinhvien/getStudentNoti")};
+export const markStudentNotiAsRead = (id) => {return axiosInstance.post(`/sinhvien/markNotiAsRead/${id}`) };
 export const getListCoursesByStudent = (mssv) => {
   return axiosInstance.get(`/sinhvien/getCourses/${mssv}`);
 }
@@ -49,6 +49,9 @@ export const getStudentInfo = (mssv) => {
 }
 export const getScheduleForStudent = (mssv) => {
   return axiosInstance.get(`/Lichhoc/get_schedulebyMSSV/${mssv}`);
+}
+export const getCalendar = (mssv) => {
+  return axiosInstance.get(`/Lich/get_calendarbyMSSV/${mssv}`);
 }
 //teacher
 export const getTeacherInfo = (id) => 
@@ -81,8 +84,8 @@ export const addTeacherApi = (teacherData) =>{
 export const searchTeacherApi = (query) =>
   axiosInstance.get(`/GiangVien/searchTeacher`, { params: { query } });
 
-export const getTeacherNoti = () => {axiosInstance.get("/GiangVien/getTeacherNoti")};
-export const markTeacherNotiAsRead = (id) => { axiosInstance.post(`/GiangVien/markNotiAsRead/${id}`) };
+export const getTeacherNoti = () => {return axiosInstance.get("/GiangVien/getTeacherNoti")};
+export const markTeacherNotiAsRead = (id) => { return axiosInstance.post(`/GiangVien/markNotiAsRead/${id}`) };
 export const deleteTeacherApi = (id) => {
   return axiosInstance.delete(`/GiangVien/deleteTeacher/${id}`);
 }

@@ -101,7 +101,6 @@ const CourseCard = ({ course, onClick  }) => {
 
 // CourseList component to display all courses
 const CourseList = ({ courses, searchTerm, year, isTeacher }) => {
-  console.log("Courses:", courses);
   var filteredCourses = Array.isArray(courses)
   ? courses.filter((course) => {
       const matchesSearch = searchTerm
@@ -115,7 +114,6 @@ const CourseList = ({ courses, searchTerm, year, isTeacher }) => {
     })
   : [];
 
-  console.log("Filtered courses:", filteredCourses);
   return (
     <Box>
       {filteredCourses.length > 0 ? (
@@ -142,7 +140,6 @@ const CourseList = ({ courses, searchTerm, year, isTeacher }) => {
 };
 
 function CoursesListAndSearch({ courses, isTeacher = false }) {
-  console.log("CoursesListAndSearch courses:", courses);
   const [year, setYear] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 

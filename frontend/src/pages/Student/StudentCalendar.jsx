@@ -12,8 +12,6 @@ import {
   DialogActions,
   TextField,
   Grid,
-  Tooltip,
-  Divider,
   Chip,
   ListItem,
   ListItemText,
@@ -25,10 +23,11 @@ import AddIcon from "@mui/icons-material/Add";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import FlagIcon from "@mui/icons-material/Flag";
 import EditIcon from "@mui/icons-material/Edit";
-import MoreIcon from "@mui/icons-material/MoreHoriz";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import Page from "../../components/Page";
+import { getCalendar } from "../../utils/api";
+import useAuth from "../../hooks/useAuth";
 
 // Helper function to get days in month
 function getDaysInMonth(year, month) {
@@ -49,9 +48,22 @@ export default function StudentCalendar() {
   const [selectedDateEvents, setSelectedDateEvents] = useState([]);
   const [noteText, setNoteText] = useState("");
   const [confirmDeleteNote, setConfirmDeleteNote] = useState(null);
-  
+  const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  useEffect(() => {
+    // Fetch calendar data from API
+    const fetchCalendarData = async () => {
+      try {
+        const response = await getCalendar(user.mssv);
+        setCalendarEvents(response.data);
+      } catch (error) {
+        console.error("Error fetching calendar data:", error);
+        enqueueSnackbar("Failed to fetch calendar data", { variant: "error" });
+      }
+    };
 
+    fetchCalendarData();
+  }, [user]);
   // Generate mock calendar data
   useEffect(() => {
     const generateMockData = () => {

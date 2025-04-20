@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Box, Typography, Badge } from "@mui/material";
 
 export default function NotificationList({notifications, role, markAsRead}) {
-
+  console.log("Notifications:", notifications);
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {notifications.map((notif) => (
         <Box
           key={notif._id}
           onMouseEnter={() => markAsRead(notif._id)}
-          onClick={() => window.location.href = `/${role}/notification/${notif._id}`}
+          onClick={() => window.location.href = `/${role}/notification/${notif.thongBaoId?._id}`}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -20,7 +20,6 @@ export default function NotificationList({notifications, role, markAsRead}) {
             "&:hover": { bgcolor: "grey.200" }
           }}
         >
-          {/* Badge Indicator */}
           <Badge
             variant="dot"
             sx={{
@@ -38,7 +37,7 @@ export default function NotificationList({notifications, role, markAsRead}) {
             variant="notification"
             sx={{ flex: 1, fontWeight: notif.isRead ? "normal" : "bold" }}
           >
-            {notif?.TenThongBao}
+            {notif?.thongBaoId?.TenThongBao}
           </Typography>
         </Box>
       ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import { useEffect, useState} from "react";
 import {
   Box,
   Table,
@@ -33,7 +33,8 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import Page from "../../components/Page";
-
+import { getScheduleForStudent } from "../../utils/api";
+import useAuth from "../../hooks/useAuth";
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -68,75 +69,21 @@ function a11yProps(index) {
   };
 }
 
-// More realistic data for registered classes
-const registeredClassesData = [
-  {
-    id: "CS302",
-    subjectName: "Advanced Algorithms",
-    credit: 3,
-    class: "CS-A1",
-    teacher: "Dr. Smith",
-    ta: "John Davis",
-    time: "Mon, Wed 10:00-11:30",
-    note: "Required",
-    status: "active",
-    progress: 85,
-  },
-  {
-    id: "MATH401",
-    subjectName: "Linear Algebra",
-    credit: 4,
-    class: "M-B2",
-    teacher: "Prof. Johnson",
-    ta: "Sarah Wilson",
-    time: "Tue, Thu 13:00-14:30",
-    note: "Elective",
-    status: "active",
-    progress: 72,
-  },
-  {
-    id: "ENG205",
-    subjectName: "Technical Writing",
-    credit: 2,
-    class: "E-C3",
-    teacher: "Dr. Williams",
-    ta: "Michael Brown",
-    time: "Fri 9:00-11:00",
-    note: "Required",
-    status: "active",
-    progress: 60,
-  },
-  {
-    id: "CS405",
-    subjectName: "Machine Learning",
-    credit: 3,
-    class: "CS-D1",
-    teacher: "Dr. Anderson",
-    ta: "Emily White",
-    time: "Mon, Wed 14:00-15:30",
-    note: "Elective",
-    status: "completed",
-    progress: 100,
-  },
-  {
-    id: "PHYS201",
-    subjectName: "Physics for CS",
-    credit: 3,
-    class: "P-A2",
-    teacher: "Prof. Roberts",
-    ta: "David Miller",
-    time: "Tue, Thu 10:00-11:30",
-    note: "Required",
-    status: "completed",
-    progress: 100,
-  },
-];
-
 export default function StudentClassesAndAssignmentsPage() {
-
+  const { user } = useAuth();
   const [semester, setSemester] = useState("2");
   const [year, setYear] = useState("2024");
   const [searchTerm, setSearchTerm] = useState("");
+  const [data, setData ] = useState([]);
+  const days = [
+    'Sunday',    // 0 
+    'Monday',    // 1
+    'Tuesday',   // 2
+    'Wednesday', // 3
+    'Thursday',  // 4
+    'Friday',    // 5
+    'Saturday'   // 6
+  ];
   const handleSemesterChange = (event) => {
     setSemester(event.target.value);
   };
@@ -148,36 +95,37 @@ export default function StudentClassesAndAssignmentsPage() {
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        const response = await getScheduleForStudent(user.username);
+        setData(response.data);
+      }
+      catch (error) {
+        console.error("Error fetching schedule:", error);
+      }
+    };
+    fetchSchedule();
+  }, []);
 
-  // Filter classes based on search term
-  const filteredClasses = registeredClassesData.filter(
-    (classItem) =>
-      classItem.subjectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      classItem.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      classItem.teacher.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Get status color
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return "success";
-      case "completed":
-        return "info";
-      case "pending":
-        return "warning";
-      case "submitted":
-        return "primary";
-      case "graded":
-        return "success";
-      default:
-        return "default";
-    }
-  };
-
-  // Count pending assignments
-  const pendingAssignmentsCount = 0
-
+  const nearestDeadline = (() => {
+    const deadlines = data.flatMap(item =>
+      item?.KhoaHocID?.Deadlines?.map(dl => new Date(dl.NgayHetHan)) || []
+    );
+  
+    if (deadlines.length === 0) return null;
+  
+    const nearest = deadlines.reduce((min, date) =>
+      date < min ? date : min
+    );
+  
+    const dd = String(nearest.getDate()).padStart(2, '0');
+    const mm = String(nearest.getMonth() + 1).padStart(2, '0');
+    const yyyy = nearest.getFullYear();
+  
+    return `${dd}-${mm}-${yyyy}`;
+  })();
+  
   return (
     <Page title="My Schedule">
       <Box sx={{ display: "flex", p: 1 }}>
@@ -241,16 +189,11 @@ export default function StudentClassesAndAssignmentsPage() {
                     </Typography>
                   </Box>
                   <Typography variant="h3" sx={{ fontWeight: "bold", mb: 1 }}>
-                    {
-                      registeredClassesData.filter((c) => c.status === "active")
-                        .length
-                    }
+                    {data.length}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Total Credits:{" "}
-                    {registeredClassesData
-                      .filter((c) => c.status === "active")
-                      .reduce((sum, item) => sum + item.credit, 0)}
+                    {data.reduce((sum, item) => sum + item?.KhoaHocID?.SoTinChi, 0)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -265,11 +208,11 @@ export default function StudentClassesAndAssignmentsPage() {
                     </Typography>
                   </Box>
                   <Typography variant="h3" sx={{ fontWeight: "bold", mb: 1 }}>
-                    {pendingAssignmentsCount}
+                    {data.reduce((sum, item) => sum + item?.KhoaHocID?.Deadlines?.length, 0)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Next Due:{" "}
-                    {"None"}
+                    {nearestDeadline ? nearestDeadline : "No deadlines"}
                   </Typography>
                 </CardContent>
               </Card>
@@ -300,7 +243,6 @@ export default function StudentClassesAndAssignmentsPage() {
                 </Tabs>
               </Box>
 
-              {/* My Classes Tab */}
               <TabPanel value={0} index={0}>
                 <Box
                   sx={{
@@ -380,73 +322,28 @@ export default function StudentClassesAndAssignmentsPage() {
                         <TableCell>Course Code</TableCell>
                         <TableCell>Subject Name</TableCell>
                         <TableCell align="center">Credits</TableCell>
-                        <TableCell>Class</TableCell>
                         <TableCell>Teacher</TableCell>
+                        <TableCell>Day</TableCell>
                         <TableCell>Schedule</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell align="center">Progress</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {filteredClasses.map((row) => (
-                        <StyledTableRow key={row.id}>
-                          <TableCell>{row.id}</TableCell>
+                      {data.map((row) => (
+                        <StyledTableRow key={row?._id}>
+                          <TableCell>{row?.KhoaHocID?.MaKhoaHoc}</TableCell>
                           <TableCell sx={{ fontWeight: "medium" }}>
-                            {row.subjectName}
+                            {row?.KhoaHocID?.TenKhoaHoc}
                           </TableCell>
-                          <TableCell align="center">{row.credit}</TableCell>
-                          <TableCell>{row.class}</TableCell>
-                          <TableCell>{row.teacher}</TableCell>
+                          <TableCell align="center">{row?.KhoaHocID?.SoTinChi}</TableCell>
+                          <TableCell>{row?.GiangVienID?.HoTen}</TableCell>
+                          <TableCell>{days[row?.NgayHoc % 7]}</TableCell>
                           <TableCell>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                               <ScheduleIcon
                                 fontSize="small"
                                 sx={{ mr: 1, color: "text.secondary" }}
                               />
-                              {row.time}
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              label={
-                                row.status === "active" ? "Active" : "Completed"
-                              }
-                              color={getStatusColor(row.status)}
-                              size="small"
-                              sx={{ fontWeight: "medium" }}
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Box sx={{ width: "100%", mr: 1 }}>
-                                <Box
-                                  sx={{
-                                    width: "100%",
-                                    height: 8,
-                                    backgroundColor: "#e0e0e0",
-                                    borderRadius: 4,
-                                    overflow: "hidden",
-                                  }}
-                                >
-                                  <Box
-                                    sx={{
-                                      width: `${row.progress}%`,
-                                      height: "100%",
-                                      backgroundColor:
-                                        row.progress === 100
-                                          ? "success.main"
-                                          : "primary.main",
-                                      borderRadius: 4,
-                                    }}
-                                  />
-                                </Box>
-                              </Box>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {row.progress}%
-                              </Typography>
+                              {row?.ThoiGianBatDau} - {row?.ThoiGianKetThuc}
                             </Box>
                           </TableCell>
                         </StyledTableRow>
