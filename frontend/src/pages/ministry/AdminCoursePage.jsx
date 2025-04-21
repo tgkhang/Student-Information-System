@@ -7,6 +7,9 @@ import {
   Box,
   TextField,
   Select,
+  Card,
+  CardContent,
+  Chip,
   MenuItem,
   InputLabel,
   FormControl,
@@ -16,10 +19,85 @@ import {
   Alert,
   Pagination,
 } from "@mui/material";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PersonIcon from "@mui/icons-material/Person";
+import PeopleIcon from "@mui/icons-material/People";
+import ClassIcon from "@mui/icons-material/Class";
 import Iconify from "../../components/Iconify";
 import exportToExcel from "../../utils/exportToExcel";
 import { getCoursesListApi, searchCourseApi } from "../../utils/api";
-import { CourseCard, formatDate } from "../../components/CourseList";
+import { formatDate } from "../../components/CourseList";
+
+// CourseCard component: display individual course information
+const CourseCard = ({ course, onClick }) => {
+  return (
+    <Card
+      onClick={onClick}
+      sx={{
+        mb: 2,
+        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.05)",
+        borderRadius: "8px",
+        border: "1px solid #e0e0e0",
+        transition: "transform 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+        },
+      }}
+    >
+      <CardContent sx={{ p: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          {/* Course ID and Name */}
+          <Box>
+            <Typography
+              variant="h6"
+              color="primary"
+              sx={{ fontWeight: "bold", fontSize: "1rem" }}
+            >
+              {course?.id} - {course?.name?.toUpperCase()}
+            </Typography>
+          </Box>
+          <Typography variant="body2" color="text.secondary">
+            Instructor: {course?.instructor}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {course?.description}
+          </Typography>
+
+          {/*Course details*/}
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+            <Chip
+              icon={<AccessTimeIcon fontSize="small" />}
+              label={`${formatDate(course.startDate)} - ${formatDate(
+                course.endDate
+              )}`}
+              size="small"
+              sx={{ bgcolor: "#f0f7ff", color: "#0057b7" }}
+            />
+            <Chip
+              icon={<PersonIcon fontSize="small" />}
+              label={course?.assistantName || "No Assistant"}
+              size="small"
+              sx={{ bgcolor: "#f5f5f5" }}
+            />
+            <Chip
+              icon={<PeopleIcon fontSize="small" />}
+              label={`${course.registeredStudents}/${course.maxStudents} Students`}
+              size="small"
+              sx={{ bgcolor: "#f5f5f5" }}
+            />
+            <Chip
+              icon={<ClassIcon fontSize="small" />}
+              label={`${course.credits} Credits`}
+              size="small"
+              sx={{ bgcolor: "#f5f5f5" }}
+            />
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
 
 // Years for filter
 const years = ["2022", "2023", "2024", "2025", "2026", "2027"];
@@ -47,18 +125,26 @@ export default function AdminCoursePage() {
   // Search state
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  
+
   // Request state
   const [isFetching, setIsFetching] = useState(false);
 
-  // Format course data for display
   const formatCourseData = useCallback((courseData) => {
     if (!courseData) return null;
     try {
+      const instructorName =
+        Array.isArray(courseData.GiangVienID) &&
+        courseData.GiangVienID.length > 0
+          ? courseData.GiangVienID[0]?.HoTen || "Unknown"
+          : typeof courseData.GiangVienID === "object" &&
+            courseData.GiangVienID !== null
+          ? courseData.GiangVienID.HoTen || "Unknown"
+          : "Unknown";
+
       return {
         id: courseData.MaKhoaHoc || "",
         name: courseData.TenKhoaHoc || "",
-        instructor: courseData.GiangVienID?.HoTen || "Unknown",
+        instructor: instructorName,
         assistantId: courseData.TroGiangID || "",
         assistantName: courseData.TroGiangID?.HoTen || "No Assistant",
         credits: courseData.SoTinChi || 0,
@@ -69,9 +155,14 @@ export default function AdminCoursePage() {
         startDate: courseData.NgayBatDau || "",
         endDate: courseData.NgayKetThuc || "",
         departmentId: courseData.KhoaID || "",
-        year: courseData.NgayBatDau 
+        year: courseData.NgayBatDau
           ? new Date(courseData.NgayBatDau).getFullYear().toString()
           : new Date().getFullYear().toString(),
+        schedule: Array.isArray(courseData.LichHoc) ? courseData.LichHoc : [],
+        // Add deadlines info
+        deadlines: Array.isArray(courseData.Deadlines)
+          ? courseData.Deadlines
+          : [],
       };
     } catch (err) {
       console.error("Error formatting course data:", err);
@@ -79,65 +170,88 @@ export default function AdminCoursePage() {
     }
   }, []);
 
-  const fetchCourses = useCallback(async (
-    page = pageNumber,
-    size = pageSize,
-    sort = sortBy,
-    order = sortOrder
-  ) => {
-    // Prevent multiple simultaneous requests
-    if (isFetching) {
-      console.log("Request already in progress, skipping");
-      return;
-    }
-    
-    try {
-      setIsFetching(true);
-      setLoading(true);
-      setError(null);
-      
-      const response = await getCoursesListApi({
-        pageSize: size,
-        pageNumber: page,
-        sortBy: sort,
-        sortOrder: order,
-      });
-      //console.log("API response:", response);
-      if (
-        response?.data &&
-        response.data?.data &&
-        Array.isArray(response.data.data)
-      ) {
-        // Update total records and pages for pagination
-        setTotalRecords(response.data.total || 0);
-        const newTotalPages = Math.max(1, Math.ceil((response.data.total || 0) / size));
-        setTotalPages(newTotalPages);
+  const fetchCourses = useCallback(
+    async (
+      page = pageNumber,
+      size = pageSize,
+      sort = sortBy,
+      order = sortOrder
+    ) => {
+      // Prevent multiple simultaneous requests
+      if (isFetching) {
+        console.log("Request already in progress, skipping");
+        return;
+      }
 
-        const formattedCourses = response.data.data
-          .map(formatCourseData)
-          .filter(Boolean); // Remove any null results
-          
-        setCourses(formattedCourses);
-        setIsSearchActive(false);
+      try {
+        setIsFetching(true);
+        setLoading(true);
         setError(null);
-      } else {
-        setError("API response format is unexpected");
+
+        const response = await getCoursesListApi({
+          pageSize: size,
+          pageNumber: page,
+          sortBy: sort,
+          sortOrder: order,
+        });
+        //console.log("API response:", response.data);
+
+        // Handle different response formats - direct array or paginated data object
+        if (response?.data) {
+          let responseData = response.data;
+          let totalItems = 0;
+          let dataArray = [];
+
+          // Check if response is an array directly
+          if (Array.isArray(responseData)) {
+            dataArray = responseData;
+            totalItems = responseData.length;
+          }
+          // Check if response is a paginated data object
+          else if (responseData?.data && Array.isArray(responseData.data)) {
+            dataArray = responseData.data;
+            totalItems = responseData.total || dataArray.length;
+          }
+          // Handle single object response
+          else if (typeof responseData === "object" && responseData !== null) {
+            dataArray = [responseData];
+            totalItems = 1;
+          }
+
+          // Update total records and pages for pagination
+          setTotalRecords(totalItems);
+          const newTotalPages = Math.max(1, Math.ceil(totalItems / size));
+          setTotalPages(newTotalPages);
+
+          const formattedCourses = dataArray
+            .map(formatCourseData)
+            .filter(Boolean); // Remove any null results
+
+          setCourses(formattedCourses);
+          setIsSearchActive(false);
+          setError(null);
+        } else {
+          setError("API response format is unexpected");
+          setCourses([]);
+          setTotalPages(1);
+          setTotalRecords(0);
+        }
+      } catch (err) {
+        console.error("Error fetching course data:", err);
+        setError(
+          `Không thể tải dữ liệu khóa học: ${err.message || "Unknown error"}`
+        );
         setCourses([]);
         setTotalPages(1);
         setTotalRecords(0);
+      } finally {
+        setLoading(false);
+        setInitialLoading(false);
+        setIsFetching(false);
       }
-    } catch (err) {
-      console.error("Error fetching course data:", err);
-      setError(`Không thể tải dữ liệu khóa học: ${err.message || "Unknown error"}`);
-      setCourses([]);
-      setTotalPages(1);
-      setTotalRecords(0);
-    } finally {
-      setLoading(false);
-      setInitialLoading(false);
-      setIsFetching(false);
-    }
-  }, [pageNumber, pageSize, sortBy, sortOrder, formatCourseData, isFetching]);
+    },
+    [pageNumber, pageSize, sortBy, sortOrder, formatCourseData, isFetching]
+  );
 
   const handleSearch = useCallback(async () => {
     // Prevent searching while another request is in progress
@@ -145,7 +259,7 @@ export default function AdminCoursePage() {
       console.log("Request already in progress, skipping search");
       return;
     }
-    
+
     if (!searchTerm || !searchTerm.trim()) {
       setIsSearchActive(false);
       return fetchCourses(1, pageSize, sortBy, sortOrder);
@@ -155,21 +269,38 @@ export default function AdminCoursePage() {
       setIsFetching(true);
       setLoading(true);
       setError(null);
-      
+
       const trimmedSearchTerm = searchTerm.trim();
       const response = await searchCourseApi(trimmedSearchTerm);
-      
-      if (response?.data && Array.isArray(response.data)) {
-        const formattedResults = response.data
+
+      // Handle different response formats
+      if (response?.data) {
+        let dataArray = [];
+
+        if (Array.isArray(response.data)) {
+          dataArray = response.data;
+        } else if (
+          typeof response.data === "object" &&
+          response.data !== null
+        ) {
+          if (response.data.data && Array.isArray(response.data.data)) {
+            dataArray = response.data.data;
+          } else {
+            // Single object response
+            dataArray = [response.data];
+          }
+        }
+
+        const formattedResults = dataArray
           .map(formatCourseData)
           .filter(Boolean); // Remove any null results
-        
+
         setSearchResults(formattedResults);
         setIsSearchActive(true);
-        
+
         const filteredCount = formattedResults.length;
         setTotalRecords(filteredCount);
-        
+
         const newTotalPages = Math.max(1, Math.ceil(filteredCount / pageSize));
         setTotalPages(newTotalPages);
         setPageNumber(1); // Reset to first page on new search
@@ -182,20 +313,32 @@ export default function AdminCoursePage() {
       }
     } catch (err) {
       console.error("Error searching courses:", err);
-     if (err.response?.status === 404) {
+      if (err.response?.status === 404) {
         setSearchResults([]);
         setIsSearchActive(true);
         setTotalRecords(0);
         setTotalPages(1);
         setPageNumber(1);
       } else {
-        setError(`Lỗi tìm kiếm: ${err.response?.data?.message || err.message || "Unknown error"}`);
+        setError(
+          `Lỗi tìm kiếm: ${
+            err.response?.data?.message || err.message || "Unknown error"
+          }`
+        );
       }
     } finally {
       setLoading(false);
       setIsFetching(false);
     }
-  }, [searchTerm, pageSize, sortBy, sortOrder, formatCourseData, fetchCourses, isFetching]);
+  }, [
+    searchTerm,
+    pageSize,
+    sortBy,
+    sortOrder,
+    formatCourseData,
+    fetchCourses,
+    isFetching,
+  ]);
 
   // Initial data fetch
   useEffect(() => {
@@ -203,14 +346,17 @@ export default function AdminCoursePage() {
   }, []);
 
   // Handle page change
-  const handlePageChange = useCallback((event, value) => {
-    // Prevent page change if another request is in progress
-    if (isFetching) return;
-    setPageNumber(value);
-    if (!isSearchActive) {
-      fetchCourses(value, pageSize, sortBy, sortOrder);
-    }
-  }, [isSearchActive, pageSize, sortBy, sortOrder, fetchCourses, isFetching]);
+  const handlePageChange = useCallback(
+    (event, value) => {
+      // Prevent page change if another request is in progress
+      if (isFetching) return;
+      setPageNumber(value);
+      if (!isSearchActive) {
+        fetchCourses(value, pageSize, sortBy, sortOrder);
+      }
+    },
+    [isSearchActive, pageSize, sortBy, sortOrder, fetchCourses, isFetching]
+  );
 
   // Handle year filter change
   const handleYearChange = useCallback((e) => {
@@ -232,13 +378,13 @@ export default function AdminCoursePage() {
   const displayedCourses = useMemo(() => {
     try {
       let displayList = isSearchActive ? searchResults : courses;
-      
+
       if (!Array.isArray(displayList)) {
         return [];
       }
       if (filterYear) {
-        displayList = displayList.filter((course) => 
-          course && course.year === filterYear
+        displayList = displayList.filter(
+          (course) => course && course.year === filterYear
         );
       }
       if (isSearchActive) {
@@ -251,27 +397,34 @@ export default function AdminCoursePage() {
       console.error("Error in displayedCourses:", err);
       return [];
     }
-  }, [courses, searchResults, isSearchActive, filterYear, pageNumber, pageSize]);
+  }, [
+    courses,
+    searchResults,
+    isSearchActive,
+    filterYear,
+    pageNumber,
+    pageSize,
+  ]);
 
   // Update total pages when filter changes for search results
   useEffect(() => {
     if (isSearchActive && searchResults) {
       try {
         let filteredResults = searchResults;
-        
+
         if (filterYear) {
           filteredResults = filteredResults.filter(
             (course) => course && course.year === filterYear
           );
         }
-        
+
         const filteredCount = filteredResults.length;
         setTotalRecords(filteredCount);
-        
+
         const newTotalPages = Math.max(1, Math.ceil(filteredCount / pageSize));
         setTotalPages(newTotalPages);
-        
-        // Reset to first page if current page would be out 
+
+        // Reset to first page if current page would be out
         if (pageNumber > newTotalPages) {
           setPageNumber(1);
         }
@@ -296,7 +449,9 @@ export default function AdminCoursePage() {
             <Button
               color="success"
               variant="contained"
-              disabled={!displayedCourses || displayedCourses.length === 0 || loading}
+              disabled={
+                !displayedCourses || displayedCourses.length === 0 || loading
+              }
               onClick={() =>
                 exportToExcel(
                   [
@@ -438,7 +593,7 @@ export default function AdminCoursePage() {
                   <CircularProgress size={30} />
                 </Box>
               )}
-              
+
               {!loading && displayedCourses.length > 0 ? (
                 <Grid container spacing={2}>
                   {displayedCourses.map((course, index) => (
