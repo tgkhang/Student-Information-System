@@ -18,7 +18,7 @@ import {
 
 
 const navTeacherConfig = [
-  { title: 'My Profile', path: '/teacher/dashboard', icon: <AccountCircle /> },
+  { title: 'Dashboard', path: '/teacher/dashboard', icon: <AccountCircle /> },
   { title: 'My Courses', path: '/teacher/course', icon: <MenuBook /> },
   { title: 'Course Reviews', path: '/teacher/review', icon: <Info /> },
 ];

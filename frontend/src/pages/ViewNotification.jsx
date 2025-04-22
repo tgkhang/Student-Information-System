@@ -63,7 +63,7 @@ export default function ViewNotification() {
           sx={{ 
             p: 4, 
             borderRadius: 2,
-            background: "linear-gradient(to bottom, #ffffff, #f9f9f9)"
+            backgroundColor: "primary.lighter"
           }}
         >
           {loading ? (
@@ -84,16 +84,16 @@ export default function ViewNotification() {
               
               {/* Title section */}
               <Box>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography variant="body1" color="secondary.main" gutterBottom>
                   Title
                 </Typography>
                 <Typography 
-                  variant="h5" 
+                  variant="body2"
                   sx={{ 
                     fontWeight: 600, 
                     p: 2, 
                     backgroundColor: "rgba(0,0,0,0.02)", 
-                    borderRadius: 1 
+                    borderRadius: 1
                   }}
                 >
                   {notification?.TenThongBao || ""}
@@ -104,7 +104,7 @@ export default function ViewNotification() {
               
               {/* Content section */}
               <Box>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography variant="body1" color="secondary.main" gutterBottom>
                   Content
                 </Typography>
                 <Typography 
@@ -125,10 +125,10 @@ export default function ViewNotification() {
               
               {/* Timestamp section */}
               <Box>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography variant="body1" color="secondary.main" gutterBottom>
                   Created At
                 </Typography>
-                <Typography variant="body2" sx={{ p: 1 }}>
+                <Typography variant="body1">
                   {formattedTime}
                 </Typography>
               </Box>

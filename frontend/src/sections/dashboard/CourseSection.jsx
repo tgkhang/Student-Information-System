@@ -52,6 +52,7 @@ const moodleStyles = {
       display: 'none',
     },
   },
+
   accordionSummary: {
     backgroundColor: '#f5f5f5',
     borderBottom: '1px solid #e0e0e0',
@@ -60,15 +61,18 @@ const moodleStyles = {
       minHeight: '64px',
     }
   },
+
   accordionDetails: {
     padding: 0,
     backgroundColor: '#ffffff',
     borderRadius: '0 0 8px 8px',
   },
+
   sectionTitle: {
     fontWeight: 600,
     fontSize: '1rem',
   },
+
   iconBox: {
     display: 'flex',
     alignItems: 'center',
@@ -80,6 +84,7 @@ const moodleStyles = {
     color: 'white',
     marginRight: '16px',
   },
+
   listItem: {
     borderLeft: '4px solid transparent',
     cursor: 'pointer',
@@ -89,6 +94,7 @@ const moodleStyles = {
     },
     padding: '12px 16px',
   },
+
   linkItem: {
     cursor: 'pointer',
     textDecoration: 'none',
@@ -96,6 +102,7 @@ const moodleStyles = {
       textDecoration: 'underline',
     },
   },
+
   addButton: {
     backgroundColor: '#4caf50',
     color: 'white',
@@ -103,65 +110,80 @@ const moodleStyles = {
       backgroundColor: '#388e3c',
     }
   },
+
   resourceIcon: {
     marginRight: '8px',
     color: '#757575',
   },
+
   mainContainer: {
     backgroundColor: '#f9f9f9',
     padding: '24px',
     borderRadius: '12px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
   },
+
   itemCount: {
     backgroundColor: '#e0e0e0',
     color: '#424242',
     height: '24px',
     marginLeft: '8px',
   },
+
   dividerContainer: {
     display: 'flex',
     alignItems: 'center',
     margin: '24px 0',
   },
+
   divider: {
     flexGrow: 1,
   },
+
   dividerText: {
     margin: '0 16px',
     color: '#757575',
   },
+
   uploadButton: {
     margin: '8px',
     textTransform: 'none',
   },
+
   actionCard: {
     marginTop: '16px',
     backgroundColor: '#f5f9ff',
     borderRadius: '8px',
   },
+
   actionButton: {
     textTransform: 'none',
   },
+
   tabPanel: {
     padding: '16px',
   },
+
   resourceTypeChip: {
     marginRight: '8px',
     marginBottom: '8px',
   },
+
   deadlineChip: {
     backgroundColor: '#ff9800',
     color: 'white',
   },
+
   quizChip: {
     backgroundColor: '#9c27b0',
     color: 'white',
   },
+
   documentChip: {
     backgroundColor: '#2196f3',
     color: 'white',
   },
+
   linkChip: {
     backgroundColor: '#4caf50',
     color: 'white',
@@ -212,12 +234,9 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
   };
   
   const [items, setItems] = useState(defaultItems[sectionType] || []);
-  
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [expanded, setExpanded] = useState(false);
-  
-  
   
   const handleDeleteClick = (item) => {
     setItemToDelete(item);
@@ -255,7 +274,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
         }}
       >
         <Box display="flex" alignItems="center" width="100%">
-          <Typography sx={moodleStyles.sectionTitle}>{title}</Typography>
+          <Typography variant="h5">{title}</Typography>
           <Box flexGrow={1} />
           <Chip 
             label={`${items.length} items`}
@@ -294,6 +313,20 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
                   </Box>
                 }
                 secondary={item.dueDate && `Due: ${formatDueDate(item.dueDate)}`}
+                primaryTypographyProps={{
+                  sx: {
+                    fontWeight: 500,
+                    color: item.type === 'link' ? 'primary.dark' : 'text.primary',
+                    fontSize: '1rem',
+                  },
+                }}
+                secondaryTypographyProps={{
+                  sx: {
+                    color: 'text.secondary',
+                    fontSize: '0.875rem',
+                    marginTop: '4px',
+                  },
+                }}
               />
               
               {isTeacherMode && (
@@ -334,15 +367,51 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
 
 const CourseSection = ({isTeacherMode, course}) => {
   return (
-    <Paper elevation={0} sx={moodleStyles.mainContainer}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight="bold">{course?.MaKhoaHoc} - {course?.TenKhoaHoc}</Typography>
+    <Paper elevation={0}
+      sx={{...moodleStyles.mainContainer,
+            mt: "64px",
+            backgroundColor: "primary.lighter",
+            p: 4,
+            minHeight: "calc(100vh - 64px)"
+      }}
+    >
+      <Card
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          boxShadow: 0,
+        }}
+      >
+        <CardContent>
+          <Typography variant="h2" fontWeight="bold" gutterBottom
+            sx={{color: "primary.main"}}
+          >
+            {course?.MaKhoaHoc} - {course?.TenKhoaHoc}
+          </Typography>
+          <Typography variant="body2">
+            <strong>Teacher:</strong> Nguyen Le Hoang Dung
+          </Typography>
+          <Typography variant="body2">
+            <strong>Time:</strong> Tuesday, 13h30
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Box sx={{  }}>
+        
       </Box>
       
       {isTeacherMode && (
         <Card sx={moodleStyles.actionCard}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>Quick Actions</Typography>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{color: "primary.main"}}
+            >
+                Quick Actions
+              </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               Manage your course materials, assignments, and references
             </Typography>

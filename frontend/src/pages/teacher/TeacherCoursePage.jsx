@@ -28,7 +28,7 @@ export default function CoursePage() {
     fetchCourses();
   }, []);
   return (
-    <Page title="StudentClassRegistrationPage">
+    <Page title="My Courses">
       <Box sx={{ display: "flex" }}>
         <Box
           component="main"

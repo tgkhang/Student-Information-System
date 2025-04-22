@@ -42,7 +42,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <Page title="TeacherDashboardPage">
+    <Page title="My Dashboard">
       <Box sx={{ display: "flex" }}>
         <Box
           component="main"
@@ -102,8 +102,11 @@ export default function Dashboard() {
                     >
                       {profile?.HoTen?.charAt(0) || "T"}
                     </Avatar>
-                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="h3" sx={{ fontWeight: "700" }}>
                       {profile?.HoTen}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      Teacher
                     </Typography>
                   </Box>
 
@@ -131,7 +134,8 @@ export default function Dashboard() {
                             secondary={profile?.MaGV}
                             primaryTypographyProps={{
                               variant: "body2",
-                              color: "text.secondary",
+                              fontWeight: 500,
+                              color: "secondary.main",
                             }}
                             secondaryTypographyProps={{
                               variant: "body1",
@@ -148,7 +152,8 @@ export default function Dashboard() {
                             secondary={user?.email}
                             primaryTypographyProps={{
                               variant: "body2",
-                              color: "text.secondary",
+                              fontWeight: 500,
+                              color: "secondary.main",
                             }}
                             secondaryTypographyProps={{
                               variant: "body1",
@@ -165,7 +170,8 @@ export default function Dashboard() {
                             secondary={profile?.SoDienThoai || "Not provided"} 
                             primaryTypographyProps={{
                               variant: "body2",
-                              color: "text.secondary",
+                              fontWeight: 500,
+                              color: "secondary.main",
                             }}
                             secondaryTypographyProps={{
                               variant: "body1",
@@ -182,7 +188,8 @@ export default function Dashboard() {
                             secondary={profile?.NgaySinh || "Not provided"}
                             primaryTypographyProps={{
                               variant: "body2",
-                              color: "text.secondary",
+                              fontWeight: 500,
+                              color: "secondary.main",
                             }}
                             secondaryTypographyProps={{
                               variant: "body1",
@@ -199,7 +206,8 @@ export default function Dashboard() {
                             secondary={profile?.GioiTinh || "Not provided"}
                             primaryTypographyProps={{
                               variant: "body2",
-                              color: "text.secondary",
+                              fontWeight: 500,
+                              color: "secondary.main",
                             }}
                             secondaryTypographyProps={{
                               variant: "body1",
@@ -217,7 +225,8 @@ export default function Dashboard() {
                             secondary={profile?.DiaChi || "Not provided"}
                             primaryTypographyProps={{
                               variant: "body2",
-                              color: "text.secondary",
+                              fontWeight: 500,
+                              color: "secondary.main",
                             }}
                             secondaryTypographyProps={{
                               variant: "body1",
@@ -241,7 +250,8 @@ export default function Dashboard() {
                           secondary="Teacher"
                           primaryTypographyProps={{
                             variant: "body2",
-                            color: "text.secondary",
+                            fontWeight: 500,
+                            color: "secondary.main",
                           }}
                           secondaryTypographyProps={{
                             variant: "body1",
@@ -258,7 +268,8 @@ export default function Dashboard() {
                           secondary={profile?.KhoaID?.TenKhoa || "Not provided"}
                           primaryTypographyProps={{
                             variant: "body2",
-                            color: "text.secondary",
+                            fontWeight: 500,
+                            color: "secondary.main",
                           }}
                           secondaryTypographyProps={{
                             variant: "body1",
@@ -275,7 +286,8 @@ export default function Dashboard() {
                           secondary={profile?.CCCD || "Not provided"}
                           primaryTypographyProps={{
                             variant: "body2",
-                            color: "text.secondary",
+                            fontWeight: 500,
+                            color: "secondary.main",
                           }}
                           secondaryTypographyProps={{
                             variant: "body1",
@@ -292,7 +304,8 @@ export default function Dashboard() {
                           secondary={profile?.TrinhDo || "Not provided"}
                           primaryTypographyProps={{
                             variant: "body2",
-                            color: "text.secondary",
+                            fontWeight: 500,
+                            color: "secondary.main",
                           }}
                           secondaryTypographyProps={{
                             variant: "body1",

@@ -168,22 +168,29 @@ export default function CreateQuiz() {
 
   return (
     <Page title="Create Quiz">
-      <Box maxWidth={800} mx="auto" mt={8}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+      <Box maxWidth={800} mx="auto" mt="64px"
+          sx={{p: 2}}
+      >
+        <Typography
+          variant="h4"
+          fontWeight={600}
+          gutterBottom
+          sx={{ color: "primary.main" }}
+        >
           Create Quiz
         </Typography>
 
         <Paper
           sx={{
             p: 2,
-            backgroundColor: "primary.light",
+            backgroundColor: "primary.lighter",
             fontWeight: "bold",
             fontSize: "1.2rem",
             borderRadius: 2,
             mb: 3,
           }}
         >
-          To: Class Computer Science 1
+          Course: <Typography variant="body2" sx={{display: "inline-block"}}> Class Computer Science  </Typography>
         </Paper>
 
         <Paper elevation={3} sx={{ p: 3 }}>

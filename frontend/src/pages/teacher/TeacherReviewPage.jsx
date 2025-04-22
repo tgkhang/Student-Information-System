@@ -38,7 +38,7 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-const drawerWidth = 10;
+const drawerWidth = 0;
 
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -107,15 +107,41 @@ function CourseReviewSummary({ course }) {
 
   return (
     <Box sx={{ mb: 4 }}>
-      <Card elevation={0} sx={{ borderRadius: 2, mb: 3 }}>
+      
+      <Card
+        elevation={0}
+        sx={{
+          borderRadius: 2,
+          mb: 3,
+          width: "100%"
+        }}
+      >
+
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              color: "primary.main"
+            }}
+          >
             {course.name} ({course.id})
           </Typography>
-          <Grid2 container spacing={3}>
+
+          <Grid2
+            container spacing={3}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5em"
+            }}>
             <Grid2 item xs={12} md={8}>
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="body2"
+                  color="secondary.dark"
+                  gutterBottom
+                >
                   Review Completion
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -174,7 +200,7 @@ function CourseReviewSummary({ course }) {
                   <Typography variant="h3" color="primary" sx={{ fontWeight: 'bold' }}>
                     {course.averageRating?.toFixed(1) || "N/A"}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="h3" color="secondary.main">
                     / 5.0
                   </Typography>
                 </Box>
@@ -189,9 +215,13 @@ function CourseReviewSummary({ course }) {
                 </Typography>
               </Box>
             </Grid2>
+
           </Grid2>
+
         </CardContent>
+
       </Card>
+
     </Box>
   );
 }
@@ -230,7 +260,7 @@ export default function CourseReviewPage() {
   };
 
   return (
-    <Page title="CourseReviewPage">
+    <Page title="Course Reviews">
       <Box sx={{ display: "flex" }}>
 
         <Box
@@ -243,26 +273,13 @@ export default function CourseReviewPage() {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
               }),
-            backgroundColor: "#f5f5f5",
+            backgroundColor: "primary.lighter",
             marginLeft: isDrawerOpen ? `${drawerWidth}px` : 0,
             width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
           }}
         >
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{
-              fontWeight: "bold",
-              color: "primary.main",
-              mb: 4,
-            }}
-          >
-            Course Reviews
-          </Typography>
-
           <Grid2
-            container
-            spacing={4}
+            container spacing={4}
             sx={{
               width: "100%",
               flexGrow: 1,
@@ -294,32 +311,49 @@ export default function CourseReviewPage() {
                         </Button>
                       </Box>
                     )}
-                    
-                    {/* Filter controls - both on the right */}
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "flex-end",
+                        justifyContent: "space-between",
                         alignItems: "center",
                         width: "100%",
                       }}
                     >
-                      <Box sx={{ display: "flex", gap: 1 }}>
-                        <CustomSelect
-                          items={["Semester 1", "Semester 2", "Semester 3"]}
-                          label="Semester"
-                          id="semester-select"
-                          value={semester}
-                          onChange={(e) => setSemester(e.target.value)}
-                        />
+                      <Typography
+                        variant="h4"
+                        sx={{
+                          mb: 0,
+                          fontWeight: "bold",
+                          color: "primary.main",
+                        }}
+                      >
+                        Course Reviews
+                      </Typography>
+                      {/* Filter controls - both on the right */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Box sx={{ display: "flex", gap: 1 }}>
+                          <CustomSelect
+                            items={["Semester 1", "Semester 2", "Semester 3"]}
+                            label="Semester"
+                            id="semester-select"
+                            value={semester}
+                            onChange={(e) => setSemester(e.target.value)}
+                          />
 
-                        <CustomSelect
-                          items={["2020", "2021", "2022", "2023", "2024","2025"]}
-                          label="Year"
-                          id="year-select"
-                          value={year}
-                          onChange={(e) => setYear(e.target.value)}
-                        />
+                          <CustomSelect
+                            items={["2020", "2021", "2022", "2023", "2024","2025"]}
+                            label="Year"
+                            id="year-select"
+                            value={year}
+                            onChange={(e) => setYear(e.target.value)}
+                          />
+                        </Box>
                       </Box>
                     </Box>
 
@@ -368,21 +402,31 @@ export default function CourseReviewPage() {
                           <Table sx={{ minWidth: 650 }}>
                             <TableHead>
                               <TableRow>
-                                <StyledTableCell>Student</StyledTableCell>
-                                <StyledTableCell>Date</StyledTableCell>
-                                <StyledTableCell>Rating</StyledTableCell>
-                                <StyledTableCell>Comment</StyledTableCell>
-                                <StyledTableCell align="center">Helpful</StyledTableCell>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                  Student
+                                </TableCell>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                  Date
+                                </TableCell>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                  Rating
+                                </TableCell>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                  Comment
+                                </TableCell>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}} align="center">
+                                  Helpful
+                                </TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
                               {selectedCourse.reviews.map((review, index) => (
                                 <StyledTableRow key={index}>
                                   <TableCell>
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: "1rem" }}>
                                       <Avatar 
                                         sx={{ 
-                                          bgcolor: 'primary.light', 
+                                          bgcolor: 'primary.main', 
                                           width: 32, 
                                           height: 32, 
                                           mr: 1,

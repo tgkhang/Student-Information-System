@@ -114,8 +114,15 @@ export default function UploadMaterials() {
 
   return (
     <Page title="Upload Teaching Materials">
-      <Box maxWidth={800} mx="auto" sx={{ mt: 8,}}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+      <Box maxWidth={800} mx="auto" mt="64px"
+          sx={{p: 2}}
+      >
+        <Typography
+          variant="h4"
+          fontWeight={600}
+          gutterBottom
+          sx={{ color: "primary.main" }}
+        >
           Upload Teaching Materials
         </Typography>
 
@@ -176,7 +183,7 @@ export default function UploadMaterials() {
             <Typography variant="h6" color={isDragActive ? "primary.main" : "text.secondary"}>
               {isDragActive ? "Drop files here..." : "Click or drag files to upload"}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
               Support for multiple files
             </Typography>
           </Box>

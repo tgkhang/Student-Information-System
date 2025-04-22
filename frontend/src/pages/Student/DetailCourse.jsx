@@ -4,7 +4,7 @@ import Page from '../../components/Page';
 export default function DetailCourse() {
     
     return (
-      <Page title="Course detail">
+      <Page title="Course Details">
         
         <CourseSection 
         />

@@ -50,11 +50,11 @@ const CourseCard = ({ course, onClick  }) => {
           {/* Course ID and Name */}
           <Box>
             <Typography
-              variant="h6"
+              variant="h4"
               color="primary"
               sx={{ fontWeight: "bold", fontSize: "1rem" }}
             >
-              {course?.MaKhoaHoc} - {course?.TenKhoaHoc?.toUpperCase()}
+              {course?.MaKhoaHoc} - {course?.TenKhoaHoc}
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary">
