@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { Box, Typography, Badge } from "@mui/material";
 
 export default function NotificationList({notifications, role, markAsRead}) {
-  console.log("Notifications:", notifications);
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {notifications.map((notif) => (

@@ -103,7 +103,6 @@ export class GiangVienService {
       if (!giangVien) {
         throw new NotFoundException('Giảng viên không tồn tại.');
       }
-      console.log(giangVien);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const user = await this.authService.deleteAccountByUsername(MaGV);
       await this.giangVienModel.findByIdAndDelete(giangVien._id);
@@ -235,7 +234,6 @@ export class GiangVienService {
       throw new NotFoundException('Không tìm thấy giảng viên.');
     }
     // const giangVienIdStr = (giangVien._id as Types.ObjectId).toString();
-    // console.log(giangVien._id);
     const courses = await this.khoaHocModel
       .find({
         $or: [

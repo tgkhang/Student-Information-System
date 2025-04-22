@@ -73,7 +73,7 @@ export default function MainHeader() {
       }
     }
     fetchNotifications();
-  }, [user]);
+  }, [user, openNotifications]);
   const handleToggleProfileMenu = (event) => {
     setAnchorProfile(event.currentTarget);
     setOpenProfileMenu((prev) => !prev);

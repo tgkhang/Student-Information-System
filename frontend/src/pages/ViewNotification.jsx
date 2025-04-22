@@ -1,10 +1,11 @@
 import { Box, Typography, Paper, Stack, Chip, Divider } from "@mui/material";
 import Page from "../components/Page";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getNotificationByIdApi } from "../utils/api";
+import { getNotificationByIdApi, markTeacherNotiAsRead, markStudentNotiAsRead } from "../utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+
 
 dayjs.extend(relativeTime);
 
@@ -12,12 +13,22 @@ export default function ViewNotification() {
   const { id } = useParams();
   const [notification, setNotification] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const location = useLocation();
+  const path = location.pathname;
+  const isStudent = path.includes('/student/');
+  const isTeacher = path.includes('/teacher/');
   useEffect(() => {
     const fetchNotification = async () => {
       try {
         setLoading(true);
         const response = await getNotificationByIdApi(id);
+        console.log("Notification data:", response.data);
+        if (isStudent) {
+          await markStudentNotiAsRead(id);
+        }
+        if (isTeacher) {
+          await markTeacherNotiAsRead(id);
+        }
         setNotification(response.data);
       } catch (error) {
         console.error("Error fetching notification:", error);

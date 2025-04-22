@@ -74,7 +74,6 @@ export class SinhVienService {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       const password = sinhVienData.mssv.toString();
       const role = 'student';
-      console.log(password);
       await this.authService.register(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         username,
@@ -254,7 +253,6 @@ export class SinhVienService {
   }
 
   async getStudentNoti(MSSV: string) {
-    console.log(MSSV);
     const sinhVien = await this.sinhVienModel
       .findOne({ mssv: MSSV })
       .populate('ThongBao.thongBaoId')
