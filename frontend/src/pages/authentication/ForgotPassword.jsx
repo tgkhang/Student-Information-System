@@ -17,10 +17,12 @@ import {
   guestLoginSection,
   guestRoundBlueButton,
 } from "../../assets/styles/guest";
-
+import { forgotPassword  } from "../../utils/api";
+import { useSnackbar } from "notistack";
 // ----------------------------------------------------------------------
 
 export function BackgroundCircles() {
+
   return (
     <Box
       sx={{
@@ -77,6 +79,7 @@ const forgotPasswordSchema = Yup.object().shape({
 });
 
 export default function ForgotPassword() {
+  const { enqueueSnackbar } = useSnackbar();
   const {
     register,
     handleSubmit,
@@ -88,9 +91,13 @@ export default function ForgotPassword() {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Forgot password data:", data.email);
-    // Logic to handle sending recovery link goes here
+  const onSubmit = async (data) => {
+    const response = await forgotPassword(data.username);
+    if (response.status === 200) {
+      enqueueSnackbar("Recovery link sent successfully", { variant: "success" });
+    } else {
+      enqueueSnackbar("Failed to send recovery link", { variant: "error" });
+    }
   };
 
   return (

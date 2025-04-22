@@ -191,7 +191,7 @@ export class AuthService {
       },
     );
 
-    const resetLink = `http://your-frontend-url/reset-password?token=${resetToken}`;
+    const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
     await this.mailerService.sendResetPasswordEmail(user.email, resetLink);
     return 'Đường dẫn reset mật khẩu đã được gửi tới email của bạn.';
   }

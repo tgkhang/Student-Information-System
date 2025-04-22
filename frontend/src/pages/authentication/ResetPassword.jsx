@@ -25,7 +25,8 @@ import {
   guestLoginSection,
   guestRoundBlueButton,
 } from "../../assets/styles/guest";
-
+import { resetPassword  } from "../../utils/api";
+import { useSnackbar } from "notistack";
 // ----------------------------------------------------------------------
 const resetPasswordSchema = Yup.object().shape({
   newPassword: Yup.string()
@@ -37,6 +38,9 @@ const resetPasswordSchema = Yup.object().shape({
 });
 
 export default function ResetPassword() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const { enqueueSnackbar } = useSnackbar();
   const {
     register,
     handleSubmit,
@@ -50,8 +54,16 @@ export default function ResetPassword() {
   });
 
   // Handle form submission
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Reset password data:", data);
+    const response = await resetPassword({token, newPassword: data.newPassword});
+    if (response.status === 200) {
+      enqueueSnackbar("Password reset successfully", {variant: "success"});
+      window.location.href = "/auth/login";
+    } 
+    else {
+      enqueueSnackbar("Password reset failed", {variant: "error"});
+    }
     // Logic to handle resetting password goes here
   };
 

@@ -30,7 +30,6 @@ export default function Router() {
         { path: "login", element: <GuestGuard><Login /></GuestGuard> },
         // { path: "register", element: <Register /> },
         { path: "forgot-password", element: <GuestGuard><ForgotPassword /></GuestGuard> },
-        { path: "reset-password", element: <GuestGuard><ResetPassword /></GuestGuard> },
       ],
     },
     // Main Routes
@@ -48,6 +47,7 @@ export default function Router() {
         { path: "contact", element: <Contact /> },
         { path: "services", element: <Services /> },
         { path: "*", element: <Navigate to="/404" replace /> },
+        { path: "reset-password", element: <ResetPassword /> },
       ],
     },
     {
