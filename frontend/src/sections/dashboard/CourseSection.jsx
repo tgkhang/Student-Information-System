@@ -390,10 +390,7 @@ const CourseSection = ({isTeacherMode, course}) => {
             {course?.MaKhoaHoc} - {course?.TenKhoaHoc}
           </Typography>
           <Typography variant="body2">
-            <strong>Teacher:</strong> Nguyen Le Hoang Dung
-          </Typography>
-          <Typography variant="body2">
-            <strong>Time:</strong> Tuesday, 13h30
+            <strong>Teacher:</strong> {course?.GiangVienID[0]?.HoTen}
           </Typography>
         </CardContent>
       </Card>
