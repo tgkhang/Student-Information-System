@@ -56,6 +56,9 @@ export const getScheduleForStudent = (mssv) => {
 export const getCalendar = (mssv) => {
   return axiosInstance.get(`/Lich/get_calendarbyMSSV/${mssv}`);
 };
+export const updateCalendar = (id, data) => {
+  return axiosInstance.patch(`/Lich/update_calendar/${id}`, data);
+}
 //teacher
 export const getTeacherInfo = (id) =>
   axiosInstance.get(`/giangvien/getTeacher/${id}`);

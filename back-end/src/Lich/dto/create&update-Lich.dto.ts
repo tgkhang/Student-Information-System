@@ -13,7 +13,7 @@ class GhiChuDto {
   NoiDung: string;
 
   @IsOptional()
-  ThoiGianTao?: Date;
+  ThoiGianTao: Date;
 }
 
 export class CreateAndUpdateLichDto {

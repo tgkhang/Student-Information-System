@@ -39,12 +39,12 @@ export class LichService {
       KhoaHocID: { $in: khoaHocIDs },
     }).exec();
 
-    const ghichu = await this.LichModel.find({ SinhVienID: sinhVienID }).exec();
-
+    const ghichu = await this.LichModel.findOne({ SinhVienID: sinhVienID }).exec();
     return {
       deadlines,
       baiKiemTras,
       ghichu,
+      id: sinhVienID,
     };
   }
 
@@ -52,18 +52,18 @@ export class LichService {
     id: string,
     updatecalendarDto: CreateAndUpdateLichDto,
   ): Promise<{ message: string }> {
-    const updateLich = await this.LichModel.findByIdAndUpdate(
-      id,
-      updatecalendarDto,
-      { new: true },
-    );
+    const ghichu = await this.LichModel.findOne({ SinhVienID: id }).exec();
 
-    if (!updateLich) {
-      throw new NotFoundException('Lịch này không tồn tại');
+    if (!ghichu) {
+    const newLich = new this.LichModel(updatecalendarDto);
+      await newLich.save();
     }
-
+    if (ghichu) {
+      ghichu.GhiChu = updatecalendarDto.GhiChu;
+      await ghichu.save();
+    }
     return {
-      message: 'Cập nhật kỷ luật thành công',
+      message: 'Cập nhật lịch thành công',
     };
   }
 

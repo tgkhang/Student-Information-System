@@ -26,7 +26,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import Page from "../../components/Page";
-import { getCalendar } from "../../utils/api";
+import { getCalendar, updateCalendar } from "../../utils/api";
 import useAuth from "../../hooks/useAuth";
 
 // Helper function to get days in month
@@ -57,7 +57,6 @@ export default function StudentCalendar() {
       try {
         const response = await getCalendar(user.username);
         setData(response.data);
-        console.log("Fetched calendar data:", response.data);
       } catch (error) {
         console.error("Error fetching calendar data:", error);
         enqueueSnackbar("Failed to fetch calendar data", { variant: "error" });
@@ -69,7 +68,6 @@ export default function StudentCalendar() {
   // Generate mock calendar data
   useEffect(() => {
     const generateMockData = () => {
-      const days = getDaysInMonth(currentYear, currentMonth);
       const events = [];
 
       const deadlineEvents = (data.deadlines || [])
@@ -87,7 +85,6 @@ export default function StudentCalendar() {
         date: new Date(d.NgayHetHan),
         editable: false,
       }));
-      console.log("Deadline events:", deadlineEvents);
       events.push(...deadlineEvents);
 
       const quizEvents = (data.baiKiemTras || [])
@@ -105,21 +102,23 @@ export default function StudentCalendar() {
         date: new Date(d.ThoiGianKetThuc),
         editable: false,
       }));
-      console.log("Quiz events:", quizEvents);
       events.push(...quizEvents);
-      // Notes (2-4 per month)
-      const noteCount = Math.floor(Math.random() * 3) + 2;
-      for (let i = 0; i < noteCount; i++) {
-        const day = Math.floor(Math.random() * days) + 1;
-        events.push({
-          id: `note-${i}`,
-          type: "note",
-          title: `Personal Note ${i + 1}`,
-          date: new Date(currentYear, currentMonth, day),
-          editable: true,
-        });
-      }
-
+      const notes = (data?.ghichu?.GhiChu || [])
+      .filter((d) => {
+        const date = new Date(d.ThoiGianTao);
+        return (
+          date.getFullYear() === currentYear &&
+          date.getMonth() === currentMonth
+        );
+      })
+      .map((d) => ({
+        id: d.id,
+        type: "note",
+        title: d.NoiDung,
+        date: new Date(d.ThoiGianTao),
+        editable: true,
+      }));
+      events.push(...notes);
       return events;
     };
 
@@ -157,7 +156,16 @@ export default function StudentCalendar() {
     setSelectedDateEvents(events);
     setNoteText("");
   };
-
+  const updateNotes = async (newData) => {
+    try {
+      await updateCalendar(data.id, {SinhVienID: data.id, GhiChu: newData.ghichu.GhiChu});
+      setData(newData);
+      enqueueSnackbar("Note updated successfully", { variant: "success" });
+    } catch (error) {
+      console.error("Error updating note:", error);
+      enqueueSnackbar("Failed to update note", { variant: "error" });
+    }
+  }
   // Handle adding a new note
   const handleAddNote = () => {
     if (!noteText.trim()) {
@@ -175,8 +183,22 @@ export default function StudentCalendar() {
 
     setCalendarEvents([...calendarEvents, newNote]);
     setSelectedDateEvents([...selectedDateEvents, newNote]);
+    var newData = {
+      ...data,
+      ghichu: {
+        ...data.ghichu,
+        GhiChu: [
+          ...(data.ghichu?.GhiChu || []),
+          {
+            id: newNote.id,
+            NoiDung: newNote.title,
+            ThoiGianTao: newNote.date,
+          },
+        ],
+      }
+    }
+    updateNotes(newData);
     setNoteText("");
-    enqueueSnackbar("Note added successfully", { variant: "success" });
   };
 
   // Handle deleting a note
@@ -187,11 +209,17 @@ export default function StudentCalendar() {
     const updatedSelectedDateEvents = selectedDateEvents.filter(
       (event) => event.id !== noteId
     );
-
+    const updatedData = {
+      ...data,
+      ghichu: {
+        ...data.ghichu,
+        GhiChu: data.ghichu.GhiChu.filter((note) => note.id !== noteId),
+      },
+    };
+    updateNotes(updatedData);
     setCalendarEvents(updatedCalendarEvents);
     setSelectedDateEvents(updatedSelectedDateEvents);
     setConfirmDeleteNote(null);
-    enqueueSnackbar("Note deleted successfully", { variant: "success" });
   };
 
   // Close dialogs
