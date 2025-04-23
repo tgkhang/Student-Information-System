@@ -36,6 +36,7 @@ export class SinhVienService {
         ],
       })
       .populate('GiangVienID', 'HoTen MaGV')
+      .populate('TaiLieu')
       // .populate('SinhVienDangKy', 'HoTen MSSV')
       .exec();
     return courses;
