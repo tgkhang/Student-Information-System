@@ -198,7 +198,8 @@ export class SinhVienService {
       .find()
       .skip(skip)
       .limit(limit)
-      .sort(sort);
+      .sort(sort)
+      .populate('KhoaID', 'TenKhoa');
 
     return {
       pageSize,

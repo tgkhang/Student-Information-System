@@ -402,19 +402,19 @@ export default function CourseReviewPage() {
                           <Table sx={{ minWidth: 650 }}>
                             <TableHead>
                               <TableRow>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Student
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Date
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Rating
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Comment
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}} align="center">
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}} align="center">
                                   Helpful
                                 </TableCell>
                               </TableRow>

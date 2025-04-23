@@ -121,10 +121,10 @@ const CourseList = ({ courses, searchTerm, year, isTeacher }) => {
           {filteredCourses.map((course) => (
             <Grid item xs={12} key={course._id}>
               <CourseCard course={course}  onClick={() => {
-    isTeacher
-      ? window.location.href = `/teacher/course/${course?.MaKhoaHoc}`
-      : window.location.href = `/student/course/${course?.MaKhoaHoc}`;
-  }} />
+                isTeacher
+                  ? window.location.href = `/teacher/course/${course?.MaKhoaHoc}`
+                  : window.location.href = `/student/course/${course?.MaKhoaHoc}`;
+              }} />
             </Grid>
           ))}
         </Grid>
@@ -159,7 +159,7 @@ function CoursesListAndSearch({ courses, isTeacher = false }) {
     >
       {/* Course Content Card */}
       <Grid2 item xs={12} sx={{ height: "100%", width: "100%" }}>
-        <Card elevation={0} sx={{ borderRadius: 2, height: "100%" }}>
+        <Card elevation={0} sx={{ borderRadius: 2, height: "100%", backgroundColor: "primary.light" }}>
           <CardContent>
             {/* Filter and Search Row */}
             <Box
