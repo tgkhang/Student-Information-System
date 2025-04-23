@@ -69,7 +69,6 @@ export class KhoaHocService {
     const HanDangKy = KhoaHocdto.HanDangKy;
     const NgayBatDau = KhoaHocdto.NgayBatDau;
     const NgayKetThuc = KhoaHocdto.NgayKetThuc;
-    console.log('validate: ', MaKhoaHoc);
     const khoaHoc = new this.khoaHocModel({
       MaKhoaHoc,
       TenKhoaHoc,
@@ -167,7 +166,6 @@ export class KhoaHocService {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const khoaHocIds = khoaHocs.map((kh) => (kh as any)._id.toString());
-    console.log(khoaHocIds);
     const lichHocList = await this.lichHocModel
       .find({ KhoaHocID: { $in: khoaHocIds } })
       .populate('GiangVienID', 'HoTen')
@@ -435,38 +433,47 @@ export class KhoaHocService {
   }
 
   async getListCourseRatingForTeacher(MaGV: string) {
-    const giangVien = await this.giangVienModel.findOne({MaGV}).exec();
+    const giangVien = await this.giangVienModel.findOne({ MaGV }).exec();
     if (!giangVien) {
       throw new BadRequestException('Không tìm thấy giáo viên với mã cung cấp');
     }
-    console.log(giangVien._id);
+  
     const khoaHocs = await this.khoaHocModel
-      // .find({ GiangVienID: giangVien._id })
-      .find({ GiangVienID: { $in: [giangVien._id] } })
-      .select('MaKhoaHoc TenKhoaHoc') 
+      .find({ GiangVienID: giangVien._id })
+      .select('MaKhoaHoc TenKhoaHoc SoLuongSinhVienDangKy')
       .exec();
+  
     if (!khoaHocs.length) {
       return [];
     }
-    console.log(khoaHocs);
+  
     const result = await Promise.all(
       khoaHocs.map(async (khoaHoc) => {
         const ratings = await this.getCourseRatings(khoaHoc.MaKhoaHoc);
+  
+        const lichHoc = await this.lichHocModel
+        .findOne({ KhoaHocID: (khoaHoc._id as any).toString()})
+        .select('NgayHoc ThoiGianBatDau ThoiGianKetThuc')
+        .exec();
+        
         return {
           MaKhoaHoc: khoaHoc.MaKhoaHoc,
           TenKhoaHoc: khoaHoc.TenKhoaHoc,
           SoLuongDanhGia: ratings.SoLuongDanhGia,
           TrungBinhSoSao: ratings.TrungBinhSoSao,
+          TenGiangVien: giangVien.HoTen,
+          SoLuongSinhVienDangKy: khoaHoc.SoLuongSinhVienDangKy,
           DanhGiaList: ratings.danhGiaList.map((dg) => ({
             SinhVien: dg.mssv,
             SoSao: dg.SoSao,
             DanhGia: dg.DanhGia || '',
             ThoiGianDanhGia: dg.ThoiGianDanhGia,
           })),
+          lichHoc,
         };
       }),
     );
-
+  
     return result;
   }
   

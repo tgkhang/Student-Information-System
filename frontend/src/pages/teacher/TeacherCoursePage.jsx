@@ -20,6 +20,7 @@ export default function CoursePage() {
         const res = await getTeacherInfo(user.username);
         const response = await getListCourses(res.data._id);
         setCourses(response.data.data);
+        console.log("Courses:", response.data.data);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }

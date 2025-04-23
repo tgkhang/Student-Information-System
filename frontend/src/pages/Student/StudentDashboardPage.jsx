@@ -321,7 +321,6 @@ export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  console.log(user)
   // Get tab from URL query parameter
   const getTabFromUrl = () => {
     const searchParams = new URLSearchParams(location.search);
