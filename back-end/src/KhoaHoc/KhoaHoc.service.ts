@@ -28,6 +28,7 @@ import { Mode } from 'fs';
 import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
 import { RemoveTeacherDto } from './dto/removeTeacher.dto';
+import { BaiKiemTraService } from 'src/BaiKiemTra/BaiKiemTra.service';
 
 @Injectable()
 export class KhoaHocService {
@@ -42,6 +43,7 @@ export class KhoaHocService {
     private readonly uploadService: UploadService,
     @InjectModel(GiangVien.name)
     private readonly giangVienModel: Model<GiangVienDocument>,
+    private readonly baiKiemTraService: BaiKiemTraService,
   ) {}
 
   async addCourse(KhoaHocdto: AddCourseDto) {
@@ -67,7 +69,6 @@ export class KhoaHocService {
     const HanDangKy = KhoaHocdto.HanDangKy;
     const NgayBatDau = KhoaHocdto.NgayBatDau;
     const NgayKetThuc = KhoaHocdto.NgayKetThuc;
-    console.log('validate: ', MaKhoaHoc);
     const khoaHoc = new this.khoaHocModel({
       MaKhoaHoc,
       TenKhoaHoc,
@@ -126,8 +127,18 @@ export class KhoaHocService {
       .findOne({ MaKhoaHoc })
       .populate('GiangVienID', 'HoTen')
       .populate('KhoaID', 'TenKhoa')
+      .populate('TaiLieu')
       .exec();
-    return khoaHoc;
+    if (!khoaHoc) {
+      throw new NotFoundException('Khóa học không tồn tại.');
+    }
+    const tests = await this.baiKiemTraService.getTestByKhoaHoc((khoaHoc._id as any).toString());
+
+    return {
+      ...khoaHoc.toObject(), 
+      BaiKiemTra: tests, 
+    };
+
   }
 
   async getCourseByID(KhoaHocID: string) {
@@ -155,7 +166,6 @@ export class KhoaHocService {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const khoaHocIds = khoaHocs.map((kh) => (kh as any)._id.toString());
-    console.log(khoaHocIds);
     const lichHocList = await this.lichHocModel
       .find({ KhoaHocID: { $in: khoaHocIds } })
       .populate('GiangVienID', 'HoTen')
@@ -375,7 +385,7 @@ export class KhoaHocService {
     }
 
     const existingRating = await this.danhGiaKhoaHocModel
-      .findOne({ KhoaHocID: khoaHoc._id, SinhVienID: sinhVienId })
+      .findOne({ KhoaHocID: khoaHoc._id, mssv: sinhVienId })
       .exec();
     if (existingRating) {
       throw new BadRequestException('Sinh viên đã đánh giá khóa học này.');
@@ -384,7 +394,7 @@ export class KhoaHocService {
     // console.log(rateCourseDto.DanhGia);
     const danhGia = new this.danhGiaKhoaHocModel({
       KhoaHocID: khoaHoc._id,
-      SinhVienID: sinhVienId,
+      mssv: sinhVienId,
       SoSao: rateCourseDto.SoSao,
       DanhGia: rateCourseDto.DanhGia,
       ThoiGianDanhGia: new Date(),
@@ -400,7 +410,7 @@ export class KhoaHocService {
 
     const danhGiaList = await this.danhGiaKhoaHocModel
       .find({ KhoaHocID: khoaHoc._id })
-      .populate('SinhVienID', 'HoTen MSSV')
+      .populate('mssv', 'HoTen MSSV')
       .exec();
     const soLuongDanhGia = danhGiaList.length;
     const tongSoSao = danhGiaList.reduce((sum, dg) => sum + dg.SoSao, 0);
@@ -410,17 +420,63 @@ export class KhoaHocService {
       SoLuongDanhGia: soLuongDanhGia,
       TrungBinhSoSao: soLuongDanhGia > 0 ? tongSoSao / soLuongDanhGia : 0,
       DanhGia: danhGiaList.map((dg) => ({
-        SinhVienID: dg.SinhVienID._id,
+        SinhVienID: dg.mssv._id,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        HoTen: (dg.SinhVienID as any).HoTen,
+        HoTen: (dg.mssv as any).HoTen,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        MSSV: (dg.SinhVienID as any).MSSV,
+        MSSV: (dg.mssv as any).MSSV,
         SoSao: dg.SoSao,
         DanhGia: dg.DanhGia,
         ThoiGianDanhGia: dg.ThoiGianDanhGia,
       })),
     };
   }
+
+  async getListCourseRatingForTeacher(MaGV: string) {
+    const giangVien = await this.giangVienModel.findOne({ MaGV }).exec();
+    if (!giangVien) {
+      throw new BadRequestException('Không tìm thấy giáo viên với mã cung cấp');
+    }
+  
+    const khoaHocs = await this.khoaHocModel
+      .find({ GiangVienID: giangVien._id })
+      .select('MaKhoaHoc TenKhoaHoc SoLuongSinhVienDangKy')
+      .exec();
+  
+    if (!khoaHocs.length) {
+      return [];
+    }
+  
+    const result = await Promise.all(
+      khoaHocs.map(async (khoaHoc) => {
+        const ratings = await this.getCourseRatings(khoaHoc.MaKhoaHoc);
+  
+        const lichHoc = await this.lichHocModel
+        .findOne({ KhoaHocID: (khoaHoc._id as any).toString()})
+        .select('NgayHoc ThoiGianBatDau ThoiGianKetThuc')
+        .exec();
+        
+        return {
+          MaKhoaHoc: khoaHoc.MaKhoaHoc,
+          TenKhoaHoc: khoaHoc.TenKhoaHoc,
+          SoLuongDanhGia: ratings.SoLuongDanhGia,
+          TrungBinhSoSao: ratings.TrungBinhSoSao,
+          TenGiangVien: giangVien.HoTen,
+          SoLuongSinhVienDangKy: khoaHoc.SoLuongSinhVienDangKy,
+          DanhGiaList: ratings.danhGiaList.map((dg) => ({
+            SinhVien: dg.mssv,
+            SoSao: dg.SoSao,
+            DanhGia: dg.DanhGia || '',
+            ThoiGianDanhGia: dg.ThoiGianDanhGia,
+          })),
+          lichHoc,
+        };
+      }),
+    );
+  
+    return result;
+  }
+  
 
   async getCourseRatings(MaKhoaHoc: string) {
     const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
@@ -430,13 +486,14 @@ export class KhoaHocService {
 
     const danhGiaList = await this.danhGiaKhoaHocModel
       .find({ KhoaHocID: khoaHoc._id })
-      .populate('SinhVienID', 'HoTen MSSV')
+      .populate('mssv', 'HoTen MSSV')
       .exec();
     const soLuongDanhGia = danhGiaList.length;
     const tongSoSao = danhGiaList.reduce((sum, dg) => sum + dg.SoSao, 0);
     return {
       SoLuongDanhGia: soLuongDanhGia,
       TrungBinhSoSao: soLuongDanhGia > 0 ? tongSoSao / soLuongDanhGia : 0,
+      danhGiaList
     };
   }
 

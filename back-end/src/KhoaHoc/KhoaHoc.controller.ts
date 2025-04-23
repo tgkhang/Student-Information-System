@@ -111,7 +111,6 @@ export class KhoaHocController {
         throw new UnauthorizedException(
           'Bạn không có quyền thực hiện thao tác này.',
         );
-      console.log('Mã khóa học: ', MaKhoaHoc);
       return this.khoaHocService.updateCourse(MaKhoaHoc, updateKhoaHocDto);
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -227,6 +226,17 @@ export class KhoaHocController {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       return { message: error.message };
     }
+  }
+
+  @Get('getListCourseRatingForTeacher/:MaGV')
+  @UseGuards(JWTAuthGuard)
+  async getCourseEvaluations(@Param('MaGV') MaGV: string) {
+    try {
+      return this.khoaHocService.getListCourseRatingForTeacher(MaGV);
+
+    }
+    catch(error)
+    {return error;}
   }
 
   @Post('rate/:MaKhoaHoc')

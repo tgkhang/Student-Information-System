@@ -36,6 +36,7 @@ export class SinhVienService {
         ],
       })
       .populate('GiangVienID', 'HoTen MaGV')
+      .populate('TaiLieu')
       // .populate('SinhVienDangKy', 'HoTen MSSV')
       .exec();
     return courses;
@@ -160,6 +161,7 @@ export class SinhVienService {
     const student = await this.sinhVienModel
       .findOne({ mssv })
       .populate('KhoaID', 'TenKhoa')
+      .select('-ThongBao')
       .exec();
     if (!student) {
       throw new NotFoundException('Sinh viên không tồn tại');
@@ -244,8 +246,6 @@ export class SinhVienService {
       { $push: { ThongBao: { thongBaoId, isRead: false } } },
     );
   }
-
-
   async removeNotiFromAll(thongBaoId: string): Promise<void> {
     await this.sinhVienModel.updateMany(
       {},

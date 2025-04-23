@@ -12,7 +12,7 @@ const classesData = [
     dueDate: "2024-12-20",
     year: 2022,
     status: "In Progress",
-    reviewsCompleted: 40,
+    reviewsCompleted: 0,
     totalReviews: 50,
     averageRating: 4.2,
     reviews: [

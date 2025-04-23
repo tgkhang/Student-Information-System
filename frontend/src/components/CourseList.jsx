@@ -66,14 +66,6 @@ const CourseCard = ({ course, onClick  }) => {
 
           {/*Course details*/}
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-            <Chip
-              icon={<AccessTimeIcon fontSize="small" />}
-              label={`${formatDate(course?.NgayBatDau)} - ${formatDate(
-                course?.NgayKetThuc
-              )}`}
-              size="small"
-              sx={{ bgcolor: "#f0f7ff", color: "#0057b7" }}
-            />
              <Chip 
               icon={<PersonIcon fontSize="small" />} 
               label={course?.TroGiangID?.HoTen || "No Assistant"} 
