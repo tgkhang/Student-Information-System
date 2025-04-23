@@ -47,19 +47,8 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import { useLocation, useNavigate } from "react-router-dom";
 import Page from "../../components/Page";
-import { getStudentInfo } from "../../utils/api";
+import { getStudentInfo, getListScoreById } from "../../utils/api";
 import useAuth from "../../hooks/useAuth";
-const drawerWidth = 0;
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -327,8 +316,10 @@ export default function Dashboard() {
       try {
         const response = await getStudentInfo(user.username);
         // Handle the response data as needed
-        console.log("Student Info:", response.data);
+        //console.log("Student Info:", response.data);
         setStudent(response.data);
+        const tmp = await getListScoreById(user.username);
+        console.log("score" + tmp.data);
       } catch (error) {
         console.error("Error fetching student info:", error);
       }
@@ -691,42 +682,6 @@ export default function Dashboard() {
                               }}
                             />
                           </ListItem>
-                          <ListItem>
-                            <ListItemIcon>
-                              <PersonIcon color="primary" />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary="Gender"
-                              secondary={student.GioiTinh}
-                              primaryTypographyProps={{
-                                variant: "body2",
-                                fontWeight: 500,
-                                color: "secondary.main",
-                              }}
-                              secondaryTypographyProps={{
-                                variant: "body1",
-                                fontWeight: "medium",
-                              }}
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemIcon>
-                              <HomeIcon color="primary" />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary="Address"
-                              secondary={student.DiaChi}
-                              primaryTypographyProps={{
-                                variant: "body2",
-                                fontWeight: 500,
-                                color: "secondary.main",
-                              }}
-                              secondaryTypographyProps={{
-                                variant: "body1",
-                                fontWeight: "medium",
-                              }}
-                            />
-                          </ListItem>
                         </List>
                       </CardContent>
                     </Card>
@@ -752,47 +707,47 @@ export default function Dashboard() {
                             <List dense>
                               <ListItem>
                                 <ListItemIcon>
+                                  <PersonIcon color="primary" />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary="Gender"
+                                  secondary={student.GioiTinh}
+                                  primaryTypographyProps={{
+                                    variant: "body2",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
+                                  }}
+                                  secondaryTypographyProps={{
+                                    variant: "body1",
+                                    fontWeight: "medium",
+                                  }}
+                                />
+                              </ListItem>
+                              <ListItem>
+                                <ListItemIcon>
+                                  <HomeIcon color="primary" />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary="Address"
+                                  secondary={student.DiaChi}
+                                  primaryTypographyProps={{
+                                    variant: "body2",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
+                                  }}
+                                  secondaryTypographyProps={{
+                                    variant: "body1",
+                                    fontWeight: "medium",
+                                  }}
+                                />
+                              </ListItem>
+                              <ListItem>
+                                <ListItemIcon>
                                   <GradeIcon color="primary" />
                                 </ListItemIcon>
                                 <ListItemText
                                   primary="Current GPA"
                                   secondary={summaryData.gpa}
-                                  primaryTypographyProps={{
-                                    variant: "body2",
-                                    fontWeight: 500,
-                                    color: "secondary.main",
-                                  }}
-                                  secondaryTypographyProps={{
-                                    variant: "body1",
-                                    fontWeight: "medium",
-                                  }}
-                                />
-                              </ListItem>
-                              <ListItem>
-                                <ListItemIcon>
-                                  <CalendarTodayIcon color="primary" />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary="Expected Graduation"
-                                  secondary={student.expectedGraduation}
-                                  primaryTypographyProps={{
-                                    variant: "body2",
-                                    fontWeight: 500,
-                                    color: "secondary.main",
-                                  }}
-                                  secondaryTypographyProps={{
-                                    variant: "body1",
-                                    fontWeight: "medium",
-                                  }}
-                                />
-                              </ListItem>
-                              <ListItem>
-                                <ListItemIcon>
-                                  <AssignmentIcon color="primary" />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary="Completed Credits"
-                                  secondary={`${summaryData.completedCredits}/${summaryData.totalCredits}`}
                                   primaryTypographyProps={{
                                     variant: "body2",
                                     fontWeight: 500,
