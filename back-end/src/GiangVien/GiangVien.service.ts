@@ -233,15 +233,10 @@ export class GiangVienService {
     if (!giangVien) {
       throw new NotFoundException('Không tìm thấy giảng viên.');
     }
-    // const giangVienIdStr = (giangVien._id as Types.ObjectId).toString();
+
     const courses = await this.khoaHocModel
-      .find({
-        $or: [
-          { GiangVienID: id },
-        ],
-      })
+      .find({ GiangVienID: { $in: [giangVien._id] } })
       .populate('GiangVienID', 'HoTen MaGV')
-      // .populate('SinhVienDangKy', 'HoTen MSSV')
       .exec();
     return courses;
   }
