@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BaiKiemTraService } from './BaiKiemTra.service';
 import { BaiKiemTraController } from './BaiKiemTra.controller';
 import { BaiKiemTra, BaiKiemTraSchema } from 'src/schemas/BaiKiemTra.schema';
@@ -15,9 +15,9 @@ import { KhoaHocModule } from 'src/KhoaHoc/KhoaHoc.module';
       { name: BaiKiemTra.name, schema: BaiKiemTraSchema },
     ]),
     AuthModule,
-    SinhVienModule,
-    GiangVienModule,
-    KhoaHocModule,
+    forwardRef(() => SinhVienModule),
+    forwardRef(() => GiangVienModule),
+    forwardRef(() => KhoaHocModule),
     JwtModule.register({
       secret: 'abc123',
       signOptions: { expiresIn: '1h' },
@@ -25,6 +25,6 @@ import { KhoaHocModule } from 'src/KhoaHoc/KhoaHoc.module';
   ],
   providers: [BaiKiemTraService],
   controllers: [BaiKiemTraController],
-  exports: [MongooseModule],
+  exports: [BaiKiemTraService, MongooseModule],
 })
 export class BaiKiemTraModule {}
