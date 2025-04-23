@@ -30,9 +30,7 @@ export class DiemSoController {
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (req.user.role != 'student') {
-      throw new UnauthorizedException(
-        'Không có quyền truy cập bài kiểm tra này',
-      );
+      throw new UnauthorizedException('Không có quyền truy cập điểm này');
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const mssv = req.user.username;
@@ -42,6 +40,17 @@ export class DiemSoController {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       mssv,
     );
+    return Score;
+  }
+
+  @Get('getListScorebyMSSV/:MSSV')
+  @UseGuards(JWTAuthGuard)
+  async GetScoreBymssv(@Param('MSSV') mssv: string, @Request() req: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (req.user.role != 'student' && req.user.username != mssv) {
+      throw new UnauthorizedException('Không có quyền truy cập điểm này');
+    }
+    const Score = await this.DiemSoService.getListScoreByMSSV(mssv);
     return Score;
   }
 
