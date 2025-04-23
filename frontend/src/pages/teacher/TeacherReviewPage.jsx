@@ -29,12 +29,11 @@ import {
   styled,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useAuth from "../../hooks/useAuth";
-import { getListCourses, getTeacherInfo, getListRateForTeacher } from "../../utils/api";
+import { getListRateForTeacher } from "../../utils/api";
 
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -93,7 +92,7 @@ export function CustomSelect({
 // Review Summary component
 function CourseReviewSummary({ course }) {
   const completionPercentage = (course?.DanhGiaList?.length / course?.SoLuongSinhVienDangKy) * 100;
-
+  const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return (
     <Box sx={{ mb: 4 }}>
       
@@ -160,20 +159,20 @@ function CourseReviewSummary({ course }) {
               
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
                 <Chip 
-                  icon={<DateRangeIcon fontSize="small" />} 
-                  label={`Start: ${new Date(course.startDate).toLocaleDateString()}`}
+                  icon={<AccessTimeIcon fontSize="small" />} 
+                  label={`Start: ${(course?.lichHoc?.ThoiGianBatDau)}`}
                   size="small"
                   sx={{ bgcolor: '#f0f7ff' }}
                 />
                 <Chip 
-                  icon={<DateRangeIcon fontSize="small" />} 
-                  label={`Due: ${new Date(course.dueDate).toLocaleDateString()}`}
+                  icon={<AccessTimeIcon fontSize="small" />} 
+                  label={`Due: ${(course?.lichHoc?.ThoiGianKetThuc)}`}
                   size="small"
                   sx={{ bgcolor: '#fff4e5' }}
                 />
                 <Chip 
-                  icon={<AccessTimeIcon fontSize="small" />} 
-                  label={course.schedule}
+                  icon={<DateRangeIcon fontSize="small" />}
+                  label={dayOfWeek[course?.lichHoc?.NgayHoc % 7]}
                   size="small"
                   sx={{ bgcolor: '#f0f7ff' }}
                 />
