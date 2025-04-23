@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -92,6 +92,22 @@ const summaryData = {
   totalCourses: 40,
   completedCourses: 28,
   currentSemester: "S1-2024-2025",
+};
+
+// Student profile data
+const studentProfile = {
+  id: "ST12345",
+  name: "John Doe",
+  dob: "January 15, 2000",
+  gender: "Male",
+  email: "john.doe@example.com",
+  phone: "+1 (555) 123-4567",
+  address: "123 University Ave, College Town, CT 12345",
+  program: "Bachelor of Science in Computer Science",
+  enrollmentYear: "2022",
+  expectedGraduation: "2026",
+  status: "Active",
+  advisor: "Dr. Sarah Johnson",
 };
 
 // Enhanced student scores data with more realistic values and status
@@ -302,11 +318,10 @@ const subjectScoresData = [
 ];
 
 export default function Dashboard() {
-  const [student, setStudent] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-
+  console.log(user)
   // Get tab from URL query parameter
   const getTabFromUrl = () => {
     const searchParams = new URLSearchParams(location.search);
@@ -328,14 +343,12 @@ export default function Dashboard() {
         const response = await getStudentInfo(user.username);
         // Handle the response data as needed
         console.log("Student Info:", response.data);
-        setStudent(response.data);
       } catch (error) {
         console.error("Error fetching student info:", error);
       }
     };
     fetchStudentInfo();
   }, [user]);
-
   // Update URL when tab changes
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -426,6 +439,7 @@ export default function Dashboard() {
   return (
     <Page title="My Dashboard">
       <Box sx={{ display: "flex", p: 1 }}>
+
         <Box
           component="main"
           sx={{
@@ -437,6 +451,8 @@ export default function Dashboard() {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
               }),
+            marginLeft: isDrawerOpen ? `${drawerWidth}px` : 0,
+            width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
             backgroundColor: "#f5f5f5",
             minHeight: "calc(100vh - 64px)",
           }}
@@ -539,7 +555,7 @@ export default function Dashboard() {
                   aria-label="dashboard tabs"
                   sx={{
                     "& .MuiTab-root": {
-                      fontWeight: 500,
+                      fontWeight: 500, 
                     },
                     "& .MuiTabs-indicator": {
                       backgroundColor: "primary.main",
@@ -560,7 +576,8 @@ export default function Dashboard() {
               {/* Student Info Tab */}
               <TabPanel value={value} index={0}>
                 <Grid container spacing={4}>
-                  <Grid item xs={12} md={12}>
+                  {/* Student Profile Card */}
+                  <Grid item xs={12} md={4}>
                     <Card
                       elevation={0}
                       sx={{ borderRadius: 2, height: "100%" }}
@@ -583,40 +600,22 @@ export default function Dashboard() {
                               fontSize: "2.5rem",
                             }}
                           >
-                            {student.Hoten}
+                            JD
                           </Avatar>
                           <Typography variant="h3" sx={{ fontWeight: "700" }}>
-                            {student.HoTen}
+                            {studentProfile.name}
                           </Typography>
                           <Typography variant="body1" color="text.secondary">
-                            {student.Khoa}
+                            {studentProfile.program}
                           </Typography>
                           <Chip
-                            label={student.TrangThai}
+                            label={studentProfile.status}
                             color="success"
                             sx={{ mt: 1, fontWeight: "medium" }}
                           />
                         </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
 
-                  <Grid item xs={12} md={6}>
-                    <Card
-                      elevation={0}
-                      sx={{ borderRadius: 2, height: "100%" }}
-                    >
-                      <CardContent>
-                        <Typography
-                          variant="h4"
-                          sx={{
-                            fontWeight: "bold",
-                            mb: 2,
-                            color: "primary.main",
-                          }}
-                        >
-                          Personal Information
-                        </Typography>
+                        <Divider sx={{ my: 2 }} />
 
                         <List dense>
                           <ListItem>
@@ -625,7 +624,7 @@ export default function Dashboard() {
                             </ListItemIcon>
                             <ListItemText
                               primary="Student ID"
-                              secondary={student.mssv}
+                              secondary={studentProfile.id}
                               primaryTypographyProps={{
                                 variant: "body2",
                                 fontWeight: 500,
@@ -643,7 +642,7 @@ export default function Dashboard() {
                             </ListItemIcon>
                             <ListItemText
                               primary="Email"
-                              secondary={user.email}
+                              secondary={studentProfile.email}
                               primaryTypographyProps={{
                                 variant: "body2",
                                 fontWeight: 500,
@@ -661,7 +660,7 @@ export default function Dashboard() {
                             </ListItemIcon>
                             <ListItemText
                               primary="Phone"
-                              secondary={student.phone}
+                              secondary={studentProfile.phone}
                               primaryTypographyProps={{
                                 variant: "body2",
                                 fontWeight: 500,
@@ -679,7 +678,7 @@ export default function Dashboard() {
                             </ListItemIcon>
                             <ListItemText
                               primary="Date of Birth"
-                              secondary={formatDate(student.NgaySinh)}
+                              secondary={studentProfile.dob}
                               primaryTypographyProps={{
                                 variant: "body2",
                                 fontWeight: 500,
@@ -697,25 +696,7 @@ export default function Dashboard() {
                             </ListItemIcon>
                             <ListItemText
                               primary="Gender"
-                              secondary={student.GioiTinh}
-                              primaryTypographyProps={{
-                                variant: "body2",
-                                fontWeight: 500,
-                                color: "secondary.main",
-                              }}
-                              secondaryTypographyProps={{
-                                variant: "body1",
-                                fontWeight: "medium",
-                              }}
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemIcon>
-                              <HomeIcon color="primary" />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary="Address"
-                              secondary={student.DiaChi}
+                              secondary={studentProfile.gender}
                               primaryTypographyProps={{
                                 variant: "body2",
                                 fontWeight: 500,
@@ -733,7 +714,7 @@ export default function Dashboard() {
                   </Grid>
 
                   {/* Academic Info Card */}
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={12} md={8}>
                     <Card elevation={0} sx={{ borderRadius: 2, mb: 3 }}>
                       <CardContent>
                         <Typography
@@ -748,6 +729,64 @@ export default function Dashboard() {
                         </Typography>
 
                         <Grid container spacing={3}>
+                          <Grid item xs={12} md={6}>
+                            <List dense>
+                              <ListItem>
+                                <ListItemIcon>
+                                  <SchoolIcon color="primary" />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary="Program"
+                                  secondary={studentProfile.program}
+                                  primaryTypographyProps={{
+                                    variant: "body2",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
+                                  }}
+                                  secondaryTypographyProps={{
+                                    variant: "body1",
+                                    fontWeight: "medium",
+                                  }}
+                                />
+                              </ListItem>
+                              <ListItem>
+                                <ListItemIcon>
+                                  <CalendarTodayIcon color="primary" />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary="Enrollment Year"
+                                  secondary={studentProfile.enrollmentYear}
+                                  primaryTypographyProps={{
+                                    variant: "body2",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
+                                  }}
+                                  secondaryTypographyProps={{
+                                    variant: "body1",
+                                    fontWeight: "medium",
+                                  }}
+                                />
+                              </ListItem>
+                              <ListItem>
+                                <ListItemIcon>
+                                  <BadgeIcon color="primary" />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary="Academic Advisor"
+                                  secondary={studentProfile.advisor}
+                                  primaryTypographyProps={{
+                                    variant: "body2",
+                                    fontWeight: 500,
+                                    color: "secondary.main",
+                                  }}
+                                  secondaryTypographyProps={{
+                                    variant: "body1",
+                                    fontWeight: "medium",
+                                  }}
+                                />
+                              </ListItem>
+                            </List>
+                          </Grid>
                           <Grid item xs={12} md={6}>
                             <List dense>
                               <ListItem>
@@ -774,7 +813,7 @@ export default function Dashboard() {
                                 </ListItemIcon>
                                 <ListItemText
                                   primary="Expected Graduation"
-                                  secondary={student.expectedGraduation}
+                                  secondary={studentProfile.expectedGraduation}
                                   primaryTypographyProps={{
                                     variant: "body2",
                                     fontWeight: 500,
@@ -809,15 +848,453 @@ export default function Dashboard() {
                         </Grid>
                       </CardContent>
                     </Card>
+
+                    <Card elevation={0} sx={{ borderRadius: 2 }}>
+                      <CardContent>
+                        <Typography
+                          variant="h4"
+                          sx={{
+                            fontWeight: "bold",
+                            mb: 2,
+                            color: "primary.main",
+                          }}
+                        >
+                          Contact Information
+                        </Typography>
+
+                        <List dense>
+                          <ListItem>
+                            <ListItemIcon>
+                              <HomeIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Address"
+                              secondary={studentProfile.address}
+                              primaryTypographyProps={{
+                                variant: "body2",
+                                fontWeight: 500,
+                                color: "secondary.main",
+                              }}
+                              secondaryTypographyProps={{
+                                variant: "body1",
+                                fontWeight: "medium",
+                              }}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <EmailIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Email"
+                              secondary={studentProfile.email}
+                              primaryTypographyProps={{
+                                variant: "body2",
+                                fontWeight: 500,
+                                color: "secondary.main",
+                              }}
+                              secondaryTypographyProps={{
+                                variant: "body1",
+                                fontWeight: "medium",
+                              }}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemIcon>
+                              <PhoneIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Phone"
+                              secondary={studentProfile.phone}
+                              primaryTypographyProps={{
+                                variant: "body2",
+                                fontWeight: 500,
+                                color: "secondary.main",
+                              }}
+                              secondaryTypographyProps={{
+                                variant: "body1",
+                                fontWeight: "medium",
+                              }}
+                            />
+                          </ListItem>
+                        </List>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            mt: 2,
+                          }}
+                        >
+                          <Button variant="outlined" size="small">
+                            Update Contact Info
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
                   </Grid>
                 </Grid>
               </TabPanel>
 
               {/* Academic Results Tab */}
-              <TabPanel value={value} index={1}></TabPanel>
+              <TabPanel value={value} index={1}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3,
+                  }}
+                >
+                  <Box sx={{ display: "flex", gap: 2 }}>
+                    {/* choose year */}
+                    <FormControl sx={{ minWidth: 120 }} size="small">
+                      <InputLabel id="year-select-label">
+                        Academic Year
+                      </InputLabel>
+                      <Select
+                        labelId="year-select-label"
+                        id="year-select"
+                        value={year}
+                        label="Academic Year"
+                        onChange={handleYearChange}
+                      >
+                        <MenuItem value={2022}>2022-2023</MenuItem>
+                        <MenuItem value={2023}>2023-2024</MenuItem>
+                        <MenuItem value={2024}>2024-2025</MenuItem>
+                      </Select>
+                    </FormControl>
+
+                    {/* Choose semester */}
+                    <FormControl sx={{ minWidth: 120 }} size="small">
+                      <InputLabel id="semester-select-label">
+                        Semester
+                      </InputLabel>
+                      <Select
+                        labelId="semester-select-label"
+                        id="semester-select"
+                        value={semester}
+                        label="Semester"
+                        onChange={handleSemesterChange}
+                      >
+                        <MenuItem value={1}>Semester 1</MenuItem>
+                        <MenuItem value={2}>Semester 2</MenuItem>
+                      </Select>
+                    </FormControl>
+
+
+                    {/* Search */}
+                    <TextField
+                      placeholder="Search courses..."
+                      size="small"
+                      value={searchTerm}
+                      onChange={handleSearchChange}
+                      sx={{ width: 200 }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon color="primary" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
+                  {/* Download Button */}
+                  <Button
+                    variant="contained"
+                    startIcon={<DownloadIcon />}
+                    size="small"
+                  >
+                    Export PDF
+                  </Button>
+                </Box>
+
+                <TableContainer
+                  component={Paper}
+                  elevation={0}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <Table
+                    sx={{ minWidth: 650 }}
+                    aria-label="student scores table"
+                  >
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.04)" }}>
+                        <TableCell>Semester</TableCell>
+                        <TableCell>Subject ID</TableCell>
+                        <TableCell>Course Name</TableCell>
+                        <TableCell align="center">Credits</TableCell>
+                        <TableCell>Class</TableCell>
+                        <TableCell align="center">Midterm</TableCell>
+                        <TableCell align="center">Practice</TableCell>
+                        <TableCell align="center">Bonus</TableCell>
+                        <TableCell align="center">Final</TableCell>
+                        <TableCell align="center">Grade</TableCell>
+                        <TableCell>Status</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {filteredScores.map((row, index) => (
+                        <StyledTableRow key={index}>
+                          <TableCell>{row.semester}</TableCell>
+                          <TableCell>{row.subjectId}</TableCell>
+                          <TableCell sx={{ fontWeight: "medium" }}>
+                            {row.name}
+                          </TableCell>
+                          <TableCell align="center">{row.credit}</TableCell>
+                          <TableCell>{row.class}</TableCell>
+                          <TableCell align="center">{row.midterm}</TableCell>
+                          <TableCell align="center">{row.practice}</TableCell>
+                          <TableCell align="center">{row.bonus}</TableCell>
+                          <TableCell align="center">{row.final}</TableCell>
+                          <TableCell align="center">
+                            <Typography
+                              sx={{
+                                fontWeight: "bold",
+                                color: getGradeColor(row.overall),
+                              }}
+                            >
+                              {row.overall}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={
+                                row.status === "passed" ? "Passed" : "Failed"
+                              }
+                              color={getStatusColor(row.status)}
+                              size="small"
+                              sx={{ fontWeight: "medium" }}
+                            />
+                          </TableCell>
+                        </StyledTableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </TabPanel>
 
               {/* Subject Scores Tab */}
-              <TabPanel value={value} index={2}></TabPanel>
+              <TabPanel value={value} index={2}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3,
+                  }}
+                >
+                  <Box sx={{ display: "flex", gap: 2 }}>
+                    <FormControl sx={{ minWidth: 250 }} size="small">
+                      <InputLabel id="subject-select-label">
+                        Select Subject
+                      </InputLabel>
+                      <Select
+                        labelId="subject-select-label"
+                        id="subject-select"
+                        value={selectedSubject}
+                        label="Select Subject"
+                        onChange={handleSubjectChange}
+                      >
+                        {subjectScoresData.map((subject) => (
+                          <MenuItem
+                            key={subject.subjectId}
+                            value={subject.subjectId}
+                          >
+                            {subject.subjectId} - {subject.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+
+                  <Button
+                    variant="outlined"
+                    startIcon={<FilterListIcon />}
+                    size="small"
+                  >
+                    View All Subjects
+                  </Button>
+                </Box>
+
+                {selectedSubjectData && (
+                  <>
+                    <Card elevation={0} sx={{ borderRadius: 2, mb: 3, p: 2 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          mb: 2,
+                        }}
+                      >
+                        <Box>
+                          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                            {selectedSubjectData.subjectId} -{" "}
+                            {selectedSubjectData.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Final Grade:{" "}
+                            <Typography
+                              component="span"
+                              sx={{
+                                fontWeight: "bold",
+                                color: getGradeColor(
+                                  selectedSubjectData.finalGrade
+                                ),
+                              }}
+                            >
+                              {selectedSubjectData.finalGrade}
+                            </Typography>
+                          </Typography>
+                        </Box>
+                        <Chip
+                          label={
+                            selectedSubjectData.status === "passed"
+                              ? "Passed"
+                              : "Failed"
+                          }
+                          color={getStatusColor(selectedSubjectData.status)}
+                          sx={{ fontWeight: "medium" }}
+                        />
+                      </Box>
+
+                      <Box sx={{ mt: 3 }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: "bold", mb: 2 }}
+                        >
+                          Overall Score:{" "}
+                          {calculateTotalScore(selectedSubjectData).toFixed(2)}%
+                        </Typography>
+                        <Box
+                          sx={{
+                            width: "100%",
+                            height: 10,
+                            backgroundColor: "#e0e0e0",
+                            borderRadius: 5,
+                            overflow: "hidden",
+                            mb: 2,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              width: `${calculateTotalScore(
+                                selectedSubjectData
+                              )}%`,
+                              height: "100%",
+                              backgroundColor:
+                                calculateTotalScore(selectedSubjectData) >= 80
+                                  ? "success.main"
+                                  : calculateTotalScore(selectedSubjectData) >=
+                                    60
+                                  ? "warning.main"
+                                  : "error.main",
+                              borderRadius: 5,
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                    </Card>
+
+                    <TableContainer
+                      component={Paper}
+                      elevation={0}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      <Table sx={{ minWidth: 650 }}>
+                        <TableHead>
+                          <TableRow
+                            sx={{ backgroundColor: "rgba(0, 0, 0, 0.04)" }}
+                          >
+                            <TableCell>Assessment</TableCell>
+                            <TableCell>Date</TableCell>
+                            <TableCell align="center">Score</TableCell>
+                            <TableCell align="center">Max Score</TableCell>
+                            <TableCell align="center">Percentage</TableCell>
+                            <TableCell align="center">Weight</TableCell>
+                            <TableCell align="center">Weighted Score</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {selectedSubjectData.assessments.map(
+                            (assessment, index) => (
+                              <StyledTableRow key={index}>
+                                <TableCell sx={{ fontWeight: "medium" }}>
+                                  {assessment.name}
+                                </TableCell>
+                                <TableCell>
+                                  {formatDate(assessment.date)}
+                                </TableCell>
+                                <TableCell align="center">
+                                  {assessment.score}
+                                </TableCell>
+                                <TableCell align="center">
+                                  {assessment.maxScore}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Typography
+                                    sx={{
+                                      fontWeight: "medium",
+                                      color:
+                                        (assessment.score /
+                                          assessment.maxScore) *
+                                          100 >=
+                                        80
+                                          ? "success.main"
+                                          : (assessment.score /
+                                              assessment.maxScore) *
+                                              100 >=
+                                            60
+                                          ? "warning.main"
+                                          : "error.main",
+                                    }}
+                                  >
+                                    {(
+                                      (assessment.score / assessment.maxScore) *
+                                      100
+                                    ).toFixed(1)}
+                                    %
+                                  </Typography>
+                                </TableCell>
+                                <TableCell align="center">
+                                  {assessment.weight}%
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Typography sx={{ fontWeight: "bold" }}>
+                                    {calculateWeightedScore(assessment).toFixed(
+                                      2
+                                    )}
+                                  </Typography>
+                                </TableCell>
+                              </StyledTableRow>
+                            )
+                          )}
+                          <TableRow
+                            sx={{ backgroundColor: "rgba(0, 0, 0, 0.04)" }}
+                          >
+                            <TableCell colSpan={5} />
+                            <TableCell
+                              align="center"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              Total
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              {calculateTotalScore(selectedSubjectData).toFixed(
+                                2
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </>
+                )}
+              </TabPanel>
             </CardContent>
           </Card>
         </Box>
