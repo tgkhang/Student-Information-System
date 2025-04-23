@@ -126,6 +126,7 @@ export class KhoaHocService {
       .findOne({ MaKhoaHoc })
       .populate('GiangVienID', 'HoTen')
       .populate('KhoaID', 'TenKhoa')
+      .populate('TaiLieu')
       .exec();
     return khoaHoc;
   }
