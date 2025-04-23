@@ -237,6 +237,7 @@ export class GiangVienService {
     const courses = await this.khoaHocModel
       .find({ GiangVienID: { $in: [giangVien._id] } })
       .populate('GiangVienID', 'HoTen MaGV')
+      .populate('TaiLieu')
       .exec();
     return courses;
   }
