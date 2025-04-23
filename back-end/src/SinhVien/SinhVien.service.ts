@@ -245,8 +245,6 @@ export class SinhVienService {
       { $push: { ThongBao: { thongBaoId, isRead: false } } },
     );
   }
-
-
   async removeNotiFromAll(thongBaoId: string): Promise<void> {
     await this.sinhVienModel.updateMany(
       {},
