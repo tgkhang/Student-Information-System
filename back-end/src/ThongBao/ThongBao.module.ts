@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ThongBaoService } from './ThongBao.service';
 import { ThongBaoController } from './ThongBao.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -15,6 +15,7 @@ import { TaiLieu, TaiLieuSchema } from 'src/schemas/TaiLieu.schema';
 import { UploadService } from 'src/upload/upload.service';
 import { DanhGiaKhoaHoc } from 'src/schemas/DanhGiaKhoaHoc.schema';
 import { KhoaHocModule } from 'src/KhoaHoc/KhoaHoc.module';
+import { BaiKiemTraModule } from 'src/BaiKiemTra/BaiKiemTra.module';
 
 @Module({
   imports: [
@@ -26,6 +27,8 @@ import { KhoaHocModule } from 'src/KhoaHoc/KhoaHoc.module';
     GiangVienModule,
     AuthModule,
     KhoaHocModule,
+    forwardRef(() => BaiKiemTraModule),
+    
     // UploadModule,
     JwtModule.register({
       secret: 'abc123',

@@ -28,6 +28,7 @@ import { Mode } from 'fs';
 import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
 import { RemoveTeacherDto } from './dto/removeTeacher.dto';
+import { BaiKiemTraService } from 'src/BaiKiemTra/BaiKiemTra.service';
 
 @Injectable()
 export class KhoaHocService {
@@ -42,6 +43,7 @@ export class KhoaHocService {
     private readonly uploadService: UploadService,
     @InjectModel(GiangVien.name)
     private readonly giangVienModel: Model<GiangVienDocument>,
+    private readonly baiKiemTraService: BaiKiemTraService,
   ) {}
 
   async addCourse(KhoaHocdto: AddCourseDto) {
@@ -128,7 +130,16 @@ export class KhoaHocService {
       .populate('KhoaID', 'TenKhoa')
       .populate('TaiLieu')
       .exec();
-    return khoaHoc;
+    if (!khoaHoc) {
+      throw new NotFoundException('Khóa học không tồn tại.');
+    }
+    const tests = await this.baiKiemTraService.getTestByKhoaHoc((khoaHoc._id as any).toString());
+
+    return {
+      ...khoaHoc.toObject(), 
+      BaiKiemTra: tests, 
+    };
+
   }
 
   async getCourseByID(KhoaHocID: string) {
