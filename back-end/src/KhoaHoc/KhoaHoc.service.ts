@@ -375,7 +375,7 @@ export class KhoaHocService {
     }
 
     const existingRating = await this.danhGiaKhoaHocModel
-      .findOne({ KhoaHocID: khoaHoc._id, SinhVienID: sinhVienId })
+      .findOne({ KhoaHocID: khoaHoc._id, mssv: sinhVienId })
       .exec();
     if (existingRating) {
       throw new BadRequestException('Sinh viên đã đánh giá khóa học này.');
@@ -384,7 +384,7 @@ export class KhoaHocService {
     // console.log(rateCourseDto.DanhGia);
     const danhGia = new this.danhGiaKhoaHocModel({
       KhoaHocID: khoaHoc._id,
-      SinhVienID: sinhVienId,
+      mssv: sinhVienId,
       SoSao: rateCourseDto.SoSao,
       DanhGia: rateCourseDto.DanhGia,
       ThoiGianDanhGia: new Date(),
@@ -400,7 +400,7 @@ export class KhoaHocService {
 
     const danhGiaList = await this.danhGiaKhoaHocModel
       .find({ KhoaHocID: khoaHoc._id })
-      .populate('SinhVienID', 'HoTen MSSV')
+      .populate('mssv', 'HoTen MSSV')
       .exec();
     const soLuongDanhGia = danhGiaList.length;
     const tongSoSao = danhGiaList.reduce((sum, dg) => sum + dg.SoSao, 0);
@@ -410,17 +410,54 @@ export class KhoaHocService {
       SoLuongDanhGia: soLuongDanhGia,
       TrungBinhSoSao: soLuongDanhGia > 0 ? tongSoSao / soLuongDanhGia : 0,
       DanhGia: danhGiaList.map((dg) => ({
-        SinhVienID: dg.SinhVienID._id,
+        SinhVienID: dg.mssv._id,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        HoTen: (dg.SinhVienID as any).HoTen,
+        HoTen: (dg.mssv as any).HoTen,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        MSSV: (dg.SinhVienID as any).MSSV,
+        MSSV: (dg.mssv as any).MSSV,
         SoSao: dg.SoSao,
         DanhGia: dg.DanhGia,
         ThoiGianDanhGia: dg.ThoiGianDanhGia,
       })),
     };
   }
+
+  async getListCourseRatingForTeacher(MaGV: string) {
+    const giangVien = await this.giangVienModel.findOne({MaGV}).exec();
+    if (!giangVien) {
+      throw new BadRequestException('Không tìm thấy giáo viên với mã cung cấp');
+    }
+    console.log(giangVien._id);
+    const khoaHocs = await this.khoaHocModel
+      // .find({ GiangVienID: giangVien._id })
+      .find({ GiangVienID: { $in: [giangVien._id] } })
+      .select('MaKhoaHoc TenKhoaHoc') 
+      .exec();
+    if (!khoaHocs.length) {
+      return [];
+    }
+    console.log(khoaHocs);
+    const result = await Promise.all(
+      khoaHocs.map(async (khoaHoc) => {
+        const ratings = await this.getCourseRatings(khoaHoc.MaKhoaHoc);
+        return {
+          MaKhoaHoc: khoaHoc.MaKhoaHoc,
+          TenKhoaHoc: khoaHoc.TenKhoaHoc,
+          SoLuongDanhGia: ratings.SoLuongDanhGia,
+          TrungBinhSoSao: ratings.TrungBinhSoSao,
+          DanhGiaList: ratings.danhGiaList.map((dg) => ({
+            SinhVien: dg.mssv,
+            SoSao: dg.SoSao,
+            DanhGia: dg.DanhGia || '',
+            ThoiGianDanhGia: dg.ThoiGianDanhGia,
+          })),
+        };
+      }),
+    );
+
+    return result;
+  }
+  
 
   async getCourseRatings(MaKhoaHoc: string) {
     const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
@@ -430,13 +467,14 @@ export class KhoaHocService {
 
     const danhGiaList = await this.danhGiaKhoaHocModel
       .find({ KhoaHocID: khoaHoc._id })
-      .populate('SinhVienID', 'HoTen MSSV')
+      .populate('mssv', 'HoTen MSSV')
       .exec();
     const soLuongDanhGia = danhGiaList.length;
     const tongSoSao = danhGiaList.reduce((sum, dg) => sum + dg.SoSao, 0);
     return {
       SoLuongDanhGia: soLuongDanhGia,
       TrungBinhSoSao: soLuongDanhGia > 0 ? tongSoSao / soLuongDanhGia : 0,
+      danhGiaList
     };
   }
 
