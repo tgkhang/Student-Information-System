@@ -160,6 +160,7 @@ export class SinhVienService {
     const student = await this.sinhVienModel
       .findOne({ mssv })
       .populate('KhoaID', 'TenKhoa')
+      .select('-ThongBao')
       .exec();
     if (!student) {
       throw new NotFoundException('Sinh viên không tồn tại');

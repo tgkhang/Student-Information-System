@@ -111,7 +111,6 @@ export class KhoaHocController {
         throw new UnauthorizedException(
           'Bạn không có quyền thực hiện thao tác này.',
         );
-      console.log('Mã khóa học: ', MaKhoaHoc);
       return this.khoaHocService.updateCourse(MaKhoaHoc, updateKhoaHocDto);
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return

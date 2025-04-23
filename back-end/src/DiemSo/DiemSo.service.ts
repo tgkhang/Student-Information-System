@@ -60,6 +60,29 @@ export class DiemSoService {
     return score;
   }
 
+  async getListScoreByMSSV(mssv: string) {
+    const sinhVien = await this.sinhVienModel.findOne({ mssv }).exec();
+    if (!sinhVien) {
+      throw new NotFoundException('Sinh viên không tồn tại');
+    }
+
+    const scoreList = await this.DiemSoModel.find({ SinhVienID: sinhVien._id })
+      .populate({
+        path: 'KhoaHocID',
+        model: 'KhoaHoc',
+      })
+      .populate({
+        path: 'SinhVienID',
+        model: 'SinhVien',
+      })
+      .populate({
+        path: 'DiemThanhPhan.BaiKiemTraID',
+        model: 'BaiKiemTra',
+      })
+      .exec();
+    return scoreList;
+  }
+
   async getListScorebyKhoaHocIDAndMaGV(KhoaHocID: string, magv: string) {
     const giangvien = await this.giangVienModel.findOne({ magv }).exec();
     if (!giangvien) {

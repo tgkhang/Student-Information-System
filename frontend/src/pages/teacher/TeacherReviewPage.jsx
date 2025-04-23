@@ -1,10 +1,8 @@
 "use client";
 
-import * as React from "react";
+import {useState, useEffect} from "react";
 import Page from "../../components/Page";
-import Header from "../../components/Header";
 import classesData from "../mockdata/courseData";
-import TeacherNavigationDrawer from "./TeacherNavigationDrawer";
 import CourseCardsView from "../../components/CourseCardsView";
 import {
   Box,
@@ -29,7 +27,6 @@ import {
   Chip,
   LinearProgress,
   Button,
-  tableCellClasses,
   styled,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -37,16 +34,9 @@ import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useAuth from "../../hooks/useAuth";
+import { getListCourses, getTeacherInfo } from "../../utils/api";
 
-const drawerWidth = 0;
-
-// Styled components
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.grey[100],
-    fontWeight: 600,
-  },
-}));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -227,18 +217,13 @@ function CourseReviewSummary({ course }) {
 }
 
 export default function CourseReviewPage() {
-  const [isDrawerOpen, setDrawerOpen] = React.useState(true);
-  const [semester, setSemester] = React.useState("");
-  const [year, setYear] = React.useState("");
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [selectedCourse, setSelectedCourse] = React.useState(null);
-  const [helpfulCounts, setHelpfulCounts] = React.useState({});
-  const [viewMode, setViewMode] = React.useState("grid"); // "grid" or "detail"
-
-  const toggleDrawer = () => {
-    setDrawerOpen(!isDrawerOpen);
-  };
-
+  const [semester, setSemester] = useState("");
+  const [year, setYear] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [helpfulCounts, setHelpfulCounts] = useState({});
+  const [viewMode, setViewMode] = useState("grid");
+  const [classesData, setClassesData] = useState([]);
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -258,7 +243,19 @@ export default function CourseReviewPage() {
       [reviewId]: (prev[reviewId] || 0) + 1
     }));
   };
+  // useEffect(() => {
+  //   const fetchCourses = async () => {
+  //     try {
+  //       const res = await getTeacherInfo(user.username);
+  //       const response = await getListCourses(res.data._id);
+  //       setClassesData(response.data.data);
+  //     } catch (error) {
+  //       console.error("Error fetching courses:", error);
+  //     }
+  //   };
 
+  //   fetchCourses();
+  // }, []);
   return (
     <Page title="Course Reviews">
       <Box sx={{ display: "flex" }}>
@@ -274,8 +271,8 @@ export default function CourseReviewPage() {
                 duration: theme.transitions.duration.enteringScreen,
               }),
             backgroundColor: "primary.lighter",
-            marginLeft: isDrawerOpen ? `${drawerWidth}px` : 0,
-            width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
+            marginLeft:  0,
+            width: "100%",
           }}
         >
           <Grid2
