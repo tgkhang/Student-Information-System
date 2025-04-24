@@ -29,6 +29,7 @@ import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
 import { RemoveTeacherDto } from './dto/removeTeacher.dto';
 import { BaiKiemTraService } from 'src/BaiKiemTra/BaiKiemTra.service';
+import path from 'path';
 
 @Injectable()
 export class KhoaHocService {
@@ -126,7 +127,10 @@ export class KhoaHocService {
       .findOne({ MaKhoaHoc })
       .populate('GiangVienID', 'HoTen')
       .populate('KhoaID', 'TenKhoa')
-      .populate('TaiLieu')
+      .populate({
+        path: 'TaiLieu',
+        model: 'TaiLieu'
+      })
       .exec();
     console.log(khoaHoc?.toObject());
     if (!khoaHoc) {
@@ -342,7 +346,11 @@ export class KhoaHocService {
 
     const files = await this.khoaHocModel
       .findById(khoaHocId)
-      .populate('TaiLieu')
+      .populate({
+        path: 'TaiLieu',
+        model: 'TaiLieu'
+      })
+
       .exec();
     return files?.TaiLieu;
   }
@@ -682,5 +690,21 @@ export class KhoaHocService {
     }
 
     return updatedKhoaHoc;
+  }
+
+  async getDeadline(id: string){
+    const khoaHoc = await this.khoaHocModel.findOne({'Deadlines._id': new Types.ObjectId(id)})
+                                          .populate({
+                                            path: 'Deadlines.Submissions.TaiLieu',
+                                            select: 'TenTaiLieu LinkTaiLieu MoTa NguoiDang NgayTao',
+                                            model: 'TaiLieu'
+                                          }).exec();
+    if (!khoaHoc)
+      throw new NotFoundException('Không tìm thấy khóa học.');
+    const deadline = khoaHoc.Deadlines.find( 
+      (deadline) => (deadline as any)._id.toString() === id
+    );
+    
+    return deadline;
   }
 }

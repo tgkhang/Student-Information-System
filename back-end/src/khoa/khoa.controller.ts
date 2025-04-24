@@ -18,7 +18,7 @@ import { JWTAuthGuard } from 'src/auth/guards/jwt.guard';
 import { updateKhoaDTO } from './dto/updateKhoa.dto';
 import { getFacultyListDTO } from './dto/getFacultyList.dto';
 import { addKhoaDTO } from './dto/addKhoa.dto';
-import { KhoaService } from './Khoa.service';
+import { KhoaService } from './khoa.service';
 
 
 
