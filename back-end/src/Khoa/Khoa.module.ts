@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Khoa, KhoaSchema } from 'src/schemas/Khoa.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { KhoaController } from './Khoa.controller';
-import { KhoaService } from './Khoa.service';
+import { KhoaService } from './khoa.service';
 
 @Module({
   imports: [

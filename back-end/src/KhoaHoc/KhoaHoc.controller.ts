@@ -24,6 +24,7 @@ import { RateCourseDto } from './dto/rateCourse.dto';
 import { CreateDeadlineDto } from './dto/createDeadline.dto';
 import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
+import { JwtModule } from '@nestjs/jwt';
 
 @Controller('api/KhoaHoc')
 export class KhoaHocController {
@@ -304,6 +305,18 @@ export class KhoaHocController {
     return { message: 'Deadline created successfully', deadline };
   }
 
+  @Get('deadline/:id')
+  @UseGuards(JWTAuthGuard)
+  async getDeadline(@Param('id') id: string){
+    try{
+      const deadline = await this.khoaHocService.getDeadline(id);
+      return deadline;
+    }
+    catch(error)
+    {
+      return error;
+    }
+  }
   @Put(':id/deadline/:deadlineId')
   @UseGuards(JWTAuthGuard)
   @UsePipes(new ValidationPipe())

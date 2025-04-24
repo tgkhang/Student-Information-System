@@ -88,8 +88,8 @@ export class UploadController {
       throw new UnauthorizedException('Chỉ sinh viên được nộp bài');
     }
     console.log(req.user.username);
-    const { khoaHocId, deadlineId } = submitAssignmentDto;
-    return this.uploadService.submitAssignment(file, khoaHocId, deadlineId, req.user.username);
+    const { deadlineId } = submitAssignmentDto;
+    return this.uploadService.submitAssignment(file, deadlineId, req.user.username);
   }
 
   @Get('submission/:khoaHocId/:deadlineId')
