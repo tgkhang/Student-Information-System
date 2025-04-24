@@ -426,15 +426,15 @@ export default function StudentClassRegistrationPage() {
                 >
                   <Table sx={{ minWidth: 650 }}>
                     <TableHead>
-                      <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.04)" }}>
-                        <TableCell>Course Code</TableCell>
-                        <TableCell>Subject Name</TableCell>
-                        <TableCell align="center">Credits</TableCell>
-                        <TableCell>Class</TableCell>
-                        <TableCell>Teacher</TableCell>
-                        <TableCell>Schedule</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell align="center">Actions</TableCell>
+                      <TableRow sx={{ backgroundColor: "primary.main" }}>
+                        <TableCell sx={{color: "primary.lighter"}}>Course Code</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Subject Name</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}} align="center">Credits</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Class</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Teacher</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Schedule</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Status</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}} align="center">Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -540,15 +540,15 @@ export default function StudentClassRegistrationPage() {
               >
                 <Table sx={{ minWidth: 650 }}>
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.04)" }}>
-                      <TableCell>Course Code</TableCell>
-                      <TableCell>Subject Name</TableCell>
-                      <TableCell align="center">Credits</TableCell>
-                      <TableCell>Class</TableCell>
-                      <TableCell>Teacher</TableCell>
-                      <TableCell>Schedule</TableCell>
-                      <TableCell>Availability</TableCell>
-                      <TableCell align="center">Actions</TableCell>
+                    <TableRow sx={{ backgroundColor: "primary.main" }}>
+                      <TableCell sx={{color: "primary.lighter"}}>Course Code</TableCell>
+                      <TableCell sx={{color: "primary.lighter"}}>Subject Name</TableCell>
+                      <TableCell sx={{color: "primary.lighter"}} align="center">Credits</TableCell>
+                      <TableCell sx={{color: "primary.lighter"}}>Class</TableCell>
+                      <TableCell sx={{color: "primary.lighter"}}>Teacher</TableCell>
+                      <TableCell sx={{color: "primary.lighter"}}>Schedule</TableCell>
+                      <TableCell sx={{color: "primary.lighter"}}>Availability</TableCell>
+                      <TableCell sx={{color: "primary.lighter"}} align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
