@@ -60,7 +60,7 @@ export default function CourseAddingPage() {
   useEffect(() => {
     const fetchFaculties = async () => {
       try {
-        const response = await getFacultyListApi({
+        const response =  await getFacultyListApi({
           page: 1,
           size: 100,
           sort: "TenKhoa",
@@ -80,35 +80,36 @@ export default function CourseAddingPage() {
     fetchFaculties();
   }, []);
 
-  // Load teachers when faculty is selected
-  useEffect(() => {
-    const fetchTeachers = async () => {
-      if (!selectedFaculty) return;
-      
-      setIsLoading(true);
-      try {
-        const response = await getTeacherListApi({
-          page: 1,
-          size: 200,
-          sort: "HoTen",
-          order: "asc",
-          KhoaID: selectedFaculty
-        });
-        if (response && response.data && response.data.data) {
-          setTeachers(response.data.data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching teachers:", error);
-        setSnackbarMessage("Failed to load teachers");
-        setSnackbarSeverity("error");
-        setShowSnackbar(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+// Load teachers when faculty is selected
+useEffect(() => {
+  const fetchTeachers = async () => {
+    if (!selectedFaculty) return;
     
-    fetchTeachers();
-  }, [selectedFaculty]);
+    setIsLoading(true);
+    try {
+      const response = await getTeacherListApi({
+        page: 1,
+        size: 100,
+        sort: "HoTen",
+        order: "asc",
+        KhoaID: selectedFaculty
+      });
+      
+      if (response && response.data && response.data.data) {
+        setTeachers(response.data.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching teachers:", error);
+      setSnackbarMessage("Failed to load teachers");
+      setSnackbarSeverity("error");
+      setShowSnackbar(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  fetchTeachers();
+}, [selectedFaculty]);
 
   // Handle faculty change
   const handleFacultyChange = (e) => {
@@ -142,28 +143,28 @@ export default function CourseAddingPage() {
   const handleSubmit = async () => {
     // Form validation
     if (!courseTitle.trim()) {
-      setSnackbarMessage("Vui lòng nhập tên khóa học");
+      setSnackbarMessage("Please enter the course title");
       setSnackbarSeverity("error");
       setShowSnackbar(true);
       return;
     }
 
     if (!selectedFaculty) {
-      setSnackbarMessage("Vui lòng chọn khoa");
+      setSnackbarMessage("Please select a faculty");
       setSnackbarSeverity("error");
       setShowSnackbar(true);
       return;
     }
 
     if (!selectedTeacher) {
-      setSnackbarMessage("Vui lòng chọn giảng viên");
+      setSnackbarMessage("Please select a lecturer");
       setSnackbarSeverity("error");
       setShowSnackbar(true);
       return;
     }
 
     if (!startDate || !endDate || !registrationDeadline) {
-      setSnackbarMessage("Vui lòng nhập đầy đủ các ngày");
+      setSnackbarMessage("Please provide all required dates");
       setSnackbarSeverity("error");
       setShowSnackbar(true);
       return;
@@ -186,13 +187,13 @@ export default function CourseAddingPage() {
 
       const response = await createCourseApi(courseData);
       
-      setSnackbarMessage("Khóa học đã được thêm thành công!");
+      setSnackbarMessage("Course added successfully!");
       setSnackbarSeverity("success");
       setShowSnackbar(true);
       handleClearForm();
     } catch (error) {
       console.error("Error adding course:", error);
-      setSnackbarMessage(error.response?.data?.message || "Thêm khóa học thất bại");
+      setSnackbarMessage(error.response?.data?.message || "Failed to add course.");
       setSnackbarSeverity("error");
       setShowSnackbar(true);
     } finally {
@@ -206,238 +207,264 @@ export default function CourseAddingPage() {
   };
 
   return (
-    <Page title="Thêm khóa học mới">
-      <Paper
-        elevation={3}
+    <Page title="Add Course">
+      <Box
         sx={{
-          p: 4,
-          maxWidth: 1200,
-          mx: "auto",
-          mt: 12,
-          mb: 5,
-          borderRadius: 2,
-        }}
+          p: 2,
+          mt: "64px"
+        }}  
       >
-        <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-          <SchoolIcon sx={{ mr: 2, color: "primary.main", fontSize: 32 }} />
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            maxWidth: 1200,
+            mx: "auto",
+            borderRadius: 2,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+            <SchoolIcon sx={{ mr: 2, color: "primary.main", fontSize: 32 }} />
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{
+                fontWeight: 600,
+                color: "primary.main",
+              }}
+            >
+              Add Course
+            </Typography>
+          </Box>
+
+          <Divider sx={{ mb: 4 }} />
+
+          {/* Course Basic Information */}
           <Typography
-            variant="h4"
-            component="h1"
+            variant="h6"
             sx={{
-              fontWeight: 600,
-              color: "primary.main",
+              mb: 2,
+              fontWeight: 500,
+              color: "primary.main"
             }}
           >
-            Thêm khóa học mới
+            <BookIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+            Course Details
           </Typography>
-        </Box>
 
-        <Divider sx={{ mb: 4 }} />
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <TextField
+                required
+                fullWidth
+                id="course-title"
+                label="Course Name"
+                value={courseTitle}
+                onChange={(e) => setCourseTitle(e.target.value)}
+                variant="outlined"
+                placeholder="Course Name"
+              />
+            </Grid>
 
-        {/* Course Basic Information */}
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
-          <BookIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-          Thông tin khóa học
-        </Typography>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <InputLabel id="credits-label">Credits</InputLabel>
+                <Select
+                  labelId="credits-label"
+                  id="credits-select"
+                  value={credits}
+                  label="Credits"
+                  onChange={(e) => setCredits(Number(e.target.value))}
+                >
+                  {[1, 2, 3, 4, 5, 6].map((value) => (
+                    <MenuItem key={value} value={value}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              required
-              fullWidth
-              id="course-title"
-              label="Tên khóa học"
-              value={courseTitle}
-              onChange={(e) => setCourseTitle(e.target.value)}
-              variant="outlined"
-              placeholder="Nhập tên khóa học"
-            />
+            <Grid item xs={12} md={3}>
+              <TextField
+                fullWidth
+                id="course-capacity"
+                label="Capacity"
+                type="number"
+                value={courseCapacity}
+                onChange={(e) => setCourseCapacity(Number(e.target.value))}
+                InputProps={{ inputProps: { min: 1 } }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                id="course-description"
+                label="Course Description"
+                multiline
+                rows={4}
+                value={courseDescription}
+                onChange={handleDescriptionChange}
+                variant="outlined"
+                placeholder="Input detailed course description..."
+                helperText={`${charCount}/${maxCharCount} characters`}
+                error={charCount > maxCharCount}
+                FormHelperTextProps={{
+                  sx: {
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginRight: 0,
+                  },
+                }}
+              />
+            </Grid>
           </Grid>
 
-          <Grid item xs={12} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="credits-label">Số tín chỉ</InputLabel>
-              <Select
-                labelId="credits-label"
-                id="credits-select"
-                value={credits}
-                label="Số tín chỉ"
-                onChange={(e) => setCredits(Number(e.target.value))}
-              >
-                {[1, 2, 3, 4, 5, 6].map((value) => (
-                  <MenuItem key={value} value={value}>
-                    {value} tín chỉ
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          <Divider sx={{ my: 4 }} />
 
-          <Grid item xs={12} md={3}>
-            <TextField
-              fullWidth
-              id="course-capacity"
-              label="Số lượng tối đa"
-              type="number"
-              value={courseCapacity}
-              onChange={(e) => setCourseCapacity(Number(e.target.value))}
-              InputProps={{ inputProps: { min: 1 } }}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              id="course-description"
-              label="Mô tả khóa học"
-              multiline
-              rows={4}
-              value={courseDescription}
-              onChange={handleDescriptionChange}
-              variant="outlined"
-              placeholder="Nhập mô tả chi tiết về khóa học..."
-              helperText={`${charCount}/${maxCharCount} ký tự`}
-              error={charCount > maxCharCount}
-              FormHelperTextProps={{
-                sx: {
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginRight: 0,
-                },
-              }}
-            />
-          </Grid>
-        </Grid>
-
-        <Divider sx={{ my: 4 }} />
-
-        {/* Faculty and Teacher Selection */}
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
-          <PersonAddIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-          Khoa và Giảng viên
-        </Typography>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth required>
-              <InputLabel id="faculty-label">Khoa</InputLabel>
-              <Select
-                labelId="faculty-label"
-                id="faculty-select"
-                value={selectedFaculty}
-                label="Khoa"
-                onChange={handleFacultyChange}
-              >
-                {faculties.map((faculty) => (
-                  <MenuItem key={faculty._id} value={faculty._id}>
-                    {faculty.TenKhoa}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Autocomplete
-              id="teachers-autocomplete"
-              options={teachers || []}
-              getOptionLabel={(option) => option.HoTen || ""}
-              value={selectedTeacher}
-              onChange={(event, newValue) => {
-                setSelectedTeacher(newValue);
-              }}
-              loading={isLoading}
-              disabled={!selectedFaculty}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Giảng viên"
-                  variant="outlined"
-                  required
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-
-        <Divider sx={{ my: 4 }} />
-
-        {/* Course Schedule */}
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
-          <CalendarMonthIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-          Lịch học
-        </Typography>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              id="start-date"
-              label="Ngày bắt đầu"
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              required
-            />
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              id="end-date"
-              label="Ngày kết thúc"
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              required
-            />
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              id="registration-deadline"
-              label="Hạn đăng ký"
-              type="date"
-              value={registrationDeadline}
-              onChange={(e) => setRegistrationDeadline(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              required
-            />
-          </Grid>
-        </Grid>
-
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleClearForm}
-            startIcon={<ClearIcon />}
+          {/* Faculty and Teacher Selection */}
+          <Typography
+            variant="h6"
+            sx={{
+              mb: 2,
+              fontWeight: 500,
+              color: "primary.main"
+            }}
           >
-            Xóa form
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            endIcon={isLoading ? null : <SaveIcon />}
-            disabled={isLoading || !courseTitle.trim() || !selectedFaculty || !selectedTeacher}
+            <PersonAddIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+            Faculty and Lecturer
+          </Typography>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth required>
+                <InputLabel id="faculty-label">Faculty</InputLabel>
+                <Select
+                  labelId="faculty-label"
+                  id="faculty-select"
+                  value={selectedFaculty}
+                  label="Faculty"
+                  onChange={handleFacultyChange}
+                >
+                  {faculties.map((faculty) => (
+                    <MenuItem key={faculty._id} value={faculty._id}>
+                      {faculty.TenKhoa}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Autocomplete
+                id="teachers-autocomplete"
+                options={teachers || []}
+                getOptionLabel={(option) => option.HoTen || ""}
+                value={selectedTeacher}
+                onChange={(event, newValue) => {
+                  setSelectedTeacher(newValue);
+                }}
+                loading={isLoading}
+                disabled={!selectedFaculty}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Lecturer"
+                    variant="outlined"
+                    required
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 4 }} />
+
+          {/* Course Schedule */}
+          <Typography
+            variant="h6"
+            sx={{
+              mb: 4,
+              fontWeight: 500,
+              color: "primary.main"
+            }}
           >
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : "Lưu khóa học"}
-          </Button>
-        </Box>
-      </Paper>
+            <CalendarMonthIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+            Schedule
+          </Typography>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                id="start-date"
+                label="Start Date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                required
+              />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                id="end-date"
+                label="End Date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                required
+              />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                id="registration-deadline"
+                label="Registration Deadline"
+                type="date"
+                value={registrationDeadline}
+                onChange={(e) => setRegistrationDeadline(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                required
+              />
+            </Grid>
+          </Grid>
+
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleClearForm}
+              startIcon={<ClearIcon />}
+            >
+              Clear
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              endIcon={isLoading ? null : <SaveIcon />}
+              disabled={isLoading || !courseTitle.trim() || !selectedFaculty || !selectedTeacher}
+            >
+              {isLoading ? <CircularProgress size={24} color="inherit" /> : "Add Course"}
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
 
       <Snackbar
         open={showSnackbar}

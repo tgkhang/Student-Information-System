@@ -32,8 +32,6 @@ export class UploadController {
     @UploadedFile() file: Express.Multer.File,
     @Body() uploadFileDto: UploadFileDto,
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    console.log(req.user.role);
     if (!file) throw new BadRequestException('Thiếu trường "file".');
     const { khoaHocId, moTa } = uploadFileDto;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -90,8 +88,8 @@ export class UploadController {
       throw new UnauthorizedException('Chỉ sinh viên được nộp bài');
     }
     console.log(req.user.username);
-    const { khoaHocId, deadlineId } = submitAssignmentDto;
-    return this.uploadService.submitAssignment(file, khoaHocId, deadlineId, req.user.username);
+    const { deadlineId } = submitAssignmentDto;
+    return this.uploadService.submitAssignment(file, deadlineId, req.user.username);
   }
 
   @Get('submission/:khoaHocId/:deadlineId')

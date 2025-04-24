@@ -99,7 +99,7 @@ export class DiemSoController {
   @UseGuards(JWTAuthGuard)
   async addScore(@Body() createScoreDto: CreateScoreDto, @Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'teacher' && req.user.role !== 'admin') {
+    if (req.user.role !== 'teacher') {
       throw new UnauthorizedException(
         'Không có quyền thêm Score cho sinh viên',
       );

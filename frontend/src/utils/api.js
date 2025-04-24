@@ -61,6 +61,7 @@ export const updateCalendar = (id, data) => {
   return axiosInstance.patch(`/Lich/update_calendar/${id}`, data);
 }
 //teacher
+
 export const getTeacherInfo = (id) =>
   axiosInstance.get(`/giangvien/getTeacher/${id}`);
 export const getListCourses = (id) =>
@@ -149,7 +150,23 @@ export const getCourseById = (id) => {
 export const createDeadline = (id, data) => {
   return axiosInstance.post(`/KhoaHoc/${id}/deadline`, data);
 };
-
+export const getDeadline = (id) => {
+  return axiosInstance.get(`/KhoaHoc/deadline/${id}`, data);
+};
+export const uploadFile = (formData) => {
+  return axiosInstance.post(`/upload`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+export const uploadDeadlineFile = (formData) => {
+  return axiosInstance.post(`/upload/submission`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
 export const createCourseApi = (data) =>
   axiosInstance.post("/KhoaHoc/addCourse", data);
 
@@ -168,3 +185,11 @@ export const studentCancelRegister= (data,username) =>
 
 export const getListCourseRegister = (studentId)=> 
    axiosInstance.get(`/KhoaHoc/getListCourseRegister/${studentId}`);
+
+export const HasRating = (MaKH, MaSV) => {
+  return axiosInstance.get(`/KhoaHoc/hasRating/${MaKH}/${MaSV}`);
+}
+export const studentRating = (MaKH, data) => {
+  return axiosInstance.post(`/KhoaHoc/rate/${MaKH}`, data);
+}
+

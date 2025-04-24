@@ -153,7 +153,7 @@ function CourseReviewSummary({ course }) {
                   </Typography>
                 </Box>
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  {course?.SoLuongSinhVienDangKy} of {course?.DanhGiaList?.length} reviews completed
+                  {course?.DanhGiaList?.length} of {course?.SoLuongSinhVienDangKy} reviews completed
                 </Typography>
               </Box>
               

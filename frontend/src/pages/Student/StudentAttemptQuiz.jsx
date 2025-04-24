@@ -82,10 +82,7 @@ export default function StudentAttemptQuiz() {
   };
 
   const handleAttemptQuiz = () => {
-    setQuizStatus("completed");
-    setAttemptedAt(dayjs());
-    enqueueSnackbar("You have completed the quiz!", { variant: "success" });
-    setConfirmAttempt(false);
+    window.location.href = "/student/quiz/123"
   };
 
   const handleViewResults = () => {

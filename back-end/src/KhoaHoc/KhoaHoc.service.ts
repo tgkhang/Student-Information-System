@@ -29,7 +29,9 @@ import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
 import { RemoveTeacherDto } from './dto/removeTeacher.dto';
 import { BaiKiemTraService } from 'src/BaiKiemTra/BaiKiemTra.service';
+
 import { SinhVien, SinhVienDocument } from 'src/schemas/SinhVien.schema';
+import path from 'path';
 
 @Injectable()
 export class KhoaHocService {
@@ -167,7 +169,7 @@ export class KhoaHocService {
       .findOne({ MaKhoaHoc })
       .populate('GiangVienID', 'HoTen')
       .populate('KhoaID', 'TenKhoa')
-      .populate('TaiLieu')
+      .populate({path: 'TaiLieu', model: 'TaiLieu'})
       .exec();
     console.log(khoaHoc?.toObject());
     if (!khoaHoc) {
@@ -273,7 +275,6 @@ export class KhoaHocService {
   }
 
   async searchCourse(query: string) {
-    console.log('query', query);
     const khoaHoc = await this.khoaHocModel.find({
       $or: [
         { MaKhoaHoc: { $regex: query, $options: 'i' } },
@@ -287,14 +288,11 @@ export class KhoaHocService {
   }
 
   async registerStudentToCourse(MaKhoaHoc: string, username: string) {
-    // console.log('Mã khóa học: ', studentId);
     const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
     if (!khoaHoc) {
       throw new NotFoundException('Khóa học không tồn tại');
     }
     const sinhVien = await this.sinhVienService.getStudentByMSSV(username);
-    console.log('sinh vien id: ', sinhVien.KhoaID.toString());
-    console.log('khóa học id: ', khoaHoc.KhoaID.toString());
     if (sinhVien.KhoaID._id.toString() !== khoaHoc.KhoaID.toString())
       throw new BadRequestException(
         'Sinh viên không thể đăng kí khóa học này.',
@@ -327,7 +325,6 @@ export class KhoaHocService {
       throw new NotFoundException('Khóa học không tồn tại');
     }
     const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
-    console.log(sinhVien.KhoaID.toString());
     if (sinhVien.KhoaID._id.toString() !== khoaHoc.KhoaID.toString())
       throw new BadRequestException(
         'Sinh viên không thể đăng kí khóa học này.',
@@ -358,7 +355,6 @@ export class KhoaHocService {
     const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
-    console.log(sinhVienId);
 
     const index = khoaHoc.SinhVienDangKy.indexOf(sinhVienId);
     if (index !== -1) {
@@ -383,7 +379,11 @@ export class KhoaHocService {
 
     const files = await this.khoaHocModel
       .findById(khoaHocId)
-      .populate('TaiLieu')
+      .populate({
+        path: 'TaiLieu',
+        model: 'TaiLieu'
+      })
+
       .exec();
     return files?.TaiLieu;
   }
@@ -724,6 +724,7 @@ export class KhoaHocService {
 
     return updatedKhoaHoc;
   }
+
   async huyDangKyKhoaHoc(khoaHocId: string, mssv: string) {
     const khoaHoc = await this.khoaHocModel.findById(khoaHocId).exec();
     if (!khoaHoc) {
@@ -759,5 +760,43 @@ export class KhoaHocService {
     await khoaHoc.save();
 
     return { message: 'Hủy đăng ký thành công.' };
+
+
+  async getDeadline(id: string){
+    const khoaHoc = await this.khoaHocModel.findOne({'Deadlines._id': new Types.ObjectId(id)})
+                                          .populate({
+                                            path: 'Deadlines.Submissions.TaiLieu',
+                                            select: 'TenTaiLieu LinkTaiLieu MoTa NguoiDang NgayTao',
+                                            model: 'TaiLieu'
+                                          }).exec();
+    if (!khoaHoc)
+      throw new NotFoundException('Không tìm thấy khóa học.');
+    const deadline = khoaHoc.Deadlines.find( 
+      (deadline) => (deadline as any)._id.toString() === id
+    );
+    
+    return deadline;
+  }
+  async hasStudentReviewed(MaKhoaHoc: string, mssv: string): Promise<boolean> {
+    const khoaHoc = await this.khoaHocModel
+      .findOne({ MaKhoaHoc })
+      .select('_id')
+      .lean()
+      .exec();
+
+    if (!khoaHoc) {
+      throw new NotFoundException('Không tìm thấy khóa học.');
+    }
+    const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
+    const review = await this.danhGiaKhoaHocModel
+      .findOne({
+        KhoaHocID: khoaHoc._id,
+        mssv: (sinhVien as any)._id,
+      })
+      .lean()
+      .exec();
+
+    return !!review;
+
   }
 }

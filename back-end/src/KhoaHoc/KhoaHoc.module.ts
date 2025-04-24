@@ -15,7 +15,6 @@ import { UploadService } from 'src/upload/upload.service';
 import { DanhGiaKhoaHoc, DanhGiaKhoaHocSchema } from 'src/schemas/DanhGiaKhoaHoc.schema';
 import { LichHoc, LichHocSchema } from 'src/schemas/LichHoc.schema';
 import { BaiKiemTraModule } from 'src/BaiKiemTra/BaiKiemTra.module';
-
 @Module({
   imports:[
     MongooseModule.forFeature([{name: KhoaHoc.name, schema: KhoaHocSchema}, 
