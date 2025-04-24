@@ -228,6 +228,17 @@ export class KhoaHocController {
     }
   }
 
+  @Get('getListCourseRatingForTeacher/:MaGV')
+  @UseGuards(JWTAuthGuard)
+  async getCourseEvaluations(@Param('MaGV') MaGV: string) {
+    try {
+      return this.khoaHocService.getListCourseRatingForTeacher(MaGV);
+
+    }
+    catch(error)
+    {return error;}
+  }
+
   @Post('rate/:MaKhoaHoc')
   @UseGuards(JWTAuthGuard)
   @UsePipes(new ValidationPipe())

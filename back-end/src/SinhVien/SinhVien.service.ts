@@ -36,6 +36,7 @@ export class SinhVienService {
         ],
       })
       .populate('GiangVienID', 'HoTen MaGV')
+      .populate('TaiLieu')
       // .populate('SinhVienDangKy', 'HoTen MSSV')
       .exec();
     return courses;
@@ -199,7 +200,8 @@ export class SinhVienService {
       .find()
       .skip(skip)
       .limit(limit)
-      .sort(sort);
+      .sort(sort)
+      .populate('KhoaID', 'TenKhoa');
 
     return {
       pageSize,
@@ -244,8 +246,6 @@ export class SinhVienService {
       { $push: { ThongBao: { thongBaoId, isRead: false } } },
     );
   }
-
-
   async removeNotiFromAll(thongBaoId: string): Promise<void> {
     await this.sinhVienModel.updateMany(
       {},

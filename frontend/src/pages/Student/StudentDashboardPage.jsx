@@ -292,8 +292,8 @@ const subjectScoresData = [
 
 export default function Dashboard() {
   const [student, setStudent] = useState({});
+  const [score, setScore] = useState({});
   const location = useLocation();
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   // Get tab from URL query parameter
@@ -303,23 +303,14 @@ export default function Dashboard() {
     return tabParam ? Number.parseInt(tabParam, 10) : 0;
   };
 
-  const [value, setValue] = useState(getTabFromUrl());
-  const [semester, setSemester] = useState("");
-  const [year, setYear] = useState("");
-  const [isDrawerOpen, setDrawerOpen] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState(
-    subjectScoresData[0]?.subjectId || ""
-  );
-  useEffect(() => {
+  // ten mon , credit, giua ki, cuoi ki, diem trung binh
+  const subjectScoresData = useEffect(() => {
     const fetchStudentInfo = async () => {
       try {
         const response = await getStudentInfo(user.username);
         // Handle the response data as needed
         //console.log("Student Info:", response.data);
         setStudent(response.data);
-        const tmp = await getListScoreById(user.username);
-        console.log("score" + tmp.data);
       } catch (error) {
         console.error("Error fetching student info:", error);
       }
@@ -327,77 +318,24 @@ export default function Dashboard() {
     fetchStudentInfo();
   }, [user]);
 
-  // Update URL when tab changes
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    navigate(`/dashboard${newValue > 0 ? `?tab=${newValue}` : ""}`);
-  };
+  useEffect(() => {
+    const fetchScore = async () => {
+      try {
+        const tmp = await getListScoreById(user.username);
+        //console.log(user.username)
+        console.log(tmp.data);
+        setScore(tmp.data);
+        // console.log(score.data);
+      } catch (error) {
+        console.error("Error fetching student info:", error);
+      }
+    };
+    fetchScore();
+  }, []);
 
-  const handleSemesterChange = (event) => {
-    setSemester(event.target.value);
-  };
-
-  const handleYearChange = (event) => {
-    setYear(event.target.value);
-  };
-
-  const handleSubjectChange = (event) => {
-    setSelectedSubject(event.target.value);
-  };
-
-  const toggleDrawer = () => {
-    setDrawerOpen(!isDrawerOpen);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  // Filter scores based on search term
-  const filteredScores = studentScores.filter(
-    (score) =>
-      score.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      score.subjectId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Get selected subject data
-  const selectedSubjectData = subjectScoresData.find(
-    (subject) => subject.subjectId === selectedSubject
-  );
-
-  // Get status color
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "passed":
-        return "success";
-      case "failed":
-        return "error";
-      default:
-        return "default";
-    }
-  };
-
-  // Get grade color
-  const getGradeColor = (grade) => {
-    if (grade === "A+" || grade === "A") return "#4caf50";
-    if (grade === "B+" || grade === "B") return "#2196f3";
-    if (grade === "C+" || grade === "C") return "#ff9800";
-    if (grade === "D+" || grade === "D") return "#f44336";
-    return "#757575";
-  };
-
-  // Calculate weighted score
-  const calculateWeightedScore = (assessment) => {
-    return (assessment.score / assessment.maxScore) * assessment.weight;
-  };
-
-  // Calculate total weighted score for a subject
-  const calculateTotalScore = (subject) => {
-    return subject.assessments.reduce(
-      (total, assessment) => total + calculateWeightedScore(assessment),
-      0
-    );
-  };
+  useEffect(() => {
+    console.log("Updated score state:", score);
+  }, [score]);
 
   // Format date
   const formatDate = (dateString) => {
@@ -407,6 +345,12 @@ export default function Dashboard() {
       month: "short",
       day: "numeric",
     });
+  };
+
+  const [value, setValue] = useState(0);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    // No need to call navigate()
   };
 
   // Update tab when URL changes
@@ -423,13 +367,7 @@ export default function Dashboard() {
             flexGrow: 1,
             p: 3,
             mt: 8,
-            transition: (theme) =>
-              theme.transitions.create(["margin", "width"], {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-              }),
             backgroundColor: "#f5f5f5",
-            minHeight: "calc(100vh - 64px)",
           }}
         >
           <Typography
@@ -543,13 +481,12 @@ export default function Dashboard() {
                   }}
                 >
                   <Tab label="Student Info" {...a11yProps(0)} />
-                  <Tab label="Academic Results" {...a11yProps(1)} />
-                  <Tab label="Subject Scores" {...a11yProps(2)} />
+                  <Tab label="Subject Results" {...a11yProps(1)} />
                 </Tabs>
               </Box>
 
               {/* Student Info Tab */}
-              <TabPanel value={value} index={0}>
+              <TabPanel value={value} index={1}>
                 <Grid container spacing={4}>
                   <Grid item xs={12} md={12}>
                     <Card
@@ -768,11 +705,13 @@ export default function Dashboard() {
                 </Grid>
               </TabPanel>
 
-              {/* Academic Results Tab */}
-              <TabPanel value={value} index={1}></TabPanel>
-
-              {/* Subject Scores Tab */}
-              <TabPanel value={value} index={2}></TabPanel>
+              <TabPanel value={value} index={0}>
+                {score && Array.isArray(score)
+                  ? score.map((item, index) => (
+                      <SubjectScore key={index} item={item} />
+                    ))
+                  : null}
+              </TabPanel>
             </CardContent>
           </Card>
         </Box>
@@ -780,3 +719,51 @@ export default function Dashboard() {
     </Page>
   );
 }
+
+// Fixed SubjectScore component
+const SubjectScore = (props) => {
+  // Make sure item is being accessed correctly
+  const item = props.item;
+
+  return (
+    <Box mb={3}>
+      <Typography
+        variant="h6"
+        color="primary"
+        sx={{ fontWeight: "bold", fontSize: "1rem" }}
+      >
+        {item?.KhoaHocID?.MaKhoaHoc} -{" "}
+        {item?.KhoaHocID?.TenKhoaHoc?.toUpperCase()}
+      </Typography>
+      <Table>
+        <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+          <TableRow>
+            <TableCell sx={{ fontWeight: "bold" }}>Loại điểm</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Hệ số</TableCell>
+            <TableCell sx={{ fontWeight: "bold" }}>Điểm</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {item?.DiemThanhPhan && Array.isArray(item.DiemThanhPhan)
+            ? item.DiemThanhPhan.map((component, index) => (
+                <TableRow key={index}>
+                  <TableCell>{component.LoaiDiem}</TableCell>
+                  <TableCell>{(component.HeSo * 100).toFixed(0)}%</TableCell>
+                  <TableCell>{component.Diem.toFixed(2)}</TableCell>
+                </TableRow>
+              ))
+            : null}
+          {item?.DiemTrungBinh && (
+            <TableRow sx={{ backgroundColor: "#f9f9f9" }}>
+              <TableCell sx={{ fontWeight: "bold" }}>Điểm trung bình</TableCell>
+              <TableCell>100%</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>
+                {item.DiemTrungBinh.toFixed(2)}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </Box>
+  );
+};

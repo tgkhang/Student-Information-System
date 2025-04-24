@@ -9,7 +9,7 @@ export class DanhGiaKhoaHoc {
   KhoaHocID: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'SinhVien', required: true })
-  SinhVienID: Types.ObjectId;
+  mssv: Types.ObjectId;
 
   @Prop({ type: Number, min: 0, max: 5, required: true })
   SoSao: number;

@@ -26,6 +26,8 @@ import {
   DialogContentText,
   DialogTitle,
   Snackbar,
+  TableContainer,
+  Paper
 } from "@mui/material";
 // components
 import Page from "../../components/Page";
@@ -48,13 +50,15 @@ const formatDate = (dateString) => {
 };
 
 const statuses = [
-  "Đang học",
-  "Bảo lưu",
-  "Đã tốt nghiệp",
-  "Đang chờ tốt nghiệp",
+  'Studying',
+  'On hold',
+  'Graduated',
+  'Dropped Out'
 ];
-const courses = ["K63", "K64", "K65"]; // Ví dụ về các khóa học
-const majors = ["Công nghệ thông tin", "Kinh tế", "Cơ khí", "Xây dựng"]; // Ví dụ về chuyên ngành
+
+const facultys = [
+  'Khoa hóa học'
+];
 
 export default function StudentListPage() {
   const [students, setStudents] = useState([]);
@@ -93,14 +97,14 @@ export default function StudentListPage() {
 
   const formatStudentData = useCallback((student) => {
     if (!student) return null;
+    console.log(student);
     try {
       return {
-        id: student.mssv || "",
-        name: student.HoTen || "",
-        dob: formatDate(student.NgaySinh || ""),
-        course: student.KhoaHoc || "",
-        major: student.ChuyenNganh || "",
-        status: student.TrangThai || "",
+        id: student.mssv || "Not Provided",
+        name: student.HoTen || "Not Provided",
+        dob: formatDate(student.NgaySinh || "Not Provided"),
+        faculty: student.KhoaID.TenKhoa || "Not Provided",
+        status: student.TrangThai || "Not Provided",
       };
     } catch (err) {
       console.error("Error formatting student data:", err);
@@ -164,7 +168,7 @@ export default function StudentListPage() {
       } catch (err) {
         console.error("Error fetching student data:", err);
         setError(
-          `Không thể tải dữ liệu sinh viên: ${err.message || "Unknown error"}`
+          `Error fetching student data : ${err.message || "Unknown error"}`
         );
         setStudents([]);
         setTotalPages(1);
@@ -187,7 +191,7 @@ export default function StudentListPage() {
       }
 
       if (!searchValue || !searchValue.trim()) {
-        setError("Vui lòng nhập thông tin để tìm kiếm");
+        setError("Please input search information.");
         return;
       }
 
@@ -215,19 +219,19 @@ export default function StudentListPage() {
             setTotalPages(1);
             setIsSearchActive(true);
           } else {
-            setError("Không tìm thấy sinh viên phù hợp");
+            setError("Student not found");
             setStudents([]);
             setIsSearchActive(true);
           }
         } else {
-          setError("Không tìm thấy sinh viên");
+          setError("Student not found");
           setStudents([]);
           setIsSearchActive(true);
         }
       } catch (err) {
         console.error("Error searching students:", err);
         if (err.response?.status === 404) {
-          setError(`Không tìm thấy sinh viên với từ khóa: ${searchValue}`);
+          setError(`No students found for: ${searchValue}`);
         } else {
           setError(
             `Lỗi tìm kiếm: ${
@@ -249,7 +253,7 @@ export default function StudentListPage() {
   const deleteStudent = useCallback(
     async (studentId) => {
       if (!studentId) {
-        setSnackbarMessage("Mã sinh viên không hợp lệ");
+        setSnackbarMessage("Invalid student ID");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
         return;
@@ -260,7 +264,7 @@ export default function StudentListPage() {
 
         const response = await deleteStudentApi(studentId);
 
-        setSnackbarMessage(`Đã xóa sinh viên ${studentId} thành công`);
+        setSnackbarMessage(`Student ${studentId} successfully deleted`);
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
 
@@ -276,7 +280,7 @@ export default function StudentListPage() {
         // Handle deletion error
         const errorMessage =
           err.response?.data?.message || err.message || "Unknown error";
-        setSnackbarMessage(`Không thể xóa sinh viên: ${errorMessage}`);
+        setSnackbarMessage(`Unable to delete student: ${errorMessage}`);
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
       } finally {
@@ -403,7 +407,7 @@ export default function StudentListPage() {
           (student.id?.toLowerCase() || "").includes(searchTerm.toLowerCase());
 
         const matchesStatus = !filterStatus || student.status === filterStatus;
-        const matchesCourse = !filterCourse || student.course === filterCourse;
+        const matchesCourse = !filterCourse || student.faculty === filterCourse;
         const matchesMajor = !filterMajor || student.major === filterMajor;
 
         return matchesSearch && matchesStatus && matchesCourse && matchesMajor;
@@ -423,15 +427,20 @@ export default function StudentListPage() {
 
   return (
     <Page title="Student List">
-      <Container maxWidth="lg" sx={{ mt: 10 }}>
-        <Box sx={{ my: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: "64px" }}>
+        <Box sx={{ p: 2 }}>
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="center"
+            sx={{
+              my: 2
+            }}
           >
-            <Typography variant="h4" gutterBottom>
-              Danh sách sinh viên {isSearchActive && "- Kết quả tìm kiếm"}
+            <Typography variant="h4" gutterBottom
+              sx={{color: "primary.main"}}
+            >
+              Student List {isSearchActive && "- Search Results"}
             </Typography>
             <Button
               color="success"
@@ -442,18 +451,18 @@ export default function StudentListPage() {
               onClick={() =>
                 exportToExcel(
                   [
-                    "Mã sinh viên",
-                    "Họ tên",
-                    "Ngày sinh",
-                    "Khóa học",
-                    "Chuyên ngành",
-                    "Tình trạng học",
+                    "Student ID",
+                    "Name",
+                    "Date of Birth",
+                    "Year",
+                    "Major",
+                    "Status",
                   ],
                   filteredStudents.map((student) => [
                     student.id,
                     student.name,
                     student.dob,
-                    student.course,
+                    student.faculty,
                     student.major,
                     student.status,
                   ])
@@ -461,7 +470,7 @@ export default function StudentListPage() {
               }
               startIcon={<Iconify icon={"eva:download-fill"} />}
             >
-              Xuất Excel
+              Export Spreadsheet
             </Button>
           </Stack>
 
@@ -470,10 +479,10 @@ export default function StudentListPage() {
               <Grid item xs={12} sm={3}>
                 <TextField
                   fullWidth
-                  label="Tìm kiếm theo tên hoặc mã sinh viên"
+                  label="Name or Student ID"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Nhập tên hoặc mã số sinh viên"
+                  placeholder="Input Name or Student ID"
                   disabled={loading}
                   onKeyPress={(e) => {
                     if (e.key === "Enter" && !loading) {
@@ -489,10 +498,10 @@ export default function StudentListPage() {
               </Grid>
               <Grid item xs={12} sm={2}>
                 <FormControl fullWidth>
-                  <InputLabel>Tình trạng học</InputLabel>
+                  <InputLabel>Status</InputLabel>
                   <Select
                     value={filterStatus}
-                    label="Tình trạng học"
+                    label="Status"
                     onChange={(e) => setFilterStatus(e.target.value)}
                     disabled={loading || isSearchActive}
                     sx={{
@@ -501,7 +510,7 @@ export default function StudentListPage() {
                       },
                     }}
                   >
-                    <MenuItem value="">Tất cả</MenuItem>
+                    <MenuItem value="">All</MenuItem>
                     {statuses.map((status) => (
                       <MenuItem key={status} value={status}>
                         {status}
@@ -512,10 +521,10 @@ export default function StudentListPage() {
               </Grid>
               <Grid item xs={12} sm={2}>
                 <FormControl fullWidth>
-                  <InputLabel>Khóa</InputLabel>
+                  <InputLabel>Faculty</InputLabel>
                   <Select
                     value={filterCourse}
-                    label="Khóa"
+                    label="Faculty"
                     onChange={(e) => setFilterCourse(e.target.value)}
                     disabled={loading || isSearchActive}
                     sx={{
@@ -524,33 +533,10 @@ export default function StudentListPage() {
                       },
                     }}
                   >
-                    <MenuItem value="">Tất cả</MenuItem>
-                    {courses.map((course) => (
-                      <MenuItem key={course} value={course}>
-                        {course}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <FormControl fullWidth>
-                  <InputLabel>Chuyên ngành</InputLabel>
-                  <Select
-                    value={filterMajor}
-                    label="Chuyên ngành"
-                    onChange={(e) => setFilterMajor(e.target.value)}
-                    disabled={loading || isSearchActive}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "8px",
-                      },
-                    }}
-                  >
-                    <MenuItem value="">Tất cả</MenuItem>
-                    {majors.map((major) => (
-                      <MenuItem key={major} value={major}>
-                        {major}
+                    <MenuItem value="">All</MenuItem>
+                    {facultys.map((faculty) => (
+                      <MenuItem key={faculty} value={faculty}>
+                        {faculty}
                       </MenuItem>
                     ))}
                   </Select>
@@ -558,19 +544,6 @@ export default function StudentListPage() {
               </Grid>
               <Grid item xs={12} sm={3}>
                 <Stack direction="row" spacing={1}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSearch}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <CircularProgress size={24} color="inherit" />
-                    ) : (
-                      "Tìm kiếm"
-                    )}
-                  </Button>
                   {(isSearchActive ||
                     searchTerm ||
                     filterStatus ||
@@ -581,6 +554,7 @@ export default function StudentListPage() {
                       color="primary"
                       onClick={handleClearSearch}
                       disabled={loading}
+                      sx={{height: "4em"}}
                     >
                       <Iconify icon={"eva:close-fill"} />
                     </Button>
@@ -601,13 +575,13 @@ export default function StudentListPage() {
                   onClick={handleClearSearch}
                   disabled={loading}
                 >
-                  Quay lại danh sách
+                  Back to list
                 </Button>
               }
             >
               {students.length > 0
-                ? `Hiển thị ${students.length} kết quả cho từ khóa: "${searchTerm}"`
-                : `Không tìm thấy sinh viên với từ khóa: "${searchTerm}"`}
+                ? `Showing ${students.length} results for: "${searchTerm}"`
+                : `No students found matching: "${searchTerm}"`}
             </Alert>
           )}
 
@@ -626,84 +600,97 @@ export default function StudentListPage() {
                   <CircularProgress size={30} />
                 </Box>
               )}
-
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      onClick={() => handleSortChange("mssv")}
-                      sx={{ cursor: !isSearchActive ? "pointer" : "default" }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        Mã sinh viên
-                        {sortBy === "mssv" && !isSearchActive && (
-                          <Iconify
-                            icon={
-                              sortOrder === "asc"
-                                ? "eva:arrow-up-fill"
-                                : "eva:arrow-down-fill"
-                            }
-                            sx={{ ml: 0.5, width: 16, height: 16 }}
-                          />
+              <TableContainer component={Paper} elevation={0}
+                sx={{
+                  borderRadius: 2,
+                  backgroundColor: "primary.lighter",
+                  my: 5
+                }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: "primary.main" }}>
+                      <TableCell
+                        onClick={() => handleSortChange("mssv")}
+                        sx={{
+                          cursor: !isSearchActive ? "pointer" : "default",
+                          color: "primary.lighter",
+                        }}
+                      >
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          Student ID
+                          {sortBy === "mssv" && !isSearchActive && (
+                            <Iconify
+                              icon={
+                                sortOrder === "asc"
+                                  ? "eva:arrow-up-fill"
+                                  : "eva:arrow-down-fill"
+                              }
+                              sx={{ ml: 0.5, width: 16, height: 16 }}
+                            />
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell
+                        onClick={() => handleSortChange("HoTen")}
+                        sx={{
+                          cursor: !isSearchActive ? "pointer" : "default",
+                          color: "primary.lighter",
+                        }}
+                      >
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          Name
+                          {sortBy === "HoTen" && !isSearchActive && (
+                            <Iconify
+                              icon={
+                                sortOrder === "asc"
+                                  ? "eva:arrow-up-fill"
+                                  : "eva:arrow-down-fill"
+                              }
+                              sx={{ ml: 0.5, width: 16, height: 16 }}
+                            />
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ color: "primary.lighter" }}>Date of Birth</TableCell>
+                      <TableCell sx={{ color: "primary.lighter" }}>Course</TableCell>
+                      <TableCell sx={{ color: "primary.lighter" }}>Study Status</TableCell>
+                      <TableCell align="center" sx={{ color: "primary.lighter", borderTopRightRadius: "16px" }}>
+                        Actions
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {!loading && filteredStudents.length > 0
+                      ? filteredStudents.map((student, index) => (
+                          <TableRow key={student.id || `student-${index}`}>
+                            <TableCell>{student.id}</TableCell>
+                            <TableCell>{student.name}</TableCell>
+                            <TableCell>{student.dob}</TableCell>
+                            <TableCell>{student.faculty}</TableCell>
+                            <TableCell>{student.status}</TableCell>
+                            <TableCell align="center">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDeleteClick(student)}
+                                disabled={deleteLoading}
+                              >
+                                <Iconify icon="eva:trash-2-outline" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : !loading && (
+                          <TableRow>
+                            <TableCell colSpan={6} align="center">
+                              Không có dữ liệu sinh viên.
+                            </TableCell>
+                          </TableRow>
                         )}
-                      </Box>
-                    </TableCell>
-                    <TableCell
-                      onClick={() => handleSortChange("HoTen")}
-                      sx={{ cursor: !isSearchActive ? "pointer" : "default" }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        Họ tên
-                        {sortBy === "HoTen" && !isSearchActive && (
-                          <Iconify
-                            icon={
-                              sortOrder === "asc"
-                                ? "eva:arrow-up-fill"
-                                : "eva:arrow-down-fill"
-                            }
-                            sx={{ ml: 0.5, width: 16, height: 16 }}
-                          />
-                        )}
-                      </Box>
-                    </TableCell>
-                    <TableCell>Ngày sinh</TableCell>
-                    <TableCell>Khóa học</TableCell>
-                    <TableCell>Chuyên ngành</TableCell>
-                    <TableCell>Tình trạng học</TableCell>
-                    <TableCell align="center">Thao tác</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {!loading && filteredStudents.length > 0
-                    ? filteredStudents.map((student, index) => (
-                        <TableRow key={student.id || `student-${index}`}>
-                          <TableCell>{student.id}</TableCell>
-                          <TableCell>{student.name}</TableCell>
-                          <TableCell>{student.dob}</TableCell>
-                          <TableCell>{student.course}</TableCell>
-                          <TableCell>{student.major}</TableCell>
-                          <TableCell>{student.status}</TableCell>
-                          <TableCell align="center">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => handleDeleteClick(student)}
-                              disabled={deleteLoading}
-                            >
-                              <Iconify icon="eva:trash-2-outline" />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    : !loading && (
-                        <TableRow>
-                          <TableCell colSpan={6} align="center">
-                            Không có dữ liệu sinh viên
-                          </TableCell>
-                        </TableRow>
-                      )}
-                </TableBody>
-              </Table>
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </>
           )}
           {!isSearchActive && totalPages > 1 && !loading && (
@@ -734,17 +721,17 @@ export default function StudentListPage() {
         aria-labelledby="delete-dialog-title"
       >
         <DialogTitle id="delete-dialog-title">
-          Xác nhận xóa sinh viên
+          Confirm Student Deletion
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc chắn muốn xóa sinh viên {studentToDelete?.name} (MSSV:{" "}
-            {studentToDelete?.id})? Hành động này không thể hoàn tác.
+            Are you sure you want to delete student {studentToDelete?.name} (Student ID:{" "}
+            {studentToDelete?.id})? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDeleteDialogClose} color="primary">
-            Hủy
+            Cancel
           </Button>
           <Button
             onClick={handleDeleteConfirm}
@@ -757,7 +744,7 @@ export default function StudentListPage() {
               ) : null
             }
           >
-            {deleteLoading ? "Đang xóa..." : "Xác nhận xóa"}
+            {deleteLoading ? "Deleting..." : "Confirm Delete"}
           </Button>
         </DialogActions>
       </Dialog>

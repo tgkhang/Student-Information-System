@@ -101,6 +101,9 @@ export const deleteTeacherApi = (id) => {
   return axiosInstance.delete(`/GiangVien/deleteTeacher/${id}`);
 };
 
+export const getListRateForTeacher = (MaGV) => {
+  return axiosInstance.get(`/KhoaHoc/getListCourseRatingForTeacher/${MaGV}`)
+}
 //FACULTY
 export const getFacultyListApi = (params = {}) => {
   const queryParams = {

@@ -25,6 +25,18 @@ export class BaiKiemTraService {
     private BaiKiemTraModel: Model<BaiKiemTraDocument>,
   ) {}
 
+  async getTestByKhoaHoc(KhoaHocID: string) {
+    const khoaHoc = await this.khoaHocModel
+      .findOne({ _id: KhoaHocID as unknown as Types.ObjectId })
+      .exec();
+    if (!khoaHoc) {
+      throw new NotFoundException('Khóa học không tồn tại');
+    }
+
+    const test = await this.BaiKiemTraModel.find({ KhoaHocID })
+      .exec();
+    return test;
+  }
   async getTestByKhoaHocAndMSSV(KhoaHocID: string, MA: string) {
     const mssv = MA;
     const MaGV = MA;

@@ -66,14 +66,6 @@ const CourseCard = ({ course, onClick  }) => {
 
           {/*Course details*/}
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-            <Chip
-              icon={<AccessTimeIcon fontSize="small" />}
-              label={`${formatDate(course?.NgayBatDau)} - ${formatDate(
-                course?.NgayKetThuc
-              )}`}
-              size="small"
-              sx={{ bgcolor: "#f0f7ff", color: "#0057b7" }}
-            />
              <Chip 
               icon={<PersonIcon fontSize="small" />} 
               label={course?.TroGiangID?.HoTen || "No Assistant"} 
@@ -121,10 +113,10 @@ const CourseList = ({ courses, searchTerm, year, isTeacher }) => {
           {filteredCourses.map((course) => (
             <Grid item xs={12} key={course._id}>
               <CourseCard course={course}  onClick={() => {
-    isTeacher
-      ? window.location.href = `/teacher/course/${course?.MaKhoaHoc}`
-      : window.location.href = `/student/course/${course?.MaKhoaHoc}`;
-  }} />
+                isTeacher
+                  ? window.location.href = `/teacher/course/${course?.MaKhoaHoc}`
+                  : window.location.href = `/student/course/${course?.MaKhoaHoc}`;
+              }} />
             </Grid>
           ))}
         </Grid>
@@ -159,7 +151,7 @@ function CoursesListAndSearch({ courses, isTeacher = false }) {
     >
       {/* Course Content Card */}
       <Grid2 item xs={12} sx={{ height: "100%", width: "100%" }}>
-        <Card elevation={0} sx={{ borderRadius: 2, height: "100%" }}>
+        <Card elevation={0} sx={{ borderRadius: 2, height: "100%", backgroundColor: "primary.light" }}>
           <CardContent>
             {/* Filter and Search Row */}
             <Box

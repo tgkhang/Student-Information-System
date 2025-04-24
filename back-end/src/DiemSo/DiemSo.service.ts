@@ -66,7 +66,9 @@ export class DiemSoService {
       throw new NotFoundException('Sinh viên không tồn tại');
     }
 
-    const scoreList = await this.DiemSoModel.find({ SinhVienID: sinhVien._id })
+    const scoreList = await this.DiemSoModel.find({
+      SinhVienID: (sinhVien._id as any).toString(),
+    })
       .populate({
         path: 'KhoaHocID',
         model: 'KhoaHoc',
@@ -79,8 +81,25 @@ export class DiemSoService {
         path: 'DiemThanhPhan.BaiKiemTraID',
         model: 'BaiKiemTra',
       })
-      .exec();
-    return scoreList;
+      .lean(); // dùng lean để dễ thêm thuộc tính
+    console.log(scoreList);
+    // Thêm DiemTrungBinh cho từng bản ghi
+    const resultWithAverage = scoreList.map((record) => {
+      const thanhPhan = record.DiemThanhPhan || [];
+      const totalHeSo = thanhPhan.reduce((sum, tp) => sum + (tp.HeSo || 0), 0);
+      const totalDiem = thanhPhan.reduce(
+        (sum, tp) => sum + (tp.Diem || 0) * (tp.HeSo || 0),
+        0,
+      );
+      const diemTB = totalHeSo > 0 ? +(totalDiem / totalHeSo).toFixed(2) : 0;
+
+      return {
+        ...record,
+        DiemTrungBinh: diemTB,
+      };
+    });
+
+    return resultWithAverage;
   }
 
   async getListScorebyKhoaHocIDAndMaGV(KhoaHocID: string, magv: string) {

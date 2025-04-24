@@ -26,6 +26,13 @@ export class BaiKiemTraController {
 
   @Get('get_TestbyKhoaHocID/:KhoaHocID')
   @UseGuards(JWTAuthGuard)
+  async GetTestByKhoaHoc(@Param('KhoaHocID') KhoaHocID: string) {
+    const test = await this.BaiKiemTraService.getTestByKhoaHoc(KhoaHocID);
+    return test;
+  }
+  
+  @Get('get_TestbyKhoaHocID/:KhoaHocID')
+  @UseGuards(JWTAuthGuard)
   async GetTestByKhoaHocAndmssv(
     @Param('KhoaHocID') KhoaHocID: string,
     @Request() req: any,

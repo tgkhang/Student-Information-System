@@ -14,6 +14,7 @@ import { UploadModule } from 'src/upload/upload.module';
 import { UploadService } from 'src/upload/upload.service';
 import { DanhGiaKhoaHoc, DanhGiaKhoaHocSchema } from 'src/schemas/DanhGiaKhoaHoc.schema';
 import { LichHoc, LichHocSchema } from 'src/schemas/LichHoc.schema';
+import { BaiKiemTraModule } from 'src/BaiKiemTra/BaiKiemTra.module';
 
 @Module({
   imports:[
@@ -30,6 +31,7 @@ import { LichHoc, LichHocSchema } from 'src/schemas/LichHoc.schema';
     forwardRef(() => SinhVienModule),
     UploadModule,
     AuthModule,
+    forwardRef(() => BaiKiemTraModule),
   ],
   providers: [KhoaHocService, SinhVienService, UploadService],
   controllers: [KhoaHocController],

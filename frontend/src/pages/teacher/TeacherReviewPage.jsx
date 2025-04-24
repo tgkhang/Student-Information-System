@@ -2,7 +2,6 @@
 
 import {useState, useEffect} from "react";
 import Page from "../../components/Page";
-import classesData from "../mockdata/courseData";
 import CourseCardsView from "../../components/CourseCardsView";
 import {
   Box,
@@ -30,12 +29,11 @@ import {
   styled,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useAuth from "../../hooks/useAuth";
-import { getListCourses, getTeacherInfo } from "../../utils/api";
+import { getListRateForTeacher } from "../../utils/api";
 
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -93,8 +91,8 @@ export function CustomSelect({
 
 // Review Summary component
 function CourseReviewSummary({ course }) {
-  const completionPercentage = (course.reviewsCompleted / course.totalReviews) * 100;
-
+  const completionPercentage = (course?.DanhGiaList?.length / course?.SoLuongSinhVienDangKy) * 100;
+  const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return (
     <Box sx={{ mb: 4 }}>
       
@@ -115,7 +113,7 @@ function CourseReviewSummary({ course }) {
               color: "primary.main"
             }}
           >
-            {course.name} ({course.id})
+            {course?.MaKhoaHoc} ({course?.TenKhoaHoc})
           </Typography>
 
           <Grid2
@@ -155,26 +153,26 @@ function CourseReviewSummary({ course }) {
                   </Typography>
                 </Box>
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  {course.reviewsCompleted} of {course.totalReviews} reviews completed
+                  {course?.SoLuongSinhVienDangKy} of {course?.DanhGiaList?.length} reviews completed
                 </Typography>
               </Box>
               
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
                 <Chip 
-                  icon={<DateRangeIcon fontSize="small" />} 
-                  label={`Start: ${new Date(course.startDate).toLocaleDateString()}`}
+                  icon={<AccessTimeIcon fontSize="small" />} 
+                  label={`Start: ${(course?.lichHoc?.ThoiGianBatDau)}`}
                   size="small"
                   sx={{ bgcolor: '#f0f7ff' }}
                 />
                 <Chip 
-                  icon={<DateRangeIcon fontSize="small" />} 
-                  label={`Due: ${new Date(course.dueDate).toLocaleDateString()}`}
+                  icon={<AccessTimeIcon fontSize="small" />} 
+                  label={`Due: ${(course?.lichHoc?.ThoiGianKetThuc)}`}
                   size="small"
                   sx={{ bgcolor: '#fff4e5' }}
                 />
                 <Chip 
-                  icon={<AccessTimeIcon fontSize="small" />} 
-                  label={course.schedule}
+                  icon={<DateRangeIcon fontSize="small" />}
+                  label={dayOfWeek[course?.lichHoc?.NgayHoc % 7]}
                   size="small"
                   sx={{ bgcolor: '#f0f7ff' }}
                 />
@@ -188,20 +186,20 @@ function CourseReviewSummary({ course }) {
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                   <Typography variant="h3" color="primary" sx={{ fontWeight: 'bold' }}>
-                    {course.averageRating?.toFixed(1) || "N/A"}
+                    {course?.TrungBinhSoSao?.toFixed(1) || "N/A"}
                   </Typography>
                   <Typography variant="h3" color="secondary.main">
                     / 5.0
                   </Typography>
                 </Box>
                 <Rating 
-                  value={course.averageRating || 0} 
+                  value={course?.TrungBinhSoSao || 0} 
                   precision={0.1} 
                   readOnly 
                   size="large"
                 />
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  Based on {course.reviewsCompleted} student reviews
+                  Based on {course?.DanhGiaList?.length} student reviews
                 </Typography>
               </Box>
             </Grid2>
@@ -217,12 +215,12 @@ function CourseReviewSummary({ course }) {
 }
 
 export default function CourseReviewPage() {
-  const [semester, setSemester] = useState("");
   const [year, setYear] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [helpfulCounts, setHelpfulCounts] = useState({});
   const [viewMode, setViewMode] = useState("grid");
+  const { user } = useAuth();
   const [classesData, setClassesData] = useState([]);
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -243,19 +241,19 @@ export default function CourseReviewPage() {
       [reviewId]: (prev[reviewId] || 0) + 1
     }));
   };
-  // useEffect(() => {
-  //   const fetchCourses = async () => {
-  //     try {
-  //       const res = await getTeacherInfo(user.username);
-  //       const response = await getListCourses(res.data._id);
-  //       setClassesData(response.data.data);
-  //     } catch (error) {
-  //       console.error("Error fetching courses:", error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await getListRateForTeacher(user.username);
+        console.log("Courses data:", res);
+        setClassesData(res.data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
 
-  //   fetchCourses();
-  // }, []);
+    fetchCourses();
+  }, []);
   return (
     <Page title="Course Reviews">
       <Box sx={{ display: "flex" }}>
@@ -335,13 +333,6 @@ export default function CourseReviewPage() {
                         }}
                       >
                         <Box sx={{ display: "flex", gap: 1 }}>
-                          <CustomSelect
-                            items={["Semester 1", "Semester 2", "Semester 3"]}
-                            label="Semester"
-                            id="semester-select"
-                            value={semester}
-                            onChange={(e) => setSemester(e.target.value)}
-                          />
 
                           <CustomSelect
                             items={["2020", "2021", "2022", "2023", "2024","2025"]}
@@ -375,13 +366,11 @@ export default function CourseReviewPage() {
                       />
                     </Box>
                   </Box>
-
                   {/* Grid View */}
                   {viewMode === "grid" && (
                     <CourseCardsView 
                       courses={classesData}
                       searchTerm={searchTerm}
-                      semester={semester}
                       year={year}
                       onSelectCourse={handleSelectCourse}
                     />
@@ -394,30 +383,30 @@ export default function CourseReviewPage() {
                       <CourseReviewSummary course={selectedCourse} />
                       
                       {/* Reviews Table */}
-                      {selectedCourse.reviews && selectedCourse.reviews.length > 0 ? (
+                      {selectedCourse?.DanhGiaList && selectedCourse?.DanhGiaList?.length > 0 ? (
                         <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 2 }}>
                           <Table sx={{ minWidth: 650 }}>
                             <TableHead>
                               <TableRow>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Student
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Date
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Rating
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}}>
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Comment
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "white"}} align="center">
+                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}} align="center">
                                   Helpful
                                 </TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {selectedCourse.reviews.map((review, index) => (
+                              {selectedCourse?.DanhGiaList?.map((review, index) => (
                                 <StyledTableRow key={index}>
                                   <TableCell>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: "1rem" }}>
@@ -430,26 +419,23 @@ export default function CourseReviewPage() {
                                           fontSize: '0.8rem'
                                         }}
                                       >
-                                        {review.studentName.split(' ').map(n => n[0]).join('')}
+                                        {review?.SinhVien?.HoTen[0]}
                                       </Avatar>
                                       <Box>
                                         <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                                          {review.studentName}
-                                        </Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                          {review.studentId}
+                                          {review?.SinhVien?.HoTen}
                                         </Typography>
                                       </Box>
                                     </Box>
                                   </TableCell>
                                   <TableCell>
-                                    {new Date(review.date).toLocaleDateString()}
+                                    {new Date(review?.ThoiGianDanhGia).toLocaleDateString()}
                                   </TableCell>
                                   <TableCell>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                      <Rating value={review.rating} precision={0.1} readOnly size="small" />
+                                      <Rating value={review?.SoSao} precision={0.1} readOnly size="small" />
                                       <Typography variant="body2" sx={{ ml: 1, fontWeight: 'medium' }}>
-                                        {review.rating.toFixed(1)}
+                                        {review?.SoSao.toFixed(1)}
                                       </Typography>
                                     </Box>
                                   </TableCell>
@@ -464,20 +450,8 @@ export default function CourseReviewPage() {
                                         WebkitBoxOrient: 'vertical',
                                       }}
                                     >
-                                      {review.comment}
+                                      {review?.DanhGia}
                                     </Typography>
-                                  </TableCell>
-                                  <TableCell align="center">
-                                    <Button 
-                                      size="small"
-                                      startIcon={<ThumbUpAltOutlinedIcon />}
-                                      onClick={() => handleHelpfulClick(`${review.studentId}-${index}`)}
-                                      sx={{ color: 'text.secondary' }}
-                                    >
-                                      {helpfulCounts[`${review.studentId}-${index}`] 
-                                        ? helpfulCounts[`${review.studentId}-${index}`] + review.helpful 
-                                        : review.helpful}
-                                    </Button>
                                   </TableCell>
                                 </StyledTableRow>
                               ))}
