@@ -20,11 +20,11 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   Chip,
-  Tab,
-  Tabs,
+  Rating,
   Card,
   CardContent,
 } from '@mui/material';
+import {useSnackbar} from 'notistack';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -39,6 +39,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { useNavigate } from 'react-router-dom';
+import { HasRating, studentRating } from '../../utils/api';
+import useAuth from '../../hooks/useAuth';
 
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 
@@ -218,6 +220,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [expanded, setExpanded] = useState(false);
+
   
   const handleDeleteClick = (item) => {
     setItemToDelete(item);
@@ -283,10 +286,13 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
                 e.preventDefault();
                 e.stopPropagation();
                 
-                if (item.type === 'deadline') {
+                if (item.type === 'deadline' && !isTeacherMode) {
                   window.location.href = "/student/submission/" + item.id;
-                } else if (item.type === 'quiz') {
+                } else if (item.type === 'quiz' && !isTeacherMode) {
                   window.location.href = "/student/attemptQuiz/" + item.id;
+                }
+                if (item.type === 'deadline' && isTeacherMode) {
+                  window.location.href = "/teacher/viewDeadline/" + item.id;
                 }
               }}
               
@@ -359,6 +365,12 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
 
 const CourseSection = ({isTeacherMode, course}) => {
   const [item, setItem] = useState({ lectures: [], assignments: [] });
+  const [rated, setRated] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [ratingValue, setRatingValue] = useState(0);
+  const [comment, setComment] = useState("");
+  const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuth();
   useEffect(() => {
     const newAssignments = Array.isArray(course?.BaiKiemTra)
     ? course.BaiKiemTra.map((item) => ({
@@ -393,6 +405,23 @@ const CourseSection = ({isTeacherMode, course}) => {
     lectures: [...prev.lectures, ...materials],
   }));
   }, [course?.BaiKiemTra]);
+  useEffect(() => {
+    const hasRate = async () => {
+      const response = await HasRating(course?.MaKhoaHoc, user.username);
+      setRated(response.data);
+    }
+    if (course?.MaKhoaHoc) {
+      hasRate();
+    }
+},[])
+  const handleRateCourse = async () => {
+    const response = await studentRating(course?.MaKhoaHoc, {SoSao: ratingValue, DanhGia: comment});  
+    if (response.status < 299) {
+      enqueueSnackbar("Rating submitted successfully", { variant: "success" });
+      setRated(true);
+      setOpenDialog(false);
+    }
+  };
   return (
     <Paper elevation={0}
       sx={{...moodleStyles.mainContainer,
@@ -471,7 +500,34 @@ const CourseSection = ({isTeacherMode, course}) => {
           </CardContent>
         </Card>
       )}
-      
+      {user.role === "student" && !rated && (
+        <Card sx={moodleStyles.actionCard}>
+          <CardContent>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{color: "primary.main"}}
+            >
+                Rate this course
+              </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Please rate this course to help us improve our content and teaching methods.
+            </Typography>
+            
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            <Button 
+              variant="outlined" 
+              startIcon={<NoteAddIcon />}
+              sx={moodleStyles.actionButton}
+              onClick={() => setOpenDialog(true)}
+            >
+              Rate Course
+            </Button>
+
+            </Box>
+          </CardContent>
+        </Card>
+      )}
       <Box sx={{ mt: 3 }}>
         <CollapsibleSection 
           title="Lectures and Materials" 
@@ -490,7 +546,44 @@ const CourseSection = ({isTeacherMode, course}) => {
         />
         
       </Box>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+  <DialogTitle>Rate this course</DialogTitle>
+  <DialogContent>
+    <Typography gutterBottom>
+      How would you rate this course?
+    </Typography>
+    <Rating
+      value={ratingValue}
+      onChange={(e, newValue) => setRatingValue(newValue)}
+    />
+    <TextField
+      fullWidth
+      multiline
+      rows={3}
+      label="Leave a comment"
+      value={comment}
+      onChange={(e) => setComment(e.target.value)}
+      sx={{ mt: 2 }}
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+    <Button 
+      variant="contained" 
+      onClick={() => {
+        // Gửi rating + comment
+        handleRateCourse();
+        setOpenDialog(false);
+      }}
+      disabled={ratingValue === 0}
+    >
+      Submit
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </Paper>
+    
   );
 };
 

@@ -137,7 +137,10 @@ export default function Router() {
           path : "createQuiz/:id",
           element: <CreateQuiz />,
         },
-        
+        {
+          path : "viewDeadline/:id",
+          element: <ViewDeadline />,
+        },
       ],
     },
     {
@@ -238,7 +241,7 @@ const CreateNotification = Loadable(lazy(() => import("../pages/teacher/CreateNo
 const CreateDeadline = Loadable(lazy(() => import("../pages/teacher/CreateDeadline")))
 const UploadMaterials = Loadable(lazy(() => import("../pages/teacher/UpLoadMaterial")))
 const CreateQuiz = Loadable(lazy(() => import("../pages/teacher/CreateQuiz")))
-
+const ViewDeadline = Loadable(lazy(() => import("../pages/teacher/ViewDeadline")))
 // MINISTRY
 const StudentListPage = Loadable(
   lazy(() => import("../pages/ministry/StudentListPage"))

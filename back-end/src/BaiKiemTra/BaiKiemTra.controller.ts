@@ -50,13 +50,8 @@ export class BaiKiemTraController {
 
   @Get('get_Test/:_id')
   @UseGuards(JWTAuthGuard)
-  async getBaiKiemTraById(@Param('_id') _id: string, @Request() req: any) {
+  async getBaiKiemTraById(@Param('_id') _id: string) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (req.user.role !== 'admin' && req.user.role !== 'teacher') {
-      throw new UnauthorizedException(
-        'Không có quyền truy cập bài kiểm tra này',
-      );
-    }
     const Test = await this.BaiKiemTraService.getTestById(_id);
     return Test;
   }

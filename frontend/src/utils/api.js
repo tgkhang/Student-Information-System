@@ -160,6 +160,13 @@ export const uploadFile = (formData) => {
     },
   });
 }
+export const uploadDeadlineFile = (formData) => {
+  return axiosInstance.post(`/upload/submission`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
 export const createCourseApi = (data) =>
   axiosInstance.post("/KhoaHoc/addCourse", data);
 
@@ -167,3 +174,10 @@ export const createCourseApi = (data) =>
 //SCORE
 export const getListScoreById = (id) =>
   axiosInstance.get(`/DiemSo/getListScorebyMSSV/${id}`);
+
+export const HasRating = (MaKH, MaSV) => {
+  return axiosInstance.get(`/KhoaHoc/hasRating/${MaKH}/${MaSV}`);
+}
+export const studentRating = (MaKH, data) => {
+  return axiosInstance.post(`/KhoaHoc/rate/${MaKH}`, data);
+}

@@ -20,7 +20,7 @@ import Page from "../../components/Page";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
-import { getDeadline } from "../../utils/api";
+import { getDeadline, uploadDeadlineFile } from "../../utils/api";
 import useAuth from "../../hooks/useAuth";
 
 dayjs.extend(relativeTime);
@@ -45,6 +45,7 @@ export default function StudentSubmission() {
           const response = await getDeadline(id);
           if (response.status === 200) {
             const data = response.data;
+            console.log(data);
             setData(data);
             setDeadline(dayjs(data?.NgayHetHan));
             const submission = data?.Submissions?.find(
@@ -78,10 +79,21 @@ export default function StudentSubmission() {
     setFile(selectedFile);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmittedAt(dayjs());
+    const formData = new FormData();
+  formData.append("file", file);
+  formData.append("deadlineId", id);
+    const response = await uploadDeadlineFile(formData)
+    if (response.status < 300) {
+      setFile(file);
     enqueueSnackbar("Submission successful!", { variant: "success" });
     setConfirmSubmit(false);
+    }
+    else {
+      enqueueSnackbar("Submission failed. Please try again.", { variant: "error" });
+    }
+
   };
   
   const handleRemove = () => {
