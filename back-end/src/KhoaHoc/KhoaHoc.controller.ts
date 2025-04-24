@@ -25,11 +25,9 @@ import { RateCourseDto } from './dto/rateCourse.dto';
 import { CreateDeadlineDto } from './dto/createDeadline.dto';
 import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
-<<<<<<< HEAD
 import { Types } from 'mongoose';
-=======
 import { JwtModule } from '@nestjs/jwt';
->>>>>>> bd430a98679e37e60dfb4f05bfd9a2593b6fbe89
+
 
 @Controller('api/KhoaHoc')
 export class KhoaHocController {
