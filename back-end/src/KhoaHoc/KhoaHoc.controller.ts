@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -373,6 +374,38 @@ export class KhoaHocController {
         message: 'Giáo viên đã được xóa khỏi khóa học thành công!',
         KhoaHoc,
       };
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return error;
+    }
+  }
+  @Patch('HuyDangKyByMSSV/:mssv')
+  @UseGuards(JWTAuthGuard)
+  async huyDangKyKhoaHoc(
+    @Body() KhoaHocID: string,
+    @Param('mssv') mssv: string,
+    @Req() req: any,
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (req.user.role !== 'student' && req.user.username !== mssv) {
+      throw new UnauthorizedException('Không có quyền truy cập sinh viên này');
+    }
+    return this.khoaHocService.huyDangKyKhoaHoc(KhoaHocID, mssv);
+  }
+  @Get('getListCourseRegister/:mssv')
+  @UseGuards(JWTAuthGuard)
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  )
+  async getListCourseRegister(@Param('mssv') mssv: string) {
+    try {
+      console.log(mssv);
+
+      return this.khoaHocService.getListCourseRegister(mssv);
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return error;

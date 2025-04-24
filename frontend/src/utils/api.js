@@ -157,3 +157,14 @@ export const createCourseApi = (data) =>
 //SCORE
 export const getListScoreById = (id) =>
   axiosInstance.get(`/DiemSo/getListScorebyMSSV/${id}`);
+
+
+//COURSE
+export const studentRegister = (courseId) =>
+  axiosInstance.get(`/KhoaHoc/registerStudent/${courseId}`);
+
+export const studentCancelRegister= (data,username) =>
+  axiosInstance.get(`/KhoaHoc/registerStudent/${username}`,data);
+
+export const getListCourseRegister = (studentId)=> 
+   axiosInstance.get(`/KhoaHoc/getListCourseRegister/${studentId}`);

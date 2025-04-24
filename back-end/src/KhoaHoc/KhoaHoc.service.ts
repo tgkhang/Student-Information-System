@@ -29,6 +29,7 @@ import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
 import { RemoveTeacherDto } from './dto/removeTeacher.dto';
 import { BaiKiemTraService } from 'src/BaiKiemTra/BaiKiemTra.service';
+import { SinhVien, SinhVienDocument } from 'src/schemas/SinhVien.schema';
 
 @Injectable()
 export class KhoaHocService {
@@ -44,8 +45,48 @@ export class KhoaHocService {
     @InjectModel(GiangVien.name)
     private readonly giangVienModel: Model<GiangVienDocument>,
     private readonly baiKiemTraService: BaiKiemTraService,
+    @InjectModel(SinhVien.name)
+    private readonly SinhVienModel: Model<SinhVienDocument>,
   ) {}
 
+  async getListCourseRegister(mssv: string) {
+    
+    const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
+    const khoaHocs = await this.khoaHocModel
+      .find({KhoaID: sinhVien.KhoaID._id.toString()})
+      .populate('GiangVienID', 'HoTen')
+      .exec();
+    console.log(khoaHocs);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const khoaHocIds = khoaHocs.map((kh) => (kh as any)._id.toString());
+    const lichHocList = await this.lichHocModel
+      .find({ KhoaHocID: { $in: khoaHocIds } })
+      .populate('GiangVienID', 'HoTen')
+      .exec();
+    const khoaHocsDetails = khoaHocs.map((khoahoc) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const khoaHocid = (khoahoc as any)._id as Types.ObjectId;
+      return {
+        ...khoahoc.toObject(),
+        LichHoc: lichHocList
+          .filter((lh) => lh.KhoaHocID.toString() === khoaHocid.toString())
+          .map((lh) => ({
+            NgayHoc: lh.NgayHoc,
+            ThoiGianBatDau: lh.ThoiGianBatDau,
+            ThoiGianKetThuc: lh.ThoiGianKetThuc,
+            DiaDiem: lh.DiaDiem,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            GiangVien: lh.GiangVienID ? (lh.GiangVienID as any).HoTen : null,
+            NgayCapNhat: lh.NgayCapNhat,
+          })),
+      };
+    });
+
+    return {
+      total: await this.khoaHocModel.countDocuments(),
+      data: khoaHocsDetails,
+    };
+  }
   async addCourse(KhoaHocdto: AddCourseDto) {
     const TenKhoaHoc = KhoaHocdto.TenKhoaHoc;
     const MaKhoaHoc = await this.generateCoursename(TenKhoaHoc);
@@ -682,5 +723,41 @@ export class KhoaHocService {
     }
 
     return updatedKhoaHoc;
+  }
+  async huyDangKyKhoaHoc(khoaHocId: string, mssv: string) {
+    const khoaHoc = await this.khoaHocModel.findById(khoaHocId).exec();
+    if (!khoaHoc) {
+      throw new NotFoundException('Không tìm thấy khóa học.');
+    }
+
+    const sinhVien = await this.SinhVienModel.findOne({ mssv }).exec();
+    if (!sinhVien) {
+      throw new NotFoundException('Không tìm thấy sinh viên.');
+    }
+    if (!sinhVien._id) {
+      throw new NotFoundException('Sinh viên không tồn tại');
+    }
+    const index = khoaHoc.SinhVienDangKy.findIndex(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      (id) => id.toString() === (sinhVien._id as any).toString(),
+    );
+    if (index === -1) {
+      throw new BadRequestException('Sinh viên không đăng ký khóa học này.');
+    }
+
+    const now = new Date();
+    if (now > khoaHoc.HanDangKy) {
+      throw new BadRequestException('Đã quá hạn hủy đăng ký.');
+    }
+
+    khoaHoc.SinhVienDangKy.splice(index, 1);
+    khoaHoc.SoLuongSinhVienDangKy = Math.max(
+      0,
+      khoaHoc.SoLuongSinhVienDangKy - 1,
+    );
+
+    await khoaHoc.save();
+
+    return { message: 'Hủy đăng ký thành công.' };
   }
 }
