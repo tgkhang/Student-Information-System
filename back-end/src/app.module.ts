@@ -15,8 +15,8 @@ import { BaiKiemTraModule } from './BaiKiemTra/BaiKiemTra.module';
 import { DiemDanhModule } from './DiemDanh/DiemDanh.module';
 import { DiemSoModule } from './DiemSo/DiemSo.module';
 import { UploadModule } from './upload/upload.module';
-import { KhoaModule } from './Khoa/khoa.module';
 import { LichModule } from './Lich/Lich.module';
+import { KhoaModule } from './Khoa/khoa.module';
 
 @Module({
   imports: [

@@ -21,7 +21,6 @@ import { addKhoaDTO } from './dto/addKhoa.dto';
 import { KhoaService } from './Khoa.service';
 
 
-
 @Controller('api/Khoa')
 export class KhoaController {
   constructor(private readonly khoaService: KhoaService) {}
