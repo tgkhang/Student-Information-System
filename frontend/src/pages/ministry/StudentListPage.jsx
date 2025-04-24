@@ -37,6 +37,7 @@ import {
   getStudentListApi,
   searchStudentApi,
   deleteStudentApi,
+  getFacultyListApi
 } from "../../utils/api";
 
 const formatDate = (dateString) => {
@@ -56,16 +57,13 @@ const statuses = [
   'Dropped Out'
 ];
 
-const facultys = [
-  'Khoa hóa học'
-];
-
 export default function StudentListPage() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+  const [faculties, setFaculties] = useState([]);
 
   // Pagination state
   const [pageSize, setPageSize] = useState(10);
@@ -425,6 +423,29 @@ export default function StudentListPage() {
     isSearchActive,
   ]);
 
+  useEffect(() => {
+    const fetchFaculties = async () => {
+      setLoading(true);
+      try {
+        const facultyResponse = await getFacultyListApi({
+          page: 1,
+          size: 100,
+          sort: "TenKhoa",
+          order: "asc",
+        });
+  
+        setFaculties(facultyResponse.data.data || []);
+      } catch (error) {
+        console.error("Error fetching faculties:", error);
+        setError("Failed to load faculty list.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchFaculties();
+  }, []);  
+
   return (
     <Page title="Student List">
       <Container maxWidth="xl" sx={{ mt: "64px" }}>
@@ -454,7 +475,7 @@ export default function StudentListPage() {
                     "Student ID",
                     "Name",
                     "Date of Birth",
-                    "Year",
+                    "Faculty",
                     "Major",
                     "Status",
                   ],
@@ -474,9 +495,9 @@ export default function StudentListPage() {
             </Button>
           </Stack>
 
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 2, width: "100%" }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={3}>
+              <Grid fullWidth item xs={12} sm={3.5}>
                 <TextField
                   fullWidth
                   label="Name or Student ID"
@@ -496,7 +517,7 @@ export default function StudentListPage() {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid fullWidth item xs={12} sm={2.5}>
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select
@@ -519,7 +540,7 @@ export default function StudentListPage() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid fullWidth item xs={12} sm={3}>
                 <FormControl fullWidth>
                   <InputLabel>Faculty</InputLabel>
                   <Select
@@ -534,16 +555,32 @@ export default function StudentListPage() {
                     }}
                   >
                     <MenuItem value="">All</MenuItem>
-                    {facultys.map((faculty) => (
-                      <MenuItem key={faculty} value={faculty}>
-                        {faculty}
+                    {faculties.map((faculty) => (
+                      <MenuItem key={faculty.id} value={faculty.TenKhoa}>
+                        {faculty.TenKhoa}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid fullWidth item xs={12} sm={3}>
                 <Stack direction="row" spacing={1}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSearch}
+                    disabled={loading || !searchTerm.trim()}
+                    sx={{
+                      py: "0.9em",
+                      px: "2em",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    <Iconify icon="eva:search-outline" sx={{ mr: 1 }} />
+                    Search
+                  </Button>
+
                   {(isSearchActive ||
                     searchTerm ||
                     filterStatus ||
@@ -554,36 +591,15 @@ export default function StudentListPage() {
                       color="primary"
                       onClick={handleClearSearch}
                       disabled={loading}
-                      sx={{height: "4em"}}
+                      sx={{ height: "4em" }}
                     >
-                      <Iconify icon={"eva:close-fill"} />
+                      <Iconify icon="eva:close-fill" />
                     </Button>
                   )}
                 </Stack>
               </Grid>
             </Grid>
           </Box>
-
-          {isSearchActive && (
-            <Alert
-              severity="info"
-              sx={{ mb: 2 }}
-              action={
-                <Button
-                  color="inherit"
-                  size="small"
-                  onClick={handleClearSearch}
-                  disabled={loading}
-                >
-                  Back to list
-                </Button>
-              }
-            >
-              {students.length > 0
-                ? `Showing ${students.length} results for: "${searchTerm}"`
-                : `No students found matching: "${searchTerm}"`}
-            </Alert>
-          )}
 
           {initialLoading ? (
             <Box sx={{ display: "flex", justifyContent: "center", my: 3 }}>
@@ -653,7 +669,7 @@ export default function StudentListPage() {
                         </Box>
                       </TableCell>
                       <TableCell sx={{ color: "primary.lighter" }}>Date of Birth</TableCell>
-                      <TableCell sx={{ color: "primary.lighter" }}>Course</TableCell>
+                      <TableCell sx={{ color: "primary.lighter" }}>Faculty</TableCell>
                       <TableCell sx={{ color: "primary.lighter" }}>Study Status</TableCell>
                       <TableCell align="center" sx={{ color: "primary.lighter", borderTopRightRadius: "16px" }}>
                         Actions

@@ -34,7 +34,7 @@ export class GiangVienService {
   }
 
   async getTeacherList(query: GetTeacherListDto) {
-    const { pageSize, pageNumber, sortBy, sortOrder } = query;
+    const { pageSize, pageNumber, sortBy, sortOrder, KhoaID } = query;
 
     if (!pageSize || !pageNumber || !sortBy || !sortOrder)
       throw new BadRequestException('Thiếu các trường cần thiết');
@@ -45,8 +45,13 @@ export class GiangVienService {
     const sort = {};
     sort[sortBy] = sortOrder === 'asc' ? 1 : -1; // 1  ascending, -1  descending
 
+    const filter: any = {};
+    if (KhoaID) {
+      filter.KhoaID = KhoaID;
+    }  
+
     const giangViens = await this.giangVienModel
-      .find()
+      .find(filter)
       .skip(skip)
       .limit(limit)
       .sort(sort);
@@ -227,19 +232,5 @@ export class GiangVienService {
     }
   
     return updatedGiangVien;
-  }
-  async getCourses(id: string): Promise<KhoaHocDocument[]> {
-    const giangVien = await this.giangVienModel.findById(id).exec();
-    if (!giangVien) {
-      throw new NotFoundException('Không tìm thấy giảng viên.');
-    }
-
-    const courses = await this.khoaHocModel
-      .find({ GiangVienID: { $in: [giangVien._id] } })
-      .populate('GiangVienID', 'HoTen MaGV')
-      .populate('TaiLieu')
-      .exec();
-    
-    return courses;
   }
 }

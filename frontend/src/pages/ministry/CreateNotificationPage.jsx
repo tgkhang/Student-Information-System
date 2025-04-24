@@ -225,7 +225,7 @@ export default function AdminCreateNotificationPage() {
       case "NienKhoa":
         return (
           <FormControl fullWidth required>
-            <InputLabel id="nienkhoa-label">Khóa</InputLabel>
+            <InputLabel id="nienkhoa-label">Year</InputLabel>
             <Select
               labelId="nienkhoa-label"
               id="nienkhoa-select"
@@ -239,7 +239,7 @@ export default function AdminCreateNotificationPage() {
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>Chọn khóa</FormHelperText>
+            <FormHelperText>Select the year to notify</FormHelperText>
           </FormControl>
         );
       
@@ -248,7 +248,7 @@ export default function AdminCreateNotificationPage() {
       case "Khoa":
         return (
           <FormControl fullWidth>
-            <InputLabel id="faculty-label">Faculty/Department (Optional)</InputLabel>
+            <InputLabel id="faculty-label">Faculty (Optional)</InputLabel>
             <Select
               labelId="faculty-label"
               id="faculty-select"
@@ -258,7 +258,7 @@ export default function AdminCreateNotificationPage() {
               disabled={facultyLoading}
             >
               <MenuItem value="">
-                <em>All Faculties/Departments</em>
+                <em>All Faculties</em>
               </MenuItem>
               {facultyList.map((faculty) => (
                 <MenuItem key={faculty._id} value={faculty._id}>
@@ -309,133 +309,156 @@ export default function AdminCreateNotificationPage() {
 
   return (
     <Page title="Create Notifications">
-      <Paper
-        elevation={3}
+      <Box
         sx={{
-          p: 4,
-          maxWidth: 800,
-          mx: "auto",
-          mt: 10,
-          borderRadius: 2,
+          py: 2,
+          mt: "64px"
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-          <NotificationsActiveIcon
-            sx={{ mr: 2, color: "primary.main", fontSize: 32 }}
-          />
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{
-              fontWeight: 600,
-              color: "primary.main",
-            }}
-          >
-            Broadcast Notifications
-          </Typography>
-        </Box>
-
-        <Divider sx={{ mb: 4 }} />
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={12}>
-            <TextField
-              required
-              fullWidth
-              id="notification-title"
-              label="Notification Title"
-              value={title}
-              onChange={handleTitleChange}
-              variant="outlined"
-              placeholder="Enter a clear and concise title"
-              InputProps={{
-                endAdornment: title && (
-                  <IconButton
-                    size="small"
-                    onClick={() => setTitle("")}
-                  >
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                ),
-              }}
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            maxWidth: 800,
+            mx: "auto",
+            borderRadius: 2,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+            <NotificationsActiveIcon
+              sx={{ mr: 2, color: "primary.main", fontSize: 32 }}
             />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth required>
-              <InputLabel id="target-group-label">Target Group</InputLabel>
-              <Select
-                labelId="target-group-label"
-                id="target-group-select"
-                value={targetGroup}
-                label="Target Group"
-                onChange={handleTargetGroupChange}
-              >
-                <MenuItem value="NienKhoa">Year Start (NienKhoa)</MenuItem>
-                <MenuItem value="SinhVien">Students (SinhVien)</MenuItem>
-                <MenuItem value="GiangVien">Teachers (GiangVien)</MenuItem>
-                <MenuItem value="Khoa">Faculty/Department (Khoa)</MenuItem>
-                <MenuItem value="KhoaHoc">Course (KhoaHoc)</MenuItem>
-              </Select>
-              <FormHelperText>Select who should receive this notification</FormHelperText>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            {renderSecondarySelection()}
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              required
-              id="notification-message"
-              label="Notification Message"
-              multiline
-              rows={8}
-              value={message}
-              onChange={handleMessageChange}
-              variant="outlined"
-              placeholder="Enter the notification message here..."
-              helperText={`${charCount}/${maxCharCount} characters`}
-              error={charCount > maxCharCount}
-              FormHelperTextProps={{
-                sx: {
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginRight: 0,
-                },
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{
+                fontWeight: 600,
+                color: "primary.main",
               }}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
             >
-              <Button
+              Broadcast Notifications
+            </Typography>
+          </Box>
+
+          <Divider sx={{ mb: 4 }} />
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={12}>
+              <TextField
+                required
+                fullWidth
+                id="notification-title"
+                label="Notification Title"
+                value={title}
+                onChange={handleTitleChange}
                 variant="outlined"
-                color="secondary"
-                onClick={handleClearForm}
-                startIcon={<ClearIcon />}
+                placeholder="Enter a clear and concise title"
+                InputProps={{
+                  endAdornment: title && (
+                    <IconButton
+                      size="small"
+                      onClick={() => setTitle("")}
+                    >
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  ),
+                }}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontWeight: 600,
+                    fontSize: "1.5rem",
+                  },
+                  "& .MuiInputBase-input::placeholder": {
+                    fontWeight: 600,
+                    fontSize: "1.5rem",
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontWeight: 600,
+                    fontSize: "1.5rem",
+                  },
+                  "& .MuiInputLabel-shrink": {
+                    fontSize: "1rem",
+                  },
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth required>
+                <InputLabel id="target-group-label">Target Group</InputLabel>
+                <Select
+                  labelId="target-group-label"
+                  id="target-group-select"
+                  value={targetGroup}
+                  label="Target Group"
+                  onChange={handleTargetGroupChange}
+                >
+                  <MenuItem value="NienKhoa">Years</MenuItem>
+                  <MenuItem value="SinhVien">Students</MenuItem>
+                  <MenuItem value="GiangVien">Lecturers</MenuItem>
+                  <MenuItem value="Khoa">Faculties</MenuItem>
+                  <MenuItem value="KhoaHoc">Courses</MenuItem>
+                </Select>
+                <FormHelperText>Select who should receive this notification</FormHelperText>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              {renderSecondarySelection()}
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                required
+                id="notification-message"
+                label="Notification Message"
+                multiline
+                rows={8}
+                value={message}
+                onChange={handleMessageChange}
+                variant="outlined"
+                placeholder="Enter the notification message here..."
+                helperText={`${charCount}/${maxCharCount} characters`}
+                error={charCount > maxCharCount}
+                FormHelperTextProps={{
+                  sx: {
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginRight: 0,
+                  },
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Box
+                sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}
               >
-                Clear
-              </Button>
-              <Button
-                variant="contained"
-                color={"primary"}
-                onClick={handleSubmit}
-                endIcon={loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
-                disabled={
-                  !isFormValid() || loading
-                }
-              >
-                {loading ? "Sending..." : "Send Notification"}
-              </Button>
-            </Box>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={handleClearForm}
+                  startIcon={<ClearIcon />}
+                >
+                  Clear
+                </Button>
+                <Button
+                  variant="contained"
+                  color={"primary"}
+                  onClick={handleSubmit}
+                  endIcon={loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
+                  disabled={
+                    !isFormValid() || loading
+                  }
+                >
+                  {loading ? "Sending..." : "Send Notification"}
+                </Button>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </Paper>
+        </Paper>
+      </Box>
 
       <Snackbar
         open={showSnackbar}

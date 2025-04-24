@@ -148,15 +148,14 @@ export default function AddTeacherPage() {
   };
 
   return (
-    <Page title="Add Teacher">
+    <Page title="Append Teacher">
       <Paper
         elevation={3}
         sx={{
           padding: 4,
           maxWidth: 1200,
           mx: "auto",
-          mt: 12,
-          mb: 4,
+          mt: 10,
           borderRadius: 2,
         }}
       >
@@ -166,7 +165,7 @@ export default function AddTeacherPage() {
             variant="h4"
             sx={{ fontWeight: 600, color: "primary.main" }}
           >
-            Add New Teacher
+            Append Teacher
           </Typography>
         </Box>
         <Divider sx={{ mb: 4 }} />
@@ -275,7 +274,7 @@ export default function AddTeacherPage() {
             endIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
             disabled={isLoading || !firstName.trim() || !lastName.trim() || !khoaID || !designation}
           >
-            {isLoading ? "Saving..." : "Save Teacher"}
+            {isLoading ? "Saving..." : "Append Teacher"}
           </Button>
         </Box>
       </Paper>

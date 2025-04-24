@@ -53,6 +53,7 @@ export default function MainHeader() {
   const handleCloseNotifications = () => {
     setOpenNotifications(false);
   };
+  
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -74,6 +75,7 @@ export default function MainHeader() {
     }
     fetchNotifications();
   }, [user, openNotifications]);
+
   const handleToggleProfileMenu = (event) => {
     setAnchorProfile(event.currentTarget);
     setOpenProfileMenu((prev) => !prev);
@@ -175,7 +177,11 @@ export default function MainHeader() {
                       '&::-webkit-scrollbar-thumb': { backgroundColor: "primary.main", borderRadius: '3px' },
                       '&::-webkit-scrollbar-thumb:hover': { backgroundColor: "primary.dark" },
                       }}>
-                      <NotificationList notifications={notifications} role={user?.role} markAsRead={markAsRead}/>
+                      <NotificationList
+                        notifications={[...notifications].reverse()}
+                        role={user?.role}
+                        markAsRead={markAsRead}
+                      />
                     </Paper>
                   </Popper>
                 </Box>

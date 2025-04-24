@@ -430,7 +430,7 @@ export default function StudentTakingQuiz() {
         <DialogActions>
           <Button
             variant="contained"
-            href="/student/dashboard"
+            href="/student/quizResult/123"
           >
             Back to Dashboard
           </Button>

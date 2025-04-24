@@ -100,7 +100,11 @@ const CourseCard = ({ course, onClick }) => {
 };
 
 // Years for filter
-const years = ["2022", "2023", "2024", "2025", "2026", "2027"];
+const years = [
+  "K18", "K19", "K20",
+  "K21", "K22", "K23", "K24",
+  "K25",
+];
 
 export default function AdminCoursePage() {
   const [courses, setCourses] = useState([]);
@@ -239,7 +243,7 @@ export default function AdminCoursePage() {
       } catch (err) {
         console.error("Error fetching course data:", err);
         setError(
-          `Không thể tải dữ liệu khóa học: ${err.message || "Unknown error"}`
+          `Error fetching course data: ${err.message || "Unknown error"}`
         );
         setCourses([]);
         setTotalPages(1);
@@ -321,7 +325,7 @@ export default function AdminCoursePage() {
         setPageNumber(1);
       } else {
         setError(
-          `Lỗi tìm kiếm: ${
+          `Error searching courses: ${
             err.response?.data?.message || err.message || "Unknown error"
           }`
         );
@@ -435,16 +439,21 @@ export default function AdminCoursePage() {
   }, [filterYear, searchResults, isSearchActive, pageSize, pageNumber]);
 
   return (
-    <Page title="Admin Course Page">
-      <Container maxWidth="lg" sx={{ mt: 10 }}>
-        <Box sx={{ my: 4 }}>
+    <Page title="All Courses">
+      <Container maxWidth="xl" sx={{ mt: "64px" }}>
+        <Box sx={{ p: 2 }}>
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="center"
+            sx={{
+              my: 2
+            }}
           >
-            <Typography variant="h4" gutterBottom>
-              Danh sách khóa học {isSearchActive && "- Kết quả tìm kiếm"}
+            <Typography variant="h4" gutterBottom
+              sx={{color: "primary.main"}}
+            >
+              All Courses {isSearchActive && "- Search Results"}
             </Typography>
             <Button
               color="success"
@@ -455,14 +464,14 @@ export default function AdminCoursePage() {
               onClick={() =>
                 exportToExcel(
                   [
-                    "Mã khóa học",
-                    "Tên khóa học",
-                    "Giảng viên",
-                    "Số tín chỉ",
-                    "Sinh viên đăng ký",
-                    "Sinh viên tối đa",
-                    "Ngày bắt đầu",
-                    "Ngày kết thúc",
+                    "Course ID",
+                    "Course Name",
+                    "Lecturer",
+                    "Credits",
+                    "Students Registered",
+                    "Max Students",
+                    "Start Date",
+                    "End Date",
                   ],
                   displayedCourses.map((course) => [
                     course.id,
@@ -478,19 +487,19 @@ export default function AdminCoursePage() {
               }
               startIcon={<Iconify icon={"eva:download-fill"} />}
             >
-              Xuất Excel
+              Export Spreadsheet
             </Button>
           </Stack>
 
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 5 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Tìm kiếm theo tên hoặc mã khóa học"
+                  label="Name or Course ID"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Nhập tên hoặc mã khóa học"
+                  placeholder="Input Name or Course ID"
                   disabled={loading}
                   onKeyPress={(e) => {
                     if (e.key === "Enter" && !loading) {
@@ -506,10 +515,10 @@ export default function AdminCoursePage() {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <FormControl fullWidth>
-                  <InputLabel>Năm</InputLabel>
+                  <InputLabel>Year</InputLabel>
                   <Select
                     value={filterYear}
-                    label="Năm"
+                    label="Year"
                     onChange={handleYearChange}
                     disabled={loading}
                     sx={{
@@ -518,7 +527,7 @@ export default function AdminCoursePage() {
                       },
                     }}
                   >
-                    <MenuItem value="">Tất cả</MenuItem>
+                    <MenuItem value="">All</MenuItem>
                     {years.map((year) => (
                       <MenuItem key={year} value={year}>
                         {year}
@@ -535,11 +544,15 @@ export default function AdminCoursePage() {
                     color="primary"
                     onClick={handleSearch}
                     disabled={loading}
+                    sx={{ height: "4em" }}
                   >
                     {loading ? (
                       <CircularProgress size={24} color="inherit" />
                     ) : (
-                      "Tìm kiếm"
+                      <>
+                        <Iconify icon="eva:search-outline" sx={{ mr: 1 }} />
+                        Search
+                      </>
                     )}
                   </Button>
                   {(isSearchActive || filterYear) && (

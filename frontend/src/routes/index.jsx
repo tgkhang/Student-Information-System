@@ -137,23 +137,60 @@ export default function Router() {
           path : "createQuiz/:id",
           element: <CreateQuiz />,
         },
-        
+        {
+          path : "viewDeadline/:id",
+          element: <ViewDeadline />,
+        },
       ],
     },
     {
       path: "admin",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
-        { path: "studentList", element: <StudentListPage /> },
-        { path: "lecturerList", element: <LecturerListPage /> },
-        { path: "lecturerProfile/:id", element: <LecturerProfile /> },
-        { path: "studentProfile/:id", element: <StudentProfile /> },
-        { path: "course", element: <AdminCoursePage /> },
-        { path: "notification", element: <NotificationPage /> },
-        { path: "createBroadcastNotification", element: <AdminCreateNotificationPage /> },
-        { path: "addCourse", element: <CourseAddingPage /> },
-        { path: "addStudent", element: <ImportStudentPage/>},
-        { path: "addTeacher", element: <AddTeacherPage /> },
+        { 
+          path: "",
+          element: <Navigate to="studentList"/>
+        },
+        {
+          path: "studentList",
+          element: <StudentListPage />
+        },
+        { 
+          path: "lecturerList",
+          element: <LecturerListPage />
+        },
+        { 
+          path: "lecturerProfile/:id",
+          element: <LecturerProfile />
+        },
+        { 
+          path: "studentProfile/:id",
+          element: <StudentProfile />
+        },
+        { 
+          path: "course",
+          element: <AdminCoursePage />
+        },
+        { 
+          path: "notification",
+          element: <NotificationPage />
+        },
+        { 
+          path: "createBroadcastNotification",
+          element: <AdminCreateNotificationPage />
+        },
+        {
+          path: "addCourse",
+          element: <CourseAddingPage />
+        },
+        { 
+          path: "addStudent",
+          element: <ImportStudentPage/>
+        },
+        {
+          path: "addTeacher",
+          element: <AddTeacherPage />
+        },
       ],
     },
   ]);
@@ -204,7 +241,7 @@ const CreateNotification = Loadable(lazy(() => import("../pages/teacher/CreateNo
 const CreateDeadline = Loadable(lazy(() => import("../pages/teacher/CreateDeadline")))
 const UploadMaterials = Loadable(lazy(() => import("../pages/teacher/UpLoadMaterial")))
 const CreateQuiz = Loadable(lazy(() => import("../pages/teacher/CreateQuiz")))
-
+const ViewDeadline = Loadable(lazy(() => import("../pages/teacher/ViewDeadline")))
 // MINISTRY
 const StudentListPage = Loadable(
   lazy(() => import("../pages/ministry/StudentListPage"))

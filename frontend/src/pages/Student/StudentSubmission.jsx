@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -19,6 +20,8 @@ import Page from "../../components/Page";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import relativeTime from "dayjs/plugin/relativeTime";
 import duration from "dayjs/plugin/duration";
+import { getDeadline, uploadDeadlineFile } from "../../utils/api";
+import useAuth from "../../hooks/useAuth";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -27,14 +30,42 @@ const FILE_SIZE_LIMIT_MB = 20;
 
 export default function StudentSubmission() {
   const [file, setFile] = useState(null);
+  const [submit, setSubmission] = useState(null);
   const [submittedAt, setSubmittedAt] = useState(null);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
-
+  const [deadline, setDeadline] = useState(dayjs("2025-10-01T12:00:00Z"));
+  const [data, setData] = useState(null);
+  const id = useParams().id;
+  const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-
+  useEffect(() => {
+      const getDeadlineData = async () => {
+        try {
+          const response = await getDeadline(id);
+          if (response.status === 200) {
+            const data = response.data;
+            console.log(data);
+            setData(data);
+            setDeadline(dayjs(data?.NgayHetHan));
+            const submission = data?.Submissions?.find(
+              (element) => element.TaiLieu?.NguoiDang === user.username
+            );
+            if (submission) {
+              setSubmission(submission);
+              setFile(submission?.TaiLieu?.TenTaiLieu);
+              setSubmittedAt(dayjs(submission.NgayTao));
+            }            
+          } else {
+            enqueueSnackbar("Failed to fetch deadline data.", { variant: "error" });
+          }
+        } catch (error) {
+          enqueueSnackbar("Error fetching deadline data.", { variant: "error" });
+        }
+      }
+      getDeadlineData();
+  }, [id])
   // Giả lập deadline từ giáo viên
-  const deadline = dayjs().add(2, "hour");
   const now = dayjs();
   const isOverdue = now.isAfter(deadline);
   const hasSubmitted = !!submittedAt;
@@ -48,10 +79,21 @@ export default function StudentSubmission() {
     setFile(selectedFile);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmittedAt(dayjs());
+    const formData = new FormData();
+  formData.append("file", file);
+  formData.append("deadlineId", id);
+    const response = await uploadDeadlineFile(formData)
+    if (response.status < 300) {
+      setFile(file);
     enqueueSnackbar("Submission successful!", { variant: "success" });
     setConfirmSubmit(false);
+    }
+    else {
+      enqueueSnackbar("Submission failed. Please try again.", { variant: "error" });
+    }
+
   };
   
   const handleRemove = () => {
@@ -63,12 +105,19 @@ export default function StudentSubmission() {
 
   const handleDownload = () => {
     if (!file) return;
+    if (typeof file === "string") {
+      const a = document.createElement('a');
+      a.href = submit?.TaiLieu?.LinkTaiLieu;
+      a.target = "_blank"; 
+      a.click();
+      return;
+    }
     
     // Tạo URL cho file để tải về
     const url = URL.createObjectURL(file);
     const a = document.createElement('a');
     a.href = url;
-    a.download = file.name;
+    a.download = file?.name;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -79,16 +128,28 @@ export default function StudentSubmission() {
 
   const renderTimeInfo = () => {
     if (hasSubmitted) {
-      const early = deadline.diff(submittedAt, "minute");
-      const minutes = Math.abs(early);
-      const minuteLabel = minutes === 1 ? "minute" : "minutes";
+      const diff = deadline.diff(submittedAt); // milliseconds
+      const isEarly = diff > 0;
+      const absDiff = Math.abs(diff);
+      const dur = dayjs.duration(absDiff);
+  
+      let label = "";
+      if (dur.asSeconds() < 60) {
+        label = `${Math.floor(dur.asSeconds())} seconds`;
+      } else if (dur.asMinutes() < 60) {
+        label = `${Math.floor(dur.asMinutes())} minutes`;
+      } else if (dur.asHours() < 24) {
+        label = `${Math.floor(dur.asHours())} hours`;
+      } else if (dur.asDays() < 30) {
+        label = `${Math.floor(dur.asDays())} days`;
+      } else {
+        label = `${Math.floor(dur.asMonths())} months`;
+      }
   
       return (
         <Chip
-          label={`Your submission is ${
-            early > 0 ? `${minutes} ${minuteLabel} early` : `${minutes} ${minuteLabel} late`
-          }`}
-          color={early >= 0 ? "success" : "error"}
+          label={`Your submission is ${label} ${isEarly ? "early" : "late"}`}
+          color={isEarly ? "success" : "error"}
           sx={{ mt: 1 }}
         />
       );
@@ -129,7 +190,7 @@ export default function StudentSubmission() {
   const getFileIcon = () => {
     if (!file) return null;
     
-    const extension = file.name.split('.').pop().toLowerCase();
+    const extension = file?.name?.split('.').pop().toLowerCase();
     
     if (['pdf'].includes(extension)) {
       return <ArticleIcon sx={{ color: '#E44D26' }} />;
@@ -179,7 +240,7 @@ export default function StudentSubmission() {
             <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
               <UploadFileIcon color="success" />
               <Typography fontWeight="bold">
-                Uploaded file: {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+                Uploaded file: {file?.name} ({(file?.size / (1024 * 1024)).toFixed(2)} MB)
               </Typography>
               <IconButton 
                 size="small" 
@@ -227,7 +288,11 @@ export default function StudentSubmission() {
             <Stack direction="row" spacing={2} alignItems="center">
               {getFileIcon()}
               <Typography fontWeight="bold">
-                {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+              {file?.name || file}
+{!isNaN(file?.size) && file?.size !== undefined && (
+  ` (${(file.size / (1024 * 1024)).toFixed(2)} MB)`
+)}
+
               </Typography>
             </Stack>
             <Box className="download-icon" sx={{ 
@@ -254,7 +319,7 @@ export default function StudentSubmission() {
             fontWeight: 700, color: "primary.main", mt: 1
           }}
         >
-          Submission
+          Submission - {data?.MoTa}
         </Typography>
 
         <Paper 

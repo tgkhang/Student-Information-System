@@ -8,7 +8,7 @@ import {
 import { BlobServiceClient } from '@azure/storage-blob';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { TaiLieu, TaiLieuDocument } from 'src/schemas/TaiLieu.schema';
 import { KhoaHoc, KhoaHocDocument, Submission } from 'src/schemas/KhoaHoc.schema';
 import { v4 as uuidv4 } from 'uuid';
@@ -155,7 +155,7 @@ export class UploadService {
 
   async submitAssignment(
     file: Express.Multer.File,
-    khoaHocId: string,
+    // khoaHocId: string,
     deadlineId: string,
     username: string,
   ): Promise<{ message: string; submission: TaiLieu }> {
@@ -183,13 +183,15 @@ export class UploadService {
     if (!sinhVien) {
       throw new NotFoundException('Không tìm thấy sinh viên');
     }
-    const khoaHoc = await this.khoaHocModel
-      .findOne({
-        _id: khoaHocId,
-        SinhVienDangKy: sinhVien._id,
-        'Deadlines._id': deadlineId,
-      })
-      .exec();
+    const khoaHoc = await this.khoaHocModel.findOne({'Deadlines._id': new Types.ObjectId(deadlineId)})
+                                              .exec();
+    // const khoaHoc = await this.khoaHocModel
+    //   .findOne({
+    //     _id: khoaHocId,
+    //     SinhVienDangKy: sinhVien._id,
+    //     'Deadlines._id': deadlineId,
+    //   })
+    //   .exec();
     if (!khoaHoc) {
       throw new NotFoundException('Không tìm thấy khóa học, deadline hoặc bạn chưa đăng ký môn học này');
     }
@@ -224,7 +226,7 @@ export class UploadService {
       }
 
       await this.khoaHocModel.updateOne(
-        { _id: khoaHocId, 'Deadlines._id': deadlineId },
+        { _id: khoaHoc._id, 'Deadlines._id': deadlineId },
         {
           $pull: {
             'Deadlines.$.Submissions': { SinhVienID: sinhVien._id },
@@ -245,7 +247,7 @@ export class UploadService {
     const containerClient = blobServiceClient.getContainerClient(containerName);
 
     const extension = file.originalname.split('.').pop();
-    const blobName = `submissions/${khoaHocId}/${deadlineId}/${username}-${uuidv4()}.${extension}`;
+    const blobName = `submissions/${khoaHoc._id}/${deadlineId}/${username}-${uuidv4()}.${extension}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
     await blockBlobClient.uploadData(file.buffer, {
@@ -261,7 +263,7 @@ export class UploadService {
       NgayTao: new Date(),
     });
     await this.khoaHocModel.updateOne(
-      { _id: khoaHocId, 'Deadlines._id': deadlineId },
+      { _id: khoaHoc._id, 'Deadlines._id': deadlineId },
       {
         $push: {
           'Deadlines.$.Submissions': {

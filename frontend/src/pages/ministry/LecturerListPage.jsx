@@ -33,9 +33,9 @@ import Page from "../../components/Page";
 import Iconify from "../../components/Iconify";
 // utils
 import exportToExcel from "../../utils/exportToExcel";
-import {  getTeacherListApi, getFacultyListApi,deleteTeacherApi,} from "../../utils/api";
+import {  getTeacherListApi, getFacultyListApi,deleteTeacherApi, } from "../../utils/api";
 
-const statuses = ["Đang công tác", "Nghỉ hưu", "Nghỉ phép", "Nghỉ việc"];
+const statuses = ["Working", "Retired", "On Leave", "Resigned"]
 
 const academicTitles = [
   "Giáo sư",
@@ -122,7 +122,7 @@ export default function LecturerListPage() {
   const deleteTeacher = useCallback(
     async (teacherId) => {
       if (!teacherId) {
-        setSnackbarMessage("Mã giảng viên không hợp lệ");
+        setSnackbarMessage("Invalid teacher ID");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
         return;
@@ -135,19 +135,19 @@ export default function LecturerListPage() {
         await deleteTeacherApi(teacherId);
 
         // Show success message
-        setSnackbarMessage(`Đã xóa giảng viên ${teacherId} thành công`);
+        setSnackbarMessage(`Lecturer ${teacherId} successfully deleted`);
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
 
         // Refresh data
         fetchData();
       } catch (err) {
-        console.error(`Error deleting teacher ${teacherId}:`, err);
+        console.error(`Error deleting lecturer ${teacherId}:`, err);
 
         // Handle deletion error
         const errorMessage =
           err.response?.data?.message || err.message || "Unknown error";
-        setSnackbarMessage(`Không thể xóa giảng viên: ${errorMessage}`);
+        setSnackbarMessage(`Unable to delete lecturer: ${errorMessage}`);
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
       } finally {
@@ -215,13 +215,13 @@ export default function LecturerListPage() {
       name: lecturer.HoTen,
       department: faculty.name,
       departmentId: lecturer.KhoaID,
-      position: lecturer.ChucVu || "Giáo viên",
-      status: lecturer.Status || "Đang công tác",
-      academicTitle: lecturer.TrinhDo || "Chưa cập nhật",
-      specialization: "Chưa cập nhật",
+      position: lecturer.ChucVu || "Teacher",
+      status: lecturer.Status || "Working",
+      academicTitle: lecturer.TrinhDo || "Not Provided",
+      specialization: "Not Provided",
       dob: lecturer.NgaySinh
         ? new Date(lecturer.NgaySinh).toLocaleDateString()
-        : "Chưa cập nhật",
+        : "Not Provided",
       //MOck avatar
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
         lecturer.HoTen
@@ -298,27 +298,27 @@ export default function LecturerListPage() {
     setExpandedDept(isExpanded ? dept : null);
   };
 
-  // Hàm để hiển thị chip trạng thái với màu sắc tương ứng
-  const getStatusChip = (status) => {
-    let color = "default";
-    switch (status) {
-      case "Đang công tác":
-        color = "success";
-        break;
-      case "Nghỉ hưu":
-        color = "secondary";
-        break;
-      case "Nghỉ phép":
-        color = "warning";
-        break;
-      case "Nghỉ việc":
-        color = "error";
-        break;
-      default:
-        color = "default";
-    }
-    return <Chip label={status} color={color} size="small" />;
-  };
+// Function to return a status chip with corresponding color
+const getStatusChip = (status) => {
+  let color = "default";
+  switch (status) {
+    case "Working":
+      color = "success";
+      break;
+    case "Retired":
+      color = "secondary";
+      break;
+    case "On Leave":
+      color = "warning";
+      break;
+    case "Resigned":
+      color = "error";
+      break;
+    default:
+      color = "default";
+  }
+  return <Chip label={status} color={color} size="small" />;
+};
 
   // Hàm để hiển thị chip chức vụ với màu sắc tương ứng
   const getPositionChip = (position) => {
@@ -338,16 +338,20 @@ export default function LecturerListPage() {
 
   return (
     <Page title="Lecturer List">
-      <Container maxWidth="lg" sx={{ mt: 10 }}>
-        <Box sx={{ my: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: "64px" }}>
+        <Box sx={{ p: 2 }}>
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="center"
-            mb={4}
+            sx={{
+              my: 2
+            }}
           >
-            <Typography variant="h4" gutterBottom>
-              Danh sách giảng viên
+            <Typography variant="h4" gutterBottom
+              sx={{color: "primary.main"}}
+            >
+              Lecturer List
             </Typography>
             <Stack direction="row" spacing={2}>
               {(appliedSearch ||
@@ -361,7 +365,7 @@ export default function LecturerListPage() {
                   startIcon={<Iconify icon="eva:refresh-outline" />}
                   disabled={loading}
                 >
-                  Làm mới
+                  Refresh
                 </Button>
               )}
               <Button
@@ -371,14 +375,14 @@ export default function LecturerListPage() {
                 onClick={() =>
                   exportToExcel(
                     [
-                      "Mã giảng viên",
-                      "Họ tên",
-                      "Ngày sinh",
-                      "Khoa",
-                      "Chức vụ",
-                      "Tình trạng",
-                      "Học hàm/học vị",
-                      "Chuyên ngành",
+                      "Teacher ID",
+                      "Name",
+                      "Date of Birth",
+                      "Faculty",
+                      "Position",
+                      "Status",
+                      "Degree",
+                      "Major",
                     ],
                     filteredLecturers.map((lecturer) => [
                       lecturer.id,
@@ -394,17 +398,17 @@ export default function LecturerListPage() {
                 }
                 startIcon={<Iconify icon={"eva:download-fill"} />}
               >
-                Xuất Excel
+                Export Spreadsheet
               </Button>
             </Stack>
           </Stack>
 
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 5 }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={6} md={3}>
                 <TextField
                   fullWidth
-                  label="Tìm kiếm theo tên hoặc mã"
+                  label="Name or Teacher ID"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   sx={{
@@ -416,10 +420,10 @@ export default function LecturerListPage() {
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
                 <FormControl fullWidth>
-                  <InputLabel>Khoa</InputLabel>
+                  <InputLabel>Faculty</InputLabel>
                   <Select
                     value={filterDepartment}
-                    label="Khoa"
+                    label="Faculty"
                     onChange={(e) => setFilterDepartment(e.target.value)}
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -427,7 +431,7 @@ export default function LecturerListPage() {
                       },
                     }}
                   >
-                    <MenuItem value="">Tất cả</MenuItem>
+                    <MenuItem value="">All</MenuItem>
                     {faculties.map((faculty) => (
                       <MenuItem key={faculty._id} value={faculty.TenKhoa}>
                         {faculty.TenKhoa}
@@ -438,10 +442,10 @@ export default function LecturerListPage() {
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
                 <FormControl fullWidth>
-                  <InputLabel>Học hàm/Học vị</InputLabel>
+                  <InputLabel>Degree</InputLabel>
                   <Select
                     value={filterTitle}
-                    label="Học hàm/Học vị"
+                    label="Degree"
                     onChange={(e) => setFilterTitle(e.target.value)}
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -449,7 +453,7 @@ export default function LecturerListPage() {
                       },
                     }}
                   >
-                    <MenuItem value="">Tất cả</MenuItem>
+                    <MenuItem value="">All</MenuItem>
                     {academicTitles.map((title) => (
                       <MenuItem key={title} value={title}>
                         {title}
@@ -460,10 +464,10 @@ export default function LecturerListPage() {
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
                 <FormControl fullWidth>
-                  <InputLabel>Tình trạng</InputLabel>
+                  <InputLabel>Status</InputLabel>
                   <Select
                     value={filterStatus}
-                    label="Tình trạng"
+                    label="Status"
                     onChange={(e) => setFilterStatus(e.target.value)}
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -471,7 +475,7 @@ export default function LecturerListPage() {
                       },
                     }}
                   >
-                    <MenuItem value="">Tất cả</MenuItem>
+                    <MenuItem value="">All</MenuItem>
                     {statuses.map((status) => (
                       <MenuItem key={status} value={status}>
                         {status}
@@ -486,10 +490,15 @@ export default function LecturerListPage() {
                   variant="contained"
                   color="primary"
                   onClick={handleSearch}
-                  sx={{ height: "56px" }}
                   disabled={loading}
+                  sx={{
+                    py: "0.9em",
+                    px: "2em",
+                    fontSize: "1rem",
+                  }}
                 >
-                  Tìm kiếm
+                  <Iconify icon="eva:search-outline" sx={{ mr: 1 }} />
+                  Search
                 </Button>
               </Grid>
             </Grid>
@@ -646,13 +655,13 @@ export default function LecturerListPage() {
 
                                 <Stack direction="row" spacing={3}>
                                   <Typography
-                                    variant="body2"
+                                    variant="body1"
                                     color="text.secondary"
                                   >
                                     <strong>Sinh nhật:</strong> {lecturer.dob}
                                   </Typography>
                                   <Typography
-                                    variant="body2"
+                                    variant="body1"
                                     color="text.secondary"
                                   >
                                     <strong>Chuyên ngành:</strong>{" "}
