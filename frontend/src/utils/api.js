@@ -150,6 +150,9 @@ export const getCourseById = (id) => {
 export const createDeadline = (id, data) => {
   return axiosInstance.post(`/KhoaHoc/${id}/deadline`, data);
 };
+export const getDeadline = (id) => {
+  return axiosInstance.get(`/KhoaHoc/deadline/${id}`, data);
+};
 export const uploadFile = (formData) => {
   return axiosInstance.post(`/upload`, formData, {
     headers: {
@@ -159,3 +162,8 @@ export const uploadFile = (formData) => {
 }
 export const createCourseApi = (data) =>
   axiosInstance.post("/KhoaHoc/addCourse", data);
+
+
+//SCORE
+export const getListScoreById = (id) =>
+  axiosInstance.get(`/DiemSo/getListScorebyMSSV/${id}`);

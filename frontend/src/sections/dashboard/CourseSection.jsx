@@ -214,23 +214,7 @@ const getResourceIcon = (type) => {
 
 const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, items }) => {
   // Default items based on section type
-  const defaultItems = {
-    'lectures': [
-      { id: 1, content: 'Course Introduction Materials', type: 'document', dueDate: null },
-      { id: 2, content: 'Week 1 Lecture Video', type: 'video', dueDate: null },
-      { id: 3, content: 'Week 2 Reading Materials', type: 'document', dueDate: null }
-    ],
-    'assignments': [
-      { id: 1, content: 'Midterm Quiz', type: 'quiz', dueDate: '2025-05-15' },
-      { id: 2, content: 'Group Project Submission', type: 'deadline', dueDate: '2025-05-20' },
-      { id: 3, content: 'Weekly Practice Quiz', type: 'quiz', dueDate: '2025-04-25' }
-    ],
-    'references': [
-      { id: 1, content: 'Additional Learning Resources', type: 'link', url: 'https://example.com/resources' },
-      { id: 2, content: 'Recommended Reading List', type: 'link', url: 'https://example.com/reading' },
-      { id: 3, content: 'Academic Papers Collection', type: 'link', url: 'https://example.com/papers' }
-    ]
-  };
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [expanded, setExpanded] = useState(false);
@@ -295,6 +279,17 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
               component={item.type === 'document' ? "a" : "div"}
               href={item.type === 'document' ? item.url : undefined}
               target={item.type === 'document' ? "_blank" : undefined}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (item.type === 'deadline') {
+                  window.location.href = "/student/submission/" + item.id;
+                } else if (item.type === 'quiz') {
+                  window.location.href = "/student/attemptQuiz/" + item.id;
+                }
+              }}
+              
             >
               <ListItemIcon>
                 {getResourceIcon(item.type)}
@@ -363,8 +358,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
 };
 
 const CourseSection = ({isTeacherMode, course}) => {
-  const [item, setItem] = useState({ lectures: [], assignments: [], references: [] });
-  console.log(course);
+  const [item, setItem] = useState({ lectures: [], assignments: [] });
   useEffect(() => {
     const newAssignments = Array.isArray(course?.BaiKiemTra)
     ? course.BaiKiemTra.map((item) => ({
