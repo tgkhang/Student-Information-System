@@ -129,6 +129,7 @@ export class KhoaHocService {
       .populate('KhoaID', 'TenKhoa')
       .populate('TaiLieu')
       .exec();
+    console.log(khoaHoc?.toObject());
     if (!khoaHoc) {
       throw new NotFoundException('Khóa học không tồn tại.');
     }
