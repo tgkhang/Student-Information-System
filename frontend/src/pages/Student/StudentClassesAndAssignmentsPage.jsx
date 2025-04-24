@@ -318,13 +318,13 @@ export default function StudentClassesAndAssignmentsPage() {
                 >
                   <Table sx={{ minWidth: 650 }}>
                     <TableHead>
-                      <TableRow sx={{ backgroundColor: "rgba(0, 0, 0, 0.04)" }}>
-                        <TableCell>Course Code</TableCell>
-                        <TableCell>Subject Name</TableCell>
-                        <TableCell align="center">Credits</TableCell>
-                        <TableCell>Teacher</TableCell>
-                        <TableCell>Day</TableCell>
-                        <TableCell>Schedule</TableCell>
+                      <TableRow sx={{ backgroundColor: "primary.main" }}>
+                        <TableCell sx={{color: "primary.lighter"}}>Course Code</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Subject Name</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}} align="center">Credits</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Teacher</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Day</TableCell>
+                        <TableCell sx={{color: "primary.lighter"}}>Schedule</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>

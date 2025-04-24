@@ -765,7 +765,7 @@ export class KhoaHocService {
     await khoaHoc.save();
 
     return { message: 'Hủy đăng ký thành công.' };
-
+  }
 
   async getDeadline(id: string){
     const khoaHoc = await this.khoaHocModel.findOne({'Deadlines._id': new Types.ObjectId(id)})

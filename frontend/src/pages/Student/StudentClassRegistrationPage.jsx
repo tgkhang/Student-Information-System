@@ -288,6 +288,7 @@ export default function StudentClassRegistrationPage() {
                         <TableCell>End Date</TableCell>
                         <TableCell>Schedule</TableCell>
                         <TableCell>Action</TableCell>
+
                       </TableRow>
                     </TableHead>
                     <TableBody>

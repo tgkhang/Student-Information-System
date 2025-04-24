@@ -10,6 +10,7 @@ import { GiangVien, GiangVienDocument } from 'src/schemas/GiangVien.schema';
 import { UpdateGiangVienDto } from './dto/update-giangvien.dto';
 import { GetTeacherListDto } from './dto/getListGiangVien.dto';
 import { KhoaHoc, KhoaHocDocument } from 'src/schemas/KhoaHoc.schema';
+import path from 'path';
 
 @Injectable()
 export class GiangVienService {
@@ -232,5 +233,19 @@ export class GiangVienService {
     }
   
     return updatedGiangVien;
+  }
+  async getCourses(id: string): Promise<KhoaHocDocument[]> {
+    const giangVien = await this.giangVienModel.findById(id).exec();
+    if (!giangVien) {
+      throw new NotFoundException('Không tìm thấy giảng viên.');
+    }
+
+    const courses = await this.khoaHocModel
+      .find({ GiangVienID: { $in: [giangVien._id] } })
+      .populate('GiangVienID', 'HoTen MaGV')
+      .populate({path: 'TaiLieu', model: 'TaiLieu'})
+      .exec();
+    
+    return courses;
   }
 }
