@@ -380,7 +380,7 @@ const CourseSection = ({isTeacherMode, course}) => {
         id: item._id,
         content: item?.MoTa,
         type: 'deadline',
-        dueDate: item?.NgayHetHan,
+        dueDate: item?.ThoiGianKetThuc,
       }))
     : [];
 
@@ -459,26 +459,9 @@ const CourseSection = ({isTeacherMode, course}) => {
                 variant="outlined" 
                 startIcon={<CloudUploadIcon />}
                 sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = `/teacher/upload/${course?.MaKhoaHoc}`}
+                onClick={() => window.location.href = `/teacher/upload/${course?._id}`}
               >
                 Upload Document
-              </Button>
-              
-              <Button 
-                variant="outlined" 
-                startIcon={<LinkIcon />}
-                sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = '/add-reference'}
-              >
-                Add Reference Link
-              </Button>
-              <Button 
-                variant="outlined" 
-                startIcon={<LinkIcon />}
-                sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = `/teacher/create-notification/${course?.MaKhoaHoc}`}
-              >
-                Add Reference Link
               </Button>
             </Box>
           </CardContent>
@@ -502,13 +485,6 @@ const CourseSection = ({isTeacherMode, course}) => {
           items={item.assignments}
         />
         
-        <CollapsibleSection 
-          title="Reference Materials" 
-          isTeacherMode={isTeacherMode}
-          sectionColor="#f3e5f5"
-          sectionType="references" 
-          items={item.references}
-        />
       </Box>
     </Paper>
   );

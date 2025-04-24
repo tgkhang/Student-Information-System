@@ -1,6 +1,6 @@
 import { IsString, IsDateString, IsNotEmpty } from 'class-validator';
 
-export class CreateDeadlineDto {
+export class  CreateDeadlineDto {
   @IsNotEmpty()
   @IsString()
   MoTa: string;

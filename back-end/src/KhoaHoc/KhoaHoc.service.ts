@@ -317,7 +317,6 @@ export class KhoaHocService {
     const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
-    console.log(sinhVienId);
 
     const index = khoaHoc.SinhVienDangKy.indexOf(sinhVienId);
     if (index !== -1) {
