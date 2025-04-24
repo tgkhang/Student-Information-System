@@ -698,4 +698,25 @@ export class KhoaHocService {
     
     return deadline;
   }
+  async hasStudentReviewed(MaKhoaHoc: string, mssv: string): Promise<boolean> {
+    const khoaHoc = await this.khoaHocModel
+      .findOne({ MaKhoaHoc })
+      .select('_id')
+      .lean()
+      .exec();
+
+    if (!khoaHoc) {
+      throw new NotFoundException('Không tìm thấy khóa học.');
+    }
+    const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
+    const review = await this.danhGiaKhoaHocModel
+      .findOne({
+        KhoaHocID: khoaHoc._id,
+        mssv: (sinhVien as any)._id,
+      })
+      .lean()
+      .exec();
+
+    return !!review;
+  }
 }

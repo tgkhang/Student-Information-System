@@ -271,14 +271,22 @@ export class KhoaHocController {
   }
 
   @Get('listRatings/:MaKhoaHoc')
+  @UseGuards(JWTAuthGuard)
   async getListCourseRatings(@Param('MaKhoaHoc') MaKhoaHoc: string) {
     const result = await this.khoaHocService.getListCourseRatings(MaKhoaHoc);
     return { message: 'Danh sách đánh giá khóa học.', data: result };
   }
 
   @Get('ratings/:MaKhoaHoc')
+  @UseGuards(JWTAuthGuard)
   async getCourseRatings(@Param('MaKhoaHoc') MaKhoaHoc: string) {
     return await this.khoaHocService.getCourseRatings(MaKhoaHoc);
+  }
+  @Get('hasRating/:MaKhoaHoc/:mssv')
+  @UseGuards(JWTAuthGuard)
+  async checkRating(@Param('MaKhoaHoc') MaKhoaHoc: string, @Param('mssv') mssv: string) {
+    return this.khoaHocService.hasStudentReviewed(MaKhoaHoc, mssv);
+
   }
 
   @Post(':id/deadline')
