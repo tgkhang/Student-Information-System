@@ -52,40 +52,45 @@ export class KhoaHocService {
   async getListCourseRegister(mssv: string) {
     
     const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
+    console.log('ddsfs', sinhVien.KhoaID._id);
+    
     const khoaHocs = await this.khoaHocModel
-      .find({KhoaID: sinhVien.KhoaID._id.toString()})
-      .populate('GiangVienID', 'HoTen')
-      .exec();
-    console.log(khoaHocs);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const khoaHocIds = khoaHocs.map((kh) => (kh as any)._id.toString());
-    const lichHocList = await this.lichHocModel
-      .find({ KhoaHocID: { $in: khoaHocIds } })
-      .populate('GiangVienID', 'HoTen')
-      .exec();
-    const khoaHocsDetails = khoaHocs.map((khoahoc) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const khoaHocid = (khoahoc as any)._id as Types.ObjectId;
-      return {
-        ...khoahoc.toObject(),
-        LichHoc: lichHocList
-          .filter((lh) => lh.KhoaHocID.toString() === khoaHocid.toString())
-          .map((lh) => ({
-            NgayHoc: lh.NgayHoc,
-            ThoiGianBatDau: lh.ThoiGianBatDau,
-            ThoiGianKetThuc: lh.ThoiGianKetThuc,
-            DiaDiem: lh.DiaDiem,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-            GiangVien: lh.GiangVienID ? (lh.GiangVienID as any).HoTen : null,
-            NgayCapNhat: lh.NgayCapNhat,
-          })),
-      };
-    });
+    .find({ KhoaID: sinhVien.KhoaID._id.toString() })
+    .populate('GiangVienID', 'HoTen')
+    .lean()
+    .exec();
+
+  const khoaHocIds = khoaHocs.map((kh) => kh._id.toString());
+  const lichHocList = await this.lichHocModel
+    .find({ KhoaHocID: { $in: khoaHocIds } })
+    .populate('GiangVienID', 'HoTen')
+    .exec();
+
+  const khoaHocsDetails = khoaHocs.map((khoahoc) => {
+    const isRegistered = khoahoc.SinhVienDangKy.some((svId) => 
+      svId.toString() === (sinhVien as any)._id.toString()
+    );
 
     return {
-      total: await this.khoaHocModel.countDocuments(),
-      data: khoaHocsDetails,
+      ...khoahoc,
+      daDangKy: isRegistered,
+      LichHoc: lichHocList
+        .filter((lh) => lh.KhoaHocID.toString() === khoahoc._id.toString())
+        .map((lh) => ({
+          NgayHoc: lh.NgayHoc,
+          ThoiGianBatDau: lh.ThoiGianBatDau,
+          ThoiGianKetThuc: lh.ThoiGianKetThuc,
+          DiaDiem: lh.DiaDiem,
+          GiangVien: lh.GiangVienID ? (lh.GiangVienID as any).HoTen : null,
+          NgayCapNhat: lh.NgayCapNhat,
+        })),
     };
+  });
+
+  return {
+    total: await this.khoaHocModel.countDocuments({ KhoaID: sinhVien.KhoaID._id }),
+    data: khoaHocsDetails,
+  };
   }
   async addCourse(KhoaHocdto: AddCourseDto) {
     const TenKhoaHoc = KhoaHocdto.TenKhoaHoc;

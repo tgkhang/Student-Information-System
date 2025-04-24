@@ -161,10 +161,10 @@ export const getListScoreById = (id) =>
 
 //COURSE
 export const studentRegister = (courseId) =>
-  axiosInstance.get(`/KhoaHoc/registerStudent/${courseId}`);
+  axiosInstance.post(`/KhoaHoc/registerStudent/${courseId}`);
 
 export const studentCancelRegister= (data,username) =>
-  axiosInstance.get(`/KhoaHoc/registerStudent/${username}`,data);
+  axiosInstance.patch(`/KhoaHoc/HuyDangKyByMSSV/${username}`,data);
 
 export const getListCourseRegister = (studentId)=> 
    axiosInstance.get(`/KhoaHoc/getListCourseRegister/${studentId}`);
