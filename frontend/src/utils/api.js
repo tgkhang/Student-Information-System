@@ -185,8 +185,6 @@ export const studentCancelRegister= (data,username) =>
 
 export const getListCourseRegister = (studentId)=> 
    axiosInstance.get(`/KhoaHoc/getListCourseRegister/${studentId}`);
-<<<<<<< HEAD
-=======
 
 export const HasRating = (MaKH, MaSV) => {
   return axiosInstance.get(`/KhoaHoc/hasRating/${MaKH}/${MaSV}`);
@@ -195,4 +193,3 @@ export const studentRating = (MaKH, data) => {
   return axiosInstance.post(`/KhoaHoc/rate/${MaKH}`, data);
 }
 
->>>>>>> bd430a98679e37e60dfb4f05bfd9a2593b6fbe89
