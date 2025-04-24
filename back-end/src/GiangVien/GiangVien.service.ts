@@ -233,18 +233,4 @@ export class GiangVienService {
   
     return updatedGiangVien;
   }
-  async getCourses(id: string): Promise<KhoaHocDocument[]> {
-    const giangVien = await this.giangVienModel.findById(id).exec();
-    if (!giangVien) {
-      throw new NotFoundException('Không tìm thấy giảng viên.');
-    }
-
-    const courses = await this.khoaHocModel
-      .find({ GiangVienID: { $in: [giangVien._id] } })
-      .populate('GiangVienID', 'HoTen MaGV')
-      .populate('TaiLieu')
-      .exec();
-    
-    return courses;
-  }
 }

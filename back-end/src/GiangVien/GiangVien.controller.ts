@@ -148,3 +148,6 @@ export class GiangVienController {
     return { message: 'Đã đánh dấu thông báo là đã đọc.', data: updatedGiangVien };
   }
 }
+
+
+}
