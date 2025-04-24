@@ -36,9 +36,9 @@ const navAdminConfig = [
   { title: 'Lecturer List', path: '/admin/lecturerList', icon: <AccountCircle /> },
   { title: 'All Courses', path: '/admin/course', icon: <MenuBook /> },
   { title: 'Create Notification', path: '/admin/createBroadcastNotification', icon: <Notifications /> },
-  { title: 'Add New Course', path: '/admin/addCourse', icon: <AddCircle /> },
+  { title: 'Add Course', path: '/admin/addCourse', icon: <AddCircle /> },
   { title: 'Import Students', path: '/admin/addStudent', icon: <UploadFile /> },
-  { title: 'Import Teachers', path: '/admin/addTeacher', icon: <PersonAdd /> },
+  { title: 'Append Teacher', path: '/admin/addTeacher', icon: <PersonAdd /> },
 ];
 
 export { navTeacherConfig, navStudentConfig, navAdminConfig };

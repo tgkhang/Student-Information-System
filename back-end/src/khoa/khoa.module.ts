@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Khoa, KhoaSchema } from 'src/schemas/Khoa.schema';
 import { JwtModule } from '@nestjs/jwt';
-import { KhoaController } from './Khoa.controller';
 import { KhoaService } from './khoa.service';
+import { KhoaController } from './khoa.controller';
 
 @Module({
   imports: [
