@@ -289,12 +289,12 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
               divider={index < item.length - 1}
               sx={{
                 ...moodleStyles.listItem,
-                ...(item.type === 'link' && moodleStyles.linkItem)
+                ...(item.type === 'document' && moodleStyles.linkItem)
               }}
               button
-              component={item.type === 'link' ? "a" : "div"}
-              href={item.type === 'link' ? item.url : undefined}
-              target={item.type === 'link' ? "_blank" : undefined}
+              component={item.type === 'document' ? "a" : "div"}
+              href={item.type === 'document' ? item.url : undefined}
+              target={item.type === 'document' ? "_blank" : undefined}
             >
               <ListItemIcon>
                 {getResourceIcon(item.type)}
@@ -303,7 +303,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
                 primary={
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography
-                      style={item.type === 'link' ? { marginRight: '8px' } : {}}
+                      style={item.type === 'document' ? { marginRight: '8px' } : {}}
                     >
                       {item.content}
                     </Typography>
@@ -313,7 +313,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
                 primaryTypographyProps={{
                   sx: {
                     fontWeight: 500,
-                    color: item.type === 'link' ? 'primary.dark' : 'text.primary',
+                    color: item.type === 'document' ? 'primary.dark' : 'text.primary',
                     fontSize: '1rem',
                   },
                 }}
@@ -364,6 +364,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
 
 const CourseSection = ({isTeacherMode, course}) => {
   const [item, setItem] = useState({ lectures: [], assignments: [], references: [] });
+  console.log(course);
   useEffect(() => {
     const newAssignments = Array.isArray(course?.BaiKiemTra)
     ? course.BaiKiemTra.map((item) => ({
@@ -387,7 +388,8 @@ const CourseSection = ({isTeacherMode, course}) => {
       id: item._id,
       content: item.TenTaiLieu,
       type: 'document',
-      dueDate: item?.NgayTao
+      dueDate: item?.NgayTao,
+      url: item?.LinkTaiLieu
       ,
     }))
   : [];
@@ -396,7 +398,6 @@ const CourseSection = ({isTeacherMode, course}) => {
     assignments: [...prev.assignments, ...newAssignments, ...deadlines],
     lectures: [...prev.lectures, ...materials],
   }));
-  console.log(item)
   }, [course?.BaiKiemTra]);
   return (
     <Paper elevation={0}
