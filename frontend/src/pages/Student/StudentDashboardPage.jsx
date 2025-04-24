@@ -83,216 +83,10 @@ const summaryData = {
   currentSemester: "S1-2024-2025",
 };
 
-// Enhanced student scores data with more realistic values and status
-const studentScores = [
-  {
-    semester: "S1-2023-2024",
-    subjectId: "CS101",
-    name: "Introduction to Programming",
-    credit: 3,
-    class: "CS-A1",
-    midterm: 85,
-    practice: 90,
-    bonus: 5,
-    final: 88,
-    overall: "A",
-    note: "Passed",
-    status: "passed",
-  },
-  {
-    semester: "S1-2023-2024",
-    subjectId: "MATH201",
-    name: "Calculus I",
-    credit: 4,
-    class: "M-B2",
-    midterm: 75,
-    practice: 80,
-    bonus: 3,
-    final: 78,
-    overall: "B+",
-    note: "Passed",
-    status: "passed",
-  },
-  {
-    semester: "S1-2023-2024",
-    subjectId: "ENG102",
-    name: "Academic English",
-    credit: 2,
-    class: "E-C3",
-    midterm: 65,
-    practice: 70,
-    bonus: 2,
-    final: 68,
-    overall: "C+",
-    note: "Passed",
-    status: "passed",
-  },
-  {
-    semester: "S2-2023-2024",
-    subjectId: "CS201",
-    name: "Data Structures",
-    credit: 3,
-    class: "CS-A2",
-    midterm: 55,
-    practice: 60,
-    bonus: 0,
-    final: 58,
-    overall: "D",
-    note: "Retake Required",
-    status: "failed",
-  },
-  {
-    semester: "S2-2023-2024",
-    subjectId: "PHYS101",
-    name: "Physics for Computer Science",
-    credit: 3,
-    class: "P-A1",
-    midterm: 92,
-    practice: 95,
-    bonus: 5,
-    final: 94,
-    overall: "A+",
-    note: "Excellent",
-    status: "passed",
-  },
-];
-
-// Subject scores data
-const subjectScoresData = [
-  {
-    subjectId: "CS101",
-    name: "Introduction to Programming",
-    assessments: [
-      {
-        name: "Quiz 1",
-        score: 85,
-        maxScore: 100,
-        weight: 10,
-        date: "2023-09-15",
-      },
-      {
-        name: "Assignment 1",
-        score: 92,
-        maxScore: 100,
-        weight: 15,
-        date: "2023-09-25",
-      },
-      {
-        name: "Midterm Exam",
-        score: 88,
-        maxScore: 100,
-        weight: 30,
-        date: "2023-10-20",
-      },
-      {
-        name: "Project",
-        score: 95,
-        maxScore: 100,
-        weight: 20,
-        date: "2023-11-15",
-      },
-      {
-        name: "Final Exam",
-        score: 90,
-        maxScore: 100,
-        weight: 25,
-        date: "2023-12-10",
-      },
-    ],
-    finalGrade: "A",
-    status: "passed",
-  },
-  {
-    subjectId: "MATH201",
-    name: "Calculus I",
-    assessments: [
-      {
-        name: "Quiz 1",
-        score: 75,
-        maxScore: 100,
-        weight: 10,
-        date: "2023-09-18",
-      },
-      {
-        name: "Quiz 2",
-        score: 80,
-        maxScore: 100,
-        weight: 10,
-        date: "2023-10-05",
-      },
-      {
-        name: "Midterm Exam",
-        score: 78,
-        maxScore: 100,
-        weight: 30,
-        date: "2023-10-22",
-      },
-      {
-        name: "Assignment",
-        score: 85,
-        maxScore: 100,
-        weight: 20,
-        date: "2023-11-10",
-      },
-      {
-        name: "Final Exam",
-        score: 82,
-        maxScore: 100,
-        weight: 30,
-        date: "2023-12-12",
-      },
-    ],
-    finalGrade: "B+",
-    status: "passed",
-  },
-  {
-    subjectId: "CS201",
-    name: "Data Structures",
-    assessments: [
-      {
-        name: "Quiz 1",
-        score: 65,
-        maxScore: 100,
-        weight: 10,
-        date: "2024-02-10",
-      },
-      {
-        name: "Assignment 1",
-        score: 70,
-        maxScore: 100,
-        weight: 15,
-        date: "2024-02-25",
-      },
-      {
-        name: "Midterm Exam",
-        score: 55,
-        maxScore: 100,
-        weight: 30,
-        date: "2024-03-15",
-      },
-      {
-        name: "Project",
-        score: 60,
-        maxScore: 100,
-        weight: 20,
-        date: "2024-04-05",
-      },
-      {
-        name: "Final Exam",
-        score: 58,
-        maxScore: 100,
-        weight: 25,
-        date: "2024-05-10",
-      },
-    ],
-    finalGrade: "D",
-    status: "failed",
-  },
-];
-
 export default function Dashboard() {
   const [student, setStudent] = useState({});
   const [score, setScore] = useState({});
+  const [gpa, setGpa] = useState(0);
   const location = useLocation();
   const { user } = useAuth();
 
@@ -335,7 +129,29 @@ export default function Dashboard() {
 
   useEffect(() => {
     console.log("Updated score state:", score);
+    calculateGPA();
   }, [score]);
+
+  const calculateGPA = () => {
+    if (!Array.isArray(score) || score.length === 0) {
+      setGpa(0);
+      return;
+    }
+
+    let totalGPA = 0;
+    score.forEach((element) => {
+      if (typeof element.DiemTrungBinh === "number") {
+        totalGPA += element.DiemTrungBinh;
+      } else {
+        console.warn("Invalid score element:", element);
+      }
+    });
+
+    const averageGPA = totalGPA / score.length;
+
+    console.log("Calculated GPA:", averageGPA);
+    setGpa(averageGPA);
+  };
 
   // Format date
   const formatDate = (dateString) => {
@@ -394,7 +210,7 @@ export default function Dashboard() {
                     </Typography>
                   </Box>
                   <Typography variant="h3" sx={{ fontWeight: "bold", mb: 1 }}>
-                    {summaryData.gpa}
+                    {gpa}
                   </Typography>
                   <Box
                     sx={{ display: "flex", justifyContent: "space-between" }}
@@ -486,7 +302,7 @@ export default function Dashboard() {
               </Box>
 
               {/* Student Info Tab */}
-              <TabPanel value={value} index={1}>
+              <TabPanel value={value} index={0}>
                 <Grid container spacing={4}>
                   <Grid item xs={12} md={12}>
                     <Card
@@ -705,7 +521,7 @@ export default function Dashboard() {
                 </Grid>
               </TabPanel>
 
-              <TabPanel value={value} index={0}>
+              <TabPanel value={value} index={1}>
                 {score && Array.isArray(score)
                   ? score.map((item, index) => (
                       <SubjectScore key={index} item={item} />

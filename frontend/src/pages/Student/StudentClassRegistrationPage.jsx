@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Box,
   Table,
@@ -36,8 +35,9 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import Page from "../../components/Page";
-
-const drawerWidth = 0;
+import { studentRegister, getListCoursesByStudent,getListCourseRegister  } from "../../utils/api";
+import { useEffect, useState } from "react";
+import useAuth from "../../hooks/useAuth";
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -151,21 +151,32 @@ const classesListData = [
 ];
 
 export default function StudentClassRegistrationPage() {
-  const [isDrawerOpen, setDrawerOpen] = React.useState(true);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [registeredClasses, setRegisteredClasses] = React.useState(
+  const { user } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [registeredClasses, setRegisteredClasses] = useState(
     registeredClassesData
   );
-  const [classesList, setClassesList] = React.useState(classesListData);
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [classToDelete, setClassToDelete] = React.useState(null);
-  const [enrollDialogOpen, setEnrollDialogOpen] = React.useState(false);
-  const [classToEnroll, setClassToEnroll] = React.useState(null);
-  const [successAlert, setSuccessAlert] = React.useState("");
+  const [classesList, setClassesList] = useState([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [classToDelete, setClassToDelete] = useState(null);
+  const [enrollDialogOpen, setEnrollDialogOpen] = useState(false);
+  const [classToEnroll, setClassToEnroll] = useState(null);
+  const [successAlert, setSuccessAlert] = useState("");
 
-  const toggleDrawer = () => {
-    setDrawerOpen(!isDrawerOpen);
-  };
+
+  useEffect(() => {
+      const fetchClasses = async () => {
+        try {
+          const courses = await getListCourseRegister(user.username);
+          console.log(courses);
+         setClassesList(courses.data);
+        } catch (error) {
+          console.error("Error fetching classes:", error);
+        }
+      };
+      fetchClasses();
+    }
+    , []);
 
   const handleDeleteClick = (classItem) => {
     setClassToDelete(classItem);
@@ -214,12 +225,13 @@ export default function StudentClassRegistrationPage() {
     setSearchTerm(event.target.value);
   };
 
-  const filteredClasses = classesList.filter(
-    (classItem) =>
-      classItem.subjectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      classItem.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      classItem.teacher.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredClasses = classesList
+  // ?.filter(
+  //   (classItem) =>
+  //     classItem?.subjectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     classItem?.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     classItem?.teacher.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   // Calculate total credits
   const totalRegisteredCredits = registeredClasses.reduce(
@@ -271,7 +283,6 @@ export default function StudentClassRegistrationPage() {
   return (
     <Page title="Class Registration">
       <Box sx={{ display: "flex", p:1 }}>
-
         <Box
           component="main"
           sx={{
@@ -283,8 +294,6 @@ export default function StudentClassRegistrationPage() {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
               }),
-            marginLeft: isDrawerOpen ? `${drawerWidth}px` : 0,
-            width: isDrawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
             backgroundColor: "#f5f5f5",
             minHeight: "calc(100vh - 64px)",
           }}
