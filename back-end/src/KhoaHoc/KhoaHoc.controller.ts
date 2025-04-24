@@ -25,7 +25,11 @@ import { RateCourseDto } from './dto/rateCourse.dto';
 import { CreateDeadlineDto } from './dto/createDeadline.dto';
 import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
+<<<<<<< HEAD
+import { Types } from 'mongoose';
+=======
 import { JwtModule } from '@nestjs/jwt';
+>>>>>>> bd430a98679e37e60dfb4f05bfd9a2593b6fbe89
 
 @Controller('api/KhoaHoc')
 export class KhoaHocController {
@@ -155,6 +159,7 @@ export class KhoaHocController {
     // console.log("-----------------------------------");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const username = req.user.username;
+    console.log(MaKHoaHoc);
     // console.log(studentId);
     // const studentId = new Types.ObjectId(req.user.userId); // lấy ID sinh viên từ token
 
@@ -403,7 +408,7 @@ export class KhoaHocController {
   @Patch('HuyDangKyByMSSV/:mssv')
   @UseGuards(JWTAuthGuard)
   async huyDangKyKhoaHoc(
-    @Body() KhoaHocID: string,
+    @Body() _id: string,
     @Param('mssv') mssv: string,
     @Req() req: any,
   ) {
@@ -411,7 +416,8 @@ export class KhoaHocController {
     if (req.user.role !== 'student' && req.user.username !== mssv) {
       throw new UnauthorizedException('Không có quyền truy cập sinh viên này');
     }
-    return this.khoaHocService.huyDangKyKhoaHoc(KhoaHocID, mssv);
+    console.log("KhoaHocID", _id)
+    return this.khoaHocService.huyDangKyKhoaHoc(_id, mssv);
   }
   @Get('getListCourseRegister/:mssv')
   @UseGuards(JWTAuthGuard)

@@ -35,7 +35,11 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import Page from "../../components/Page";
-import { studentRegister, getListCoursesByStudent,getListCourseRegister  } from "../../utils/api";
+import {
+  studentRegister,
+  getListCourseRegister,
+  studentCancelRegister,
+} from "../../utils/api";
 import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 
@@ -49,251 +53,179 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-// More realistic data for registered classes
-const registeredClassesData = [
-  {
-    id: "CS302",
-    subjectName: "Advanced Algorithms",
-    credit: 3,
-    class: "CS-A1",
-    teacher: "Dr. Smith",
-    ta: "John Davis",
-    time: "Mon, Wed 10:00-11:30",
-    note: "Required",
-    status: "confirmed",
-  },
-  {
-    id: "MATH401",
-    subjectName: "Linear Algebra",
-    credit: 4,
-    class: "M-B2",
-    teacher: "Prof. Johnson",
-    ta: "Sarah Wilson",
-    time: "Tue, Thu 13:00-14:30",
-    note: "Elective",
-    status: "confirmed",
-  },
-  {
-    id: "ENG205",
-    subjectName: "Technical Writing",
-    credit: 2,
-    class: "E-C3",
-    teacher: "Dr. Williams",
-    ta: "Michael Brown",
-    time: "Fri 9:00-11:00",
-    note: "Required",
-    status: "pending",
-  },
-];
+// Helper function to format dates
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
 
-// More realistic data for available classes
-const classesListData = [
-  {
-    id: "CS405",
-    subjectName: "Machine Learning",
-    credit: 3,
-    class: "CS-D1",
-    teacher: "Dr. Anderson",
-    ta: "Emily White",
-    time: "Mon, Wed 14:00-15:30",
-    note: "Elective",
-    availability: "available",
-    seats: "15/30",
-  },
-  {
-    id: "PHYS201",
-    subjectName: "Physics for CS",
-    credit: 3,
-    class: "P-A2",
-    teacher: "Prof. Roberts",
-    ta: "David Miller",
-    time: "Tue, Thu 10:00-11:30",
-    note: "Required",
-    availability: "limited",
-    seats: "3/25",
-  },
-  {
-    id: "STAT301",
-    subjectName: "Statistics & Probability",
-    credit: 4,
-    class: "S-B1",
-    teacher: "Dr. Thompson",
-    ta: "Jessica Lee",
-    time: "Wed, Fri 13:00-14:30",
-    note: "Required",
-    availability: "full",
-    seats: "0/30",
-  },
-  {
-    id: "CS410",
-    subjectName: "Artificial Intelligence",
-    credit: 3,
-    class: "CS-A3",
-    teacher: "Prof. Garcia",
-    ta: "Robert Chen",
-    time: "Mon, Thu 15:30-17:00",
-    note: "Elective",
-    availability: "available",
-    seats: "20/35",
-  },
-  {
-    id: "BUS202",
-    subjectName: "Business for Engineers",
-    credit: 2,
-    class: "B-C2",
-    teacher: "Dr. Martinez",
-    ta: "Amanda Taylor",
-    time: "Tue 9:00-11:00",
-    note: "Elective",
-    availability: "available",
-    seats: "25/40",
-  },
-];
+// Get instructor names as a string
+const getInstructorNames = (instructors) => {
+  if (!instructors || !instructors.length) return "-";
+  return instructors.map((instructor) => instructor.HoTen).join(", ");
+};
 
 export default function StudentClassRegistrationPage() {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
-  const [registeredClasses, setRegisteredClasses] = useState(
-    registeredClassesData
-  );
-  const [classesList, setClassesList] = useState([]);
+  const [registeredCourses, setRegisteredCourses] = useState([]);
+  const [availableCourses, setAvailableCourses] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [classToDelete, setClassToDelete] = useState(null);
   const [enrollDialogOpen, setEnrollDialogOpen] = useState(false);
   const [classToEnroll, setClassToEnroll] = useState(null);
   const [successAlert, setSuccessAlert] = useState("");
+  const [errorAlert, setErrorAlert] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState({
+    field: 'TenKhoaHoc',
+    direction: 'asc'
+  });
 
+  // Function to fetch all courses
+  const fetchCourses = async () => {
+    setIsLoading(true);
+    try {
+      const response = await getListCourseRegister(user.username);
+      console.log("API Response:", response);
+      
+      if (response && response.data && response.data.data) {
+        const allCourses = response.data.data;
+        
+        // Use the daDangKy property to filter courses
+        const registered = allCourses.filter(course => course.daDangKy === true);
+        const available = allCourses.filter(course => course.daDangKy === false);
+        
+        setRegisteredCourses(registered);
+        setAvailableCourses(available);
+      }
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      setErrorAlert("Could not fetch courses. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Initial data fetch
   useEffect(() => {
-      const fetchClasses = async () => {
-        try {
-          const courses = await getListCourseRegister(user.username);
-          console.log(courses);
-         setClassesList(courses.data);
-        } catch (error) {
-          console.error("Error fetching classes:", error);
+    if (user && user.username) {
+      fetchCourses();
+    }
+  }, [user]);
+
+  // Filter and sort courses based on search term
+  const filteredAvailableCourses = availableCourses
+    .filter((course) =>
+      (course.TenKhoaHoc?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (course.MaKhoaHoc?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (course.MoTa?.toLowerCase() || "").includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      const aValue = a[sortOrder.field];
+      const bValue = b[sortOrder.field];
+      
+      // Handle different data types
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortOrder.direction === 'asc' 
+          ? aValue.localeCompare(bValue) 
+          : bValue.localeCompare(aValue);
+      } else {
+        // For numbers or other types
+        if (sortOrder.direction === 'asc') {
+          return aValue > bValue ? 1 : -1;
+        } else {
+          return aValue < bValue ? 1 : -1;
         }
-      };
-      fetchClasses();
-    }
-    , []);
+      }
+    });
 
-  const handleDeleteClick = (classItem) => {
-    setClassToDelete(classItem);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    if (classToDelete) {
-      setRegisteredClasses(
-        registeredClasses.filter((item) => item.id !== classToDelete.id)
-      );
-      setSuccessAlert(
-        `Successfully removed ${classToDelete.subjectName} from your schedule.`
-      );
-      setTimeout(() => setSuccessAlert(""), 3000);
-    }
-    setDeleteDialogOpen(false);
-  };
-
-  const handleEnrollClick = (classItem) => {
-    setClassToEnroll(classItem);
+  // Handle course registration
+  const handleEnrollOpen = (course) => {
+    setClassToEnroll(course);
     setEnrollDialogOpen(true);
   };
 
-  const handleEnrollConfirm = () => {
-    if (classToEnroll) {
-      // Check if already registered
-      if (!registeredClasses.some((c) => c.id === classToEnroll.id)) {
-        setRegisteredClasses([
-          ...registeredClasses,
-          {
-            ...classToEnroll,
-            status: "pending",
-          },
-        ]);
-        setSuccessAlert(
-          `Successfully enrolled in ${classToEnroll.subjectName}.`
-        );
-        setTimeout(() => setSuccessAlert(""), 3000);
+  const handleEnrollConfirm = async () => {
+    try {
+      if (!classToEnroll || !classToEnroll._id) {
+        setErrorAlert("Invalid course selection");
+        return;
       }
-    }
-    setEnrollDialogOpen(false);
-  };
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+      // Using courseId directly as per API definition
+      const response = await studentRegister(classToEnroll.MaKhoaHoc);
 
-  const filteredClasses = classesList
-  // ?.filter(
-  //   (classItem) =>
-  //     classItem?.subjectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     classItem?.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     classItem?.teacher.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
-
-  // Calculate total credits
-  const totalRegisteredCredits = registeredClasses.reduce(
-    (sum, item) => sum + item.credit,
-    0
-  );
-  const maxCredits = 18;
-
-  // Get status color
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "confirmed":
-        return "success";
-      case "pending":
-        return "warning";
-      default:
-        return "default";
+      if (response && response.data) {
+        setSuccessAlert(`Successfully enrolled in ${classToEnroll.TenKhoaHoc}`);
+        fetchCourses(); // Refresh course lists
+      }
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      setErrorAlert(error.response?.data?.message || "Failed to enroll in course");
+    } finally {
+      setEnrollDialogOpen(false);
+      setClassToEnroll(null);
     }
   };
 
-  // Get availability color
-  const getAvailabilityColor = (availability) => {
-    switch (availability) {
-      case "available":
-        return "success";
-      case "limited":
-        return "warning";
-      case "full":
-        return "error";
-      default:
-        return "default";
+  // Handle course cancellation
+  const handleDeleteOpen = (course) => {
+    setClassToDelete(course);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      if (!classToDelete || !classToDelete._id) {
+        setErrorAlert("Invalid course selection");
+        return;
+      }
+      console.log(classToDelete._id)
+      const response = await studentCancelRegister({_id : classToDelete._id}, user.username);
+
+      if (response && response.data) {
+        setSuccessAlert(`Successfully canceled registration for ${classToDelete.TenKhoaHoc}`);
+        fetchCourses(); // Refresh course lists
+      }
+    } catch (error) {
+      console.error("Error canceling registration:", error);
+      setErrorAlert(error.response?.data?.message || "Failed to cancel registration");
+    } finally {
+      setDeleteDialogOpen(false);
+      setClassToDelete(null);
     }
   };
 
-  // Get availability text
-  const getAvailabilityText = (availability) => {
-    switch (availability) {
-      case "available":
-        return "Available";
-      case "limited":
-        return "Limited Seats";
-      case "full":
-        return "Full";
-      default:
-        return availability;
+  // Clear alerts after 5 seconds
+  useEffect(() => {
+    if (successAlert) {
+      const timer = setTimeout(() => {
+        setSuccessAlert("");
+      }, 5000);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [successAlert]);
+
+  useEffect(() => {
+    if (errorAlert) {
+      const timer = setTimeout(() => {
+        setErrorAlert("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorAlert]);
 
   return (
     <Page title="Class Registration">
-      <Box sx={{ display: "flex", p:1 }}>
+      <Box sx={{ display: "flex", p: 1 }}>
         <Box
           component="main"
           sx={{
             flexGrow: 1,
             p: 3,
             mt: 8,
-            transition: (theme) =>
-              theme.transitions.create(["margin", "width"], {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-              }),
             backgroundColor: "#f5f5f5",
             minHeight: "calc(100vh - 64px)",
           }}
@@ -310,186 +242,108 @@ export default function StudentClassRegistrationPage() {
             Class Registration
           </Typography>
 
+          {/* Alerts */}
           {successAlert && (
-            <Alert
-              severity="success"
-              sx={{ mb: 3 }}
+            <Alert 
+              severity="success" 
+              sx={{ mb: 2 }}
               onClose={() => setSuccessAlert("")}
             >
               {successAlert}
             </Alert>
           )}
+          
+          {errorAlert && (
+            <Alert 
+              severity="error" 
+              sx={{ mb: 2 }}
+              onClose={() => setErrorAlert("")}
+            >
+              {errorAlert}
+            </Alert>
+          )}
 
-          {/* Summary Cards */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={4}>
-              <Card elevation={0} sx={{ borderRadius: 2, minHeight: "170px" }}>
-                <CardContent>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                    <EventIcon color="primary" sx={{ mr: 1 }} />
-                    <Typography variant="h6" color="primary">
-                      Current Semester
-                    </Typography>
-                  </Box>
-                  <Typography variant="h3" sx={{ fontWeight: "bold", mb: 1 }}>
-                    S2
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Academic Year: 2024-2025
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Card elevation={0} sx={{ borderRadius: 2, minHeight: "170px" }}>
-                <CardContent>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                    <CreditCardIcon color="primary" sx={{ mr: 1 }} />
-                    <Typography variant="h6" color="primary">
-                      Credit Status
-                    </Typography>
-                  </Box>
-                  <Typography variant="h3" sx={{ fontWeight: "bold", mb: 1 }}>
-                    {totalRegisteredCredits}/{maxCredits}
-                  </Typography>
-                  <Box
-                    sx={{
-                      width: "100%",
-                      height: 8,
-                      backgroundColor: "#e0e0e0",
-                      borderRadius: 4,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: `${
-                          (totalRegisteredCredits / maxCredits) * 100
-                        }%`,
-                        height: "100%",
-                        backgroundColor: "primary.main",
-                        borderRadius: 4,
-                      }}
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Card elevation={0} sx={{ borderRadius: 2, minHeight: "170px" }}>
-                <CardContent>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                    <LibraryBooksIcon color="primary" sx={{ mr: 1 }} />
-                    <Typography variant="h6" color="primary">
-                      Registration Status
-                    </Typography>
-                  </Box>
-                  <Typography variant="h3" sx={{ fontWeight: "bold", mb: 1 }}>
-                    Open
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Closes on: May 15, 2024
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-
-          {/* Registered Classes Section */}
-          <Card elevation={0} sx={{ borderRadius: 2, mb: 4 }}>
+          {/* My Registered Courses Section */}
+          <Card sx={{ mb: 4, boxShadow: 3 }}>
             <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography
-                  variant="h5"
-                  sx={{ fontWeight: "bold", color: "primary.main" }}
-                >
-                  Registered Classes
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
+                My Registered Courses ({registeredCourses.length})
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              
+              {registeredCourses.length === 0 ? (
+                <Typography variant="body1" sx={{ py: 2, textAlign: "center", color: "text.secondary" }}>
+                  You haven't registered for any courses yet.
                 </Typography>
-                <Chip
-                  label={`${registeredClasses.length} Classes | ${totalRegisteredCredits} Credits`}
-                  color="primary"
-                  variant="outlined"
-                />
-              </Box>
-
-              <Divider sx={{ mb: 3 }} />
-
-              {registeredClasses.length === 0 ? (
-                <Box sx={{ textAlign: "center", py: 4 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    You haven't registered for any classes yet.
-                  </Typography>
-                </Box>
               ) : (
-                <TableContainer
-                  component={Paper}
-                  elevation={0}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <Table sx={{ minWidth: 650 }}>
+                <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
+                  <Table>
                     <TableHead>
-                      <TableRow sx={{ backgroundColor: "primary.main" }}>
-                        <TableCell sx={{color: "primary.lighter"}}>Course Code</TableCell>
-                        <TableCell sx={{color: "primary.lighter"}}>Subject Name</TableCell>
-                        <TableCell sx={{color: "primary.lighter"}} align="center">Credits</TableCell>
-                        <TableCell sx={{color: "primary.lighter"}}>Class</TableCell>
-                        <TableCell sx={{color: "primary.lighter"}}>Teacher</TableCell>
-                        <TableCell sx={{color: "primary.lighter"}}>Schedule</TableCell>
-                        <TableCell sx={{color: "primary.lighter"}}>Status</TableCell>
-                        <TableCell sx={{color: "primary.lighter"}} align="center">Actions</TableCell>
+                      <TableRow>
+                        <TableCell>Course Code</TableCell>
+                        <TableCell>Course Name</TableCell>
+                        <TableCell>Instructor</TableCell>
+                        <TableCell>Credits</TableCell>
+                        <TableCell>Start Date</TableCell>
+                        <TableCell>End Date</TableCell>
+                        <TableCell>Schedule</TableCell>
+                        <TableCell>Action</TableCell>
+
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {registeredClasses.map((row) => (
-                        <StyledTableRow key={row.id}>
-                          <TableCell>{row.id}</TableCell>
-                          <TableCell sx={{ fontWeight: "medium" }}>
-                            {row.subjectName}
-                          </TableCell>
-                          <TableCell align="center">{row.credit}</TableCell>
-                          <TableCell>{row.class}</TableCell>
-                          <TableCell>{row.teacher}</TableCell>
-                          <TableCell>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <ScheduleIcon
-                                fontSize="small"
-                                sx={{ mr: 1, color: "text.secondary" }}
-                              />
-                              {row.time}
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              label={
-                                row.status === "confirmed"
-                                  ? "Confirmed"
-                                  : "Pending"
-                              }
-                              color={getStatusColor(row.status)}
-                              size="small"
-                              sx={{ fontWeight: "medium" }}
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            <Tooltip title="Remove from schedule">
-                              <IconButton
-                                color="error"
-                                size="small"
-                                onClick={() => handleDeleteClick(row)}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </TableCell>
-                        </StyledTableRow>
-                      ))}
+                      {registeredCourses.map((course) => {
+                        // Format schedule information
+                        let scheduleInfo = "Not scheduled";
+                        if (course.LichHoc && course.LichHoc.length > 0) {
+                          const days = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                          const firstSchedule = course.LichHoc[0];
+                          scheduleInfo = `${days[firstSchedule.NgayHoc] || 'Day ' + firstSchedule.NgayHoc}, ${firstSchedule.ThoiGianBatDau}-${firstSchedule.ThoiGianKetThuc}`;
+                          if (firstSchedule.DiaDiem) {
+                            scheduleInfo += `, ${firstSchedule.DiaDiem}`;
+                          }
+                        }
+                        
+                        return (
+                          <StyledTableRow key={course._id}>
+                            <TableCell>{course.MaKhoaHoc}</TableCell>
+                            <TableCell>
+                              <Tooltip title={course.MoTa || "No description available"}>
+                                <span>{course.TenKhoaHoc}</span>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>{getInstructorNames(course.GiangVienID)}</TableCell>
+                            <TableCell>{course.SoTinChi}</TableCell>
+                            <TableCell>{formatDate(course.NgayBatDau)}</TableCell>
+                            <TableCell>{formatDate(course.NgayKetThuc)}</TableCell>
+                            <TableCell>
+                              <Tooltip title={scheduleInfo}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    maxWidth: 150,
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap"
+                                  }}
+                                >
+                                  {scheduleInfo}
+                                </Typography>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>
+                              <Tooltip title="Cancel Registration">
+                                <IconButton
+                                  color="error"
+                                  onClick={() => handleDeleteOpen(course)}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </TableCell>
+                          </StyledTableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -497,163 +351,145 @@ export default function StudentClassRegistrationPage() {
             </CardContent>
           </Card>
 
-          {/* Available Classes Section */}
-          <Card elevation={0} sx={{ borderRadius: 2 }}>
+          {/* Loading Indicator */}
+          {isLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+              <Typography>Loading courses...</Typography>
+            </Box>
+          )}
+          
+          {/* Available Courses Section */}
+          <Card sx={{ boxShadow: 3 }}>
             <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography
-                  variant="h5"
-                  sx={{ fontWeight: "bold", color: "primary.main" }}
-                >
-                  Available Classes
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                  Available Courses ({filteredAvailableCourses.length})
                 </Typography>
-
-                <TextField
-                  placeholder="Search courses..."
-                  size="small"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  sx={{ width: 250 }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="primary" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <Tooltip title="Advanced filters">
-                          <IconButton size="small">
-                            <FilterListIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="Search courses..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ width: 300 }}
+                  />
+                </Box>
               </Box>
-
-              <Divider sx={{ mb: 3 }} />
-
-              <TableContainer
-                component={Paper}
-                elevation={0}
-                sx={{ borderRadius: 2 }}
-              >
-                <Table sx={{ minWidth: 650 }}>
-                  <TableHead>
-                    <TableRow sx={{ backgroundColor: "primary.main" }}>
-                      <TableCell sx={{color: "primary.lighter"}}>Course Code</TableCell>
-                      <TableCell sx={{color: "primary.lighter"}}>Subject Name</TableCell>
-                      <TableCell sx={{color: "primary.lighter"}} align="center">Credits</TableCell>
-                      <TableCell sx={{color: "primary.lighter"}}>Class</TableCell>
-                      <TableCell sx={{color: "primary.lighter"}}>Teacher</TableCell>
-                      <TableCell sx={{color: "primary.lighter"}}>Schedule</TableCell>
-                      <TableCell sx={{color: "primary.lighter"}}>Availability</TableCell>
-                      <TableCell sx={{color: "primary.lighter"}} align="center">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredClasses.map((row) => (
-                      <StyledTableRow key={row.id}>
-                        <TableCell>{row.id}</TableCell>
-                        <TableCell sx={{ fontWeight: "medium" }}>
-                          {row.subjectName}
-                        </TableCell>
-                        <TableCell align="center">{row.credit}</TableCell>
-                        <TableCell>{row.class}</TableCell>
-                        <TableCell>{row.teacher}</TableCell>
-                        <TableCell>
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <ScheduleIcon
-                              fontSize="small"
-                              sx={{ mr: 1, color: "text.secondary" }}
-                            />
-                            {row.time}
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <Chip
-                              label={getAvailabilityText(row.availability)}
-                              color={getAvailabilityColor(row.availability)}
-                              size="small"
-                              sx={{ fontWeight: "medium", mr: 1 }}
-                            />
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {row.seats}
-                            </Typography>
-                          </Box>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Tooltip
-                            title={
-                              row.availability === "full"
-                                ? "Class is full"
-                                : "Enroll in this class"
-                            }
-                          >
-                            <span>
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                startIcon={<AddIcon />}
-                                onClick={() => handleEnrollClick(row)}
-                                disabled={
-                                  row.availability === "full" ||
-                                  registeredClasses.some((c) => c.id === row.id)
-                                }
-                              >
-                                Enroll
-                              </Button>
-                            </span>
-                          </Tooltip>
-                        </TableCell>
-                      </StyledTableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <Divider sx={{ mb: 2 }} />
+              
+              {filteredAvailableCourses.length === 0 ? (
+                <Typography variant="body1" sx={{ py: 2, textAlign: "center", color: "text.secondary" }}>
+                  No available courses found.
+                </Typography>
+              ) : (
+                <TableContainer component={Paper} sx={{ boxShadow: 0 }}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Course Code</TableCell>
+                        <TableCell>Course Name</TableCell>
+                        <TableCell>Instructor</TableCell>
+                        <TableCell>Credits</TableCell>
+                        <TableCell>Available Slots</TableCell>
+                        <TableCell>Registration Deadline</TableCell>
+                        <TableCell>Action</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {filteredAvailableCourses.map((course) => {
+                        // Check if registration deadline has passed
+                        const deadlinePassed = new Date(course.HanDangKy) < new Date();
+                        const isFull = course.SoLuongSinhVienDangKy >= course.SoLuongToiDa;
+                        const buttonDisabled = deadlinePassed || isFull;
+                        
+                        let buttonTooltip = "";
+                        if (deadlinePassed) {
+                          buttonTooltip = "Registration deadline has passed";
+                        } else if (isFull) {
+                          buttonTooltip = "Class is full";
+                        }
+                        
+                        return (
+                          <StyledTableRow key={course._id}>
+                            <TableCell>{course.MaKhoaHoc}</TableCell>
+                            <TableCell>
+                              <Tooltip title={course.MoTa || "No description available"}>
+                                <span>{course.TenKhoaHoc}</span>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>{getInstructorNames(course.GiangVienID)}</TableCell>
+                            <TableCell>{course.SoTinChi}</TableCell>
+                            <TableCell>
+                              {course.SoLuongSinhVienDangKy}/{course.SoLuongToiDa}
+                            </TableCell>
+                            <TableCell>
+                              {formatDate(course.HanDangKy)}
+                              {deadlinePassed && (
+                                <Chip 
+                                  size="small" 
+                                  color="error" 
+                                  label="Expired" 
+                                  sx={{ ml: 1 }} 
+                                />
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Tooltip title={buttonTooltip || "Register for this course"}>
+                                <span>
+                                  <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<AddIcon />}
+                                    onClick={() => handleEnrollOpen(course)}
+                                    disabled={buttonDisabled}
+                                  >
+                                    Enroll
+                                  </Button>
+                                </span>
+                              </Tooltip>
+                            </TableCell>
+                          </StyledTableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </CardContent>
           </Card>
 
-          {/* Delete Confirmation Dialog */}
+          {/* Cancel Registration Dialog */}
           <Dialog
             open={deleteDialogOpen}
             onClose={() => setDeleteDialogOpen(false)}
           >
-            <DialogTitle>Confirm Removal</DialogTitle>
+            <DialogTitle>Cancel Course Registration</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Are you sure you want to remove{" "}
-                <strong>{classToDelete?.subjectName}</strong> from your
-                schedule?
+                Are you sure you want to cancel your registration for{" "}
+                <strong>{classToDelete?.TenKhoaHoc}</strong>? This action cannot be undone.
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-              <Button
-                onClick={handleDeleteConfirm}
-                color="error"
-                variant="contained"
-              >
-                Remove
+              <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+                No, Keep It
+              </Button>
+              <Button onClick={handleDeleteConfirm} color="error">
+                Yes, Cancel Registration
               </Button>
             </DialogActions>
           </Dialog>
 
-          {/* Enroll Confirmation Dialog */}
+          {/* Enroll Dialog */}
           <Dialog
             open={enrollDialogOpen}
             onClose={() => setEnrollDialogOpen(false)}
@@ -662,42 +498,52 @@ export default function StudentClassRegistrationPage() {
             <DialogContent>
               <DialogContentText>
                 Are you sure you want to enroll in{" "}
-                <strong>{classToEnroll?.subjectName}</strong>?
+                <strong>{classToEnroll?.TenKhoaHoc}</strong>?
               </DialogContentText>
               {classToEnroll && (
-                <Box
-                  sx={{
-                    mt: 2,
-                    p: 2,
-                    bgcolor: "background.default",
-                    borderRadius: 1,
-                  }}
-                >
-                  <Typography variant="subtitle2" gutterBottom>
-                    Course Details:
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Course Code:</strong> {classToEnroll.id}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Credits:</strong> {classToEnroll.credit}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Schedule:</strong> {classToEnroll.time}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Instructor:</strong> {classToEnroll.teacher}
-                  </Typography>
+                <Box sx={{ mt: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="textSecondary">
+                        Course Code:
+                      </Typography>
+                      <Typography variant="body1">
+                        {classToEnroll.MaKhoaHoc}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="textSecondary">
+                        Credits:
+                      </Typography>
+                      <Typography variant="body1">
+                        {classToEnroll.SoTinChi}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant="body2" color="textSecondary">
+                        Instructor:
+                      </Typography>
+                      <Typography variant="body1">
+                        {getInstructorNames(classToEnroll.GiangVienID)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant="body2" color="textSecondary">
+                        Description:
+                      </Typography>
+                      <Typography variant="body1">
+                        {classToEnroll.MoTa || "No description available"}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </Box>
               )}
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setEnrollDialogOpen(false)}>Cancel</Button>
-              <Button
-                onClick={handleEnrollConfirm}
-                color="primary"
-                variant="contained"
-              >
+              <Button onClick={() => setEnrollDialogOpen(false)} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleEnrollConfirm} color="primary" variant="contained">
                 Confirm Enrollment
               </Button>
             </DialogActions>
