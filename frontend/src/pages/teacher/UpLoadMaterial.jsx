@@ -78,19 +78,15 @@ export default function UploadMaterials() {
     return isValid;
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!validateForm()) {
       return;
     }
-
-    console.log(title);
-    console.log(file);
-    console.log(id);
     const formData = new FormData();
   formData.append("moTa", title);
   formData.append("file", file);
   formData.append("khoaHocId", id);
-  const response = uploadFile(formData);
+  const response = await uploadFile(formData);
   if (response.status < 300) {
     enqueueSnackbar("File uploaded successfully!", {
       variant: "success",

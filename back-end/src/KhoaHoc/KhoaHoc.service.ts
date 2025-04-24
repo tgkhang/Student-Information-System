@@ -126,7 +126,7 @@ export class KhoaHocService {
       .findOne({ MaKhoaHoc })
       .populate('GiangVienID', 'HoTen')
       .populate('KhoaID', 'TenKhoa')
-      .populate('TaiLieu')
+      .populate({path: 'TaiLieu', model: 'TaiLieu'})
       .exec();
     console.log(khoaHoc?.toObject());
     if (!khoaHoc) {
@@ -232,7 +232,6 @@ export class KhoaHocService {
   }
 
   async searchCourse(query: string) {
-    console.log('query', query);
     const khoaHoc = await this.khoaHocModel.find({
       $or: [
         { MaKhoaHoc: { $regex: query, $options: 'i' } },
@@ -246,14 +245,11 @@ export class KhoaHocService {
   }
 
   async registerStudentToCourse(MaKhoaHoc: string, username: string) {
-    // console.log('Mã khóa học: ', studentId);
     const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
     if (!khoaHoc) {
       throw new NotFoundException('Khóa học không tồn tại');
     }
     const sinhVien = await this.sinhVienService.getStudentByMSSV(username);
-    console.log('sinh vien id: ', sinhVien.KhoaID.toString());
-    console.log('khóa học id: ', khoaHoc.KhoaID.toString());
     if (sinhVien.KhoaID._id.toString() !== khoaHoc.KhoaID.toString())
       throw new BadRequestException(
         'Sinh viên không thể đăng kí khóa học này.',
@@ -286,7 +282,6 @@ export class KhoaHocService {
       throw new NotFoundException('Khóa học không tồn tại');
     }
     const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
-    console.log(sinhVien.KhoaID.toString());
     if (sinhVien.KhoaID._id.toString() !== khoaHoc.KhoaID.toString())
       throw new BadRequestException(
         'Sinh viên không thể đăng kí khóa học này.',

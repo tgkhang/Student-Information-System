@@ -363,7 +363,6 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
 };
 
 const CourseSection = ({isTeacherMode, course}) => {
-  console.log(course);
   const [item, setItem] = useState({ lectures: [], assignments: [], references: [] });
   useEffect(() => {
     const newAssignments = Array.isArray(course?.BaiKiemTra)
@@ -383,11 +382,21 @@ const CourseSection = ({isTeacherMode, course}) => {
         dueDate: item?.ThoiGianKetThuc,
       }))
     : [];
-
+  const materials = Array.isArray(course?.TaiLieu)
+  ? course.TaiLieu.map((item) => ({
+      id: item._id,
+      content: item.TenTaiLieu,
+      type: 'document',
+      dueDate: item?.NgayTao
+      ,
+    }))
+  : [];
   setItem((prev) => ({
     ...prev,
     assignments: [...prev.assignments, ...newAssignments, ...deadlines],
+    lectures: [...prev.lectures, ...materials],
   }));
+  console.log(item)
   }, [course?.BaiKiemTra]);
   return (
     <Paper elevation={0}
@@ -473,7 +482,7 @@ const CourseSection = ({isTeacherMode, course}) => {
           title="Lectures and Materials" 
           isTeacherMode={isTeacherMode}
           sectionColor="#e8f5e9"
-          sectionType="lectures"
+          sectionType="document"
           items={item.lectures}
         />
         
