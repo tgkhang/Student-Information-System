@@ -144,16 +144,50 @@ export default function Router() {
       path: "admin",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
-        { path: "studentList", element: <StudentListPage /> },
-        { path: "lecturerList", element: <LecturerListPage /> },
-        { path: "lecturerProfile/:id", element: <LecturerProfile /> },
-        { path: "studentProfile/:id", element: <StudentProfile /> },
-        { path: "course", element: <AdminCoursePage /> },
-        { path: "notification", element: <NotificationPage /> },
-        { path: "createBroadcastNotification", element: <AdminCreateNotificationPage /> },
-        { path: "addCourse", element: <CourseAddingPage /> },
-        { path: "addStudent", element: <ImportStudentPage/>},
-        { path: "addTeacher", element: <AddTeacherPage /> },
+        { 
+          path: "",
+          element: <Navigate to="studentList"/>
+        },
+        {
+          path: "studentList",
+          element: <StudentListPage />
+        },
+        { 
+          path: "lecturerList",
+          element: <LecturerListPage />
+        },
+        { 
+          path: "lecturerProfile/:id",
+          element: <LecturerProfile />
+        },
+        { 
+          path: "studentProfile/:id",
+          element: <StudentProfile />
+        },
+        { 
+          path: "course",
+          element: <AdminCoursePage />
+        },
+        { 
+          path: "notification",
+          element: <NotificationPage />
+        },
+        { 
+          path: "createBroadcastNotification",
+          element: <AdminCreateNotificationPage />
+        },
+        {
+          path: "addCourse",
+          element: <CourseAddingPage />
+        },
+        { 
+          path: "addStudent",
+          element: <ImportStudentPage/>
+        },
+        {
+          path: "addTeacher",
+          element: <AddTeacherPage />
+        },
       ],
     },
   ]);
