@@ -122,7 +122,6 @@ export class KhoaHocService {
     return studentDetails;
   }
   async getCourse(MaKhoaHoc: string) {
-    console.log('Mã khóa học', MaKhoaHoc);
     const khoaHoc = await this.khoaHocModel
       .findOne({ MaKhoaHoc })
       .populate('GiangVienID', 'HoTen')
@@ -163,15 +162,12 @@ export class KhoaHocService {
       .populate('GiangVienID', 'HoTen')
       .exec();
 
-    // console.log(khoaHocs);
-
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const khoaHocIds = khoaHocs.map((kh) => (kh as any)._id.toString());
     const lichHocList = await this.lichHocModel
       .find({ KhoaHocID: { $in: khoaHocIds } })
       .populate('GiangVienID', 'HoTen')
       .exec();
-    console.log(lichHocList);
     const khoaHocsDetails = khoaHocs.map((khoahoc) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const khoaHocid = (khoahoc as any)._id as Types.ObjectId;
@@ -201,7 +197,6 @@ export class KhoaHocService {
 
   async updateCourse(MaKhoaHoc: string, updateCourseDto: UpdateCourseDto) {
     const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc });
-    console.log(MaKhoaHoc);
     if (!khoaHoc) {
       throw new NotFoundException('Khóa học không tồn tại');
     }

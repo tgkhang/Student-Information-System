@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Accordion,
   AccordionSummary,
@@ -212,8 +212,7 @@ const getResourceIcon = (type) => {
 };
 
 
-const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, course }) => {
-  console.log(course)
+const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, items }) => {
   // Default items based on section type
   const defaultItems = {
     'lectures': [
@@ -232,8 +231,6 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
       { id: 3, content: 'Academic Papers Collection', type: 'link', url: 'https://example.com/papers' }
     ]
   };
-  
-  const [items, setItems] = useState(defaultItems[sectionType] || []);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [expanded, setExpanded] = useState(false);
@@ -243,10 +240,10 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
     setDeleteDialogOpen(true);
   };
   
-  const handleConfirmDelete = () => {
-    setItems(items.filter(item => item.id !== itemToDelete.id));
-    setDeleteDialogOpen(false);
-  };
+  // const handleConfirmDelete = () => {
+  //   setItems(items.filter(item => item.id !== itemToDelete.id));
+  //   setDeleteDialogOpen(false);
+  // };
   
   const formatDueDate = (dateString) => {
     if (!dateString) return '';
@@ -277,7 +274,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
           <Typography variant="h5">{title}</Typography>
           <Box flexGrow={1} />
           <Chip 
-            label={`${items.length} items`}
+            label={`${items?.length} items`}
             size="small"
             sx={moodleStyles.itemCount}
           />
@@ -289,7 +286,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
           {items.map((item, index) => (
             <ListItem 
               key={item.id} 
-              divider={index < items.length - 1}
+              divider={index < item.length - 1}
               sx={{
                 ...moodleStyles.listItem,
                 ...(item.type === 'link' && moodleStyles.linkItem)
@@ -359,13 +356,39 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
         message={"Are you sure you want to delete this item?"} 
         open={deleteDialogOpen} 
         onClose={() => setDeleteDialogOpen(false)} 
-        onConfirm={handleConfirmDelete} 
+        onConfirm={() => {}} 
       />
     </Accordion>
   );
 };
 
 const CourseSection = ({isTeacherMode, course}) => {
+  console.log(course);
+  const [item, setItem] = useState({ lectures: [], assignments: [], references: [] });
+  useEffect(() => {
+    const newAssignments = Array.isArray(course?.BaiKiemTra)
+    ? course.BaiKiemTra.map((item) => ({
+        id: item._id,
+        content: item.TenBaiKiemTra,
+        type: 'quiz',
+        dueDate: item?.HanNop,
+      }))
+    : [];
+
+  const deadlines = Array.isArray(course?.Deadlines)
+    ? course.Deadlines.map((item) => ({
+        id: item._id,
+        content: item?.MoTa,
+        type: 'deadline',
+        dueDate: item?.NgayHetHan,
+      }))
+    : [];
+
+  setItem((prev) => ({
+    ...prev,
+    assignments: [...prev.assignments, ...newAssignments, ...deadlines],
+  }));
+  }, [course?.BaiKiemTra]);
   return (
     <Paper elevation={0}
       sx={{...moodleStyles.mainContainer,
@@ -468,7 +491,7 @@ const CourseSection = ({isTeacherMode, course}) => {
           isTeacherMode={isTeacherMode}
           sectionColor="#e8f5e9"
           sectionType="lectures"
-          course={course}
+          items={item.lectures}
         />
         
         <CollapsibleSection 
@@ -476,7 +499,7 @@ const CourseSection = ({isTeacherMode, course}) => {
           isTeacherMode={isTeacherMode}
           sectionColor="#fff8e1"
           sectionType="assignments"
-          course={course}
+          items={item.assignments}
         />
         
         <CollapsibleSection 
@@ -484,7 +507,7 @@ const CourseSection = ({isTeacherMode, course}) => {
           isTeacherMode={isTeacherMode}
           sectionColor="#f3e5f5"
           sectionType="references" 
-          course={course}
+          items={item.references}
         />
       </Box>
     </Paper>
