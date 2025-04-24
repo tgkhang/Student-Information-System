@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Accordion,
   AccordionSummary,
@@ -212,8 +212,7 @@ const getResourceIcon = (type) => {
 };
 
 
-const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, course }) => {
-  console.log(course)
+const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, items }) => {
   // Default items based on section type
   const defaultItems = {
     'lectures': [
@@ -232,8 +231,6 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
       { id: 3, content: 'Academic Papers Collection', type: 'link', url: 'https://example.com/papers' }
     ]
   };
-  
-  const [items, setItems] = useState(defaultItems[sectionType] || []);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [expanded, setExpanded] = useState(false);
@@ -243,10 +240,10 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
     setDeleteDialogOpen(true);
   };
   
-  const handleConfirmDelete = () => {
-    setItems(items.filter(item => item.id !== itemToDelete.id));
-    setDeleteDialogOpen(false);
-  };
+  // const handleConfirmDelete = () => {
+  //   setItems(items.filter(item => item.id !== itemToDelete.id));
+  //   setDeleteDialogOpen(false);
+  // };
   
   const formatDueDate = (dateString) => {
     if (!dateString) return '';
@@ -277,7 +274,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
           <Typography variant="h5">{title}</Typography>
           <Box flexGrow={1} />
           <Chip 
-            label={`${items.length} items`}
+            label={`${items?.length} items`}
             size="small"
             sx={moodleStyles.itemCount}
           />
@@ -289,15 +286,15 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
           {items.map((item, index) => (
             <ListItem 
               key={item.id} 
-              divider={index < items.length - 1}
+              divider={index < item.length - 1}
               sx={{
                 ...moodleStyles.listItem,
-                ...(item.type === 'link' && moodleStyles.linkItem)
+                ...(item.type === 'document' && moodleStyles.linkItem)
               }}
               button
-              component={item.type === 'link' ? "a" : "div"}
-              href={item.type === 'link' ? item.url : undefined}
-              target={item.type === 'link' ? "_blank" : undefined}
+              component={item.type === 'document' ? "a" : "div"}
+              href={item.type === 'document' ? item.url : undefined}
+              target={item.type === 'document' ? "_blank" : undefined}
             >
               <ListItemIcon>
                 {getResourceIcon(item.type)}
@@ -306,7 +303,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
                 primary={
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography
-                      style={item.type === 'link' ? { marginRight: '8px' } : {}}
+                      style={item.type === 'document' ? { marginRight: '8px' } : {}}
                     >
                       {item.content}
                     </Typography>
@@ -316,7 +313,7 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
                 primaryTypographyProps={{
                   sx: {
                     fontWeight: 500,
-                    color: item.type === 'link' ? 'primary.dark' : 'text.primary',
+                    color: item.type === 'document' ? 'primary.dark' : 'text.primary',
                     fontSize: '1rem',
                   },
                 }}
@@ -359,13 +356,49 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, c
         message={"Are you sure you want to delete this item?"} 
         open={deleteDialogOpen} 
         onClose={() => setDeleteDialogOpen(false)} 
-        onConfirm={handleConfirmDelete} 
+        onConfirm={() => {}} 
       />
     </Accordion>
   );
 };
 
 const CourseSection = ({isTeacherMode, course}) => {
+  const [item, setItem] = useState({ lectures: [], assignments: [], references: [] });
+  console.log(course);
+  useEffect(() => {
+    const newAssignments = Array.isArray(course?.BaiKiemTra)
+    ? course.BaiKiemTra.map((item) => ({
+        id: item._id,
+        content: item.TenBaiKiemTra,
+        type: 'quiz',
+        dueDate: item?.HanNop,
+      }))
+    : [];
+
+  const deadlines = Array.isArray(course?.Deadlines)
+    ? course.Deadlines.map((item) => ({
+        id: item._id,
+        content: item?.MoTa,
+        type: 'deadline',
+        dueDate: item?.ThoiGianKetThuc,
+      }))
+    : [];
+  const materials = Array.isArray(course?.TaiLieu)
+  ? course.TaiLieu.map((item) => ({
+      id: item._id,
+      content: item.TenTaiLieu,
+      type: 'document',
+      dueDate: item?.NgayTao,
+      url: item?.LinkTaiLieu
+      ,
+    }))
+  : [];
+  setItem((prev) => ({
+    ...prev,
+    assignments: [...prev.assignments, ...newAssignments, ...deadlines],
+    lectures: [...prev.lectures, ...materials],
+  }));
+  }, [course?.BaiKiemTra]);
   return (
     <Paper elevation={0}
       sx={{...moodleStyles.mainContainer,
@@ -436,26 +469,9 @@ const CourseSection = ({isTeacherMode, course}) => {
                 variant="outlined" 
                 startIcon={<CloudUploadIcon />}
                 sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = `/teacher/upload/${course?.MaKhoaHoc}`}
+                onClick={() => window.location.href = `/teacher/upload/${course?._id}`}
               >
                 Upload Document
-              </Button>
-              
-              <Button 
-                variant="outlined" 
-                startIcon={<LinkIcon />}
-                sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = '/add-reference'}
-              >
-                Add Reference Link
-              </Button>
-              <Button 
-                variant="outlined" 
-                startIcon={<LinkIcon />}
-                sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = `/teacher/create-notification/${course?.MaKhoaHoc}`}
-              >
-                Add Reference Link
               </Button>
             </Box>
           </CardContent>
@@ -467,8 +483,8 @@ const CourseSection = ({isTeacherMode, course}) => {
           title="Lectures and Materials" 
           isTeacherMode={isTeacherMode}
           sectionColor="#e8f5e9"
-          sectionType="lectures"
-          course={course}
+          sectionType="document"
+          items={item.lectures}
         />
         
         <CollapsibleSection 
@@ -476,16 +492,9 @@ const CourseSection = ({isTeacherMode, course}) => {
           isTeacherMode={isTeacherMode}
           sectionColor="#fff8e1"
           sectionType="assignments"
-          course={course}
+          items={item.assignments}
         />
         
-        <CollapsibleSection 
-          title="Reference Materials" 
-          isTeacherMode={isTeacherMode}
-          sectionColor="#f3e5f5"
-          sectionType="references" 
-          course={course}
-        />
       </Box>
     </Paper>
   );

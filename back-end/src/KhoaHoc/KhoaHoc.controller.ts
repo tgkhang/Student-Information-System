@@ -24,6 +24,7 @@ import { RateCourseDto } from './dto/rateCourse.dto';
 import { CreateDeadlineDto } from './dto/createDeadline.dto';
 import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
+import { JwtModule } from '@nestjs/jwt';
 
 @Controller('api/KhoaHoc')
 export class KhoaHocController {
@@ -270,14 +271,22 @@ export class KhoaHocController {
   }
 
   @Get('listRatings/:MaKhoaHoc')
+  @UseGuards(JWTAuthGuard)
   async getListCourseRatings(@Param('MaKhoaHoc') MaKhoaHoc: string) {
     const result = await this.khoaHocService.getListCourseRatings(MaKhoaHoc);
     return { message: 'Danh sách đánh giá khóa học.', data: result };
   }
 
   @Get('ratings/:MaKhoaHoc')
+  @UseGuards(JWTAuthGuard)
   async getCourseRatings(@Param('MaKhoaHoc') MaKhoaHoc: string) {
     return await this.khoaHocService.getCourseRatings(MaKhoaHoc);
+  }
+  @Get('hasRating/:MaKhoaHoc/:mssv')
+  @UseGuards(JWTAuthGuard)
+  async checkRating(@Param('MaKhoaHoc') MaKhoaHoc: string, @Param('mssv') mssv: string) {
+    return this.khoaHocService.hasStudentReviewed(MaKhoaHoc, mssv);
+
   }
 
   @Post(':id/deadline')
@@ -304,6 +313,18 @@ export class KhoaHocController {
     return { message: 'Deadline created successfully', deadline };
   }
 
+  @Get('deadline/:id')
+  @UseGuards(JWTAuthGuard)
+  async getDeadline(@Param('id') id: string){
+    try{
+      const deadline = await this.khoaHocService.getDeadline(id);
+      return deadline;
+    }
+    catch(error)
+    {
+      return error;
+    }
+  }
   @Put(':id/deadline/:deadlineId')
   @UseGuards(JWTAuthGuard)
   @UsePipes(new ValidationPipe())

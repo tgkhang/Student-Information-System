@@ -1,11 +1,11 @@
 import { useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import {
   Box,
   Typography,
   Paper,
   Button,
   Stack,
-  List,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -19,29 +19,33 @@ import {
   Description as FileIcon,
   CloudUpload as UploadIcon,
   Close as CloseIcon,
-  DeleteOutline as DeleteIcon,
   Title as TitleIcon,
 } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import Page from "../../components/Page";
+import { uploadFile } from "../../utils/api";
 
 export default function UploadMaterials() {
-  const [files, setFiles] = useState([]);
+  const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
+  const { id } = useParams();
   const [titleError, setTitleError] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const onDrop = useCallback((acceptedFiles) => {
-    setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
+    if (acceptedFiles && acceptedFiles.length > 0) {
+      setFile(acceptedFiles[0]);
+    }
   }, []);
 
-  const removeFile = (indexToRemove) => {
-    setFiles((prevFiles) => prevFiles.filter((_, index) => index !== indexToRemove));
+  const removeFile = () => {
+    setFile(null);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    multiple: true,
+    multiple: false,
+    maxFiles: 1,
   });
 
   const handleTitleChange = (e) => {
@@ -56,15 +60,15 @@ export default function UploadMaterials() {
 
     if (!title.trim()) {
       setTitleError(true);
-      enqueueSnackbar("Please enter a title for your materials", { 
+      enqueueSnackbar("Please enter a title for your material", { 
         variant: "error",
         anchorOrigin: { vertical: "top", horizontal: "right" }
       });
       isValid = false;
     }
 
-    if (files.length === 0) {
-      enqueueSnackbar("Please select at least one file to upload", { 
+    if (!file) {
+      enqueueSnackbar("Please select a file to upload", { 
         variant: "error",
         anchorOrigin: { vertical: "top", horizontal: "right" }
       });
@@ -74,21 +78,31 @@ export default function UploadMaterials() {
     return isValid;
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!validateForm()) {
       return;
     }
-
-    console.log("Uploading files with title:", title);
-    files.forEach((file) => console.log(file.name));
-    
-    enqueueSnackbar("Upload completed successfully!", {
+    const formData = new FormData();
+  formData.append("moTa", title);
+  formData.append("file", file);
+  formData.append("khoaHocId", id);
+  const response = await uploadFile(formData);
+  if (response.status < 300) {
+    enqueueSnackbar("File uploaded successfully!", {
       variant: "success",
     });
+    window.history.back();
+  }
+  else {
+    enqueueSnackbar("File upload failed!", {
+      variant: "error",
+    });
+  }
   };
 
   // Function to get file type icon color based on extension
   const getFileColor = (filename) => {
+    if (!filename) return "#9E9E9E";
     const extension = filename.split('.').pop().toLowerCase();
     const colorMap = {
       pdf: "#F40F02",
@@ -113,17 +127,15 @@ export default function UploadMaterials() {
   };
 
   return (
-    <Page title="Upload Teaching Materials">
-      <Box maxWidth={800} mx="auto" mt="64px"
-          sx={{p: 2}}
-      >
+    <Page title="Upload Teaching Material">
+      <Box maxWidth={800} mx="auto" mt="64px" sx={{p: 2}}>
         <Typography
           variant="h4"
           fontWeight={600}
           gutterBottom
           sx={{ color: "primary.main" }}
         >
-          Upload Teaching Materials
+          Upload Teaching Material
         </Typography>
 
         <Paper elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
@@ -137,7 +149,7 @@ export default function UploadMaterials() {
               onChange={handleTitleChange}
               error={titleError}
               helperText={titleError ? "Title is required" : ""}
-              placeholder="Enter the title for your teaching materials"
+              placeholder="Enter the title for your teaching material"
               InputProps={{
                 startAdornment: (
                   <TitleIcon color="action" sx={{ mr: 1 }} />
@@ -147,7 +159,7 @@ export default function UploadMaterials() {
           </Box>
 
           <Typography variant="body1" mb={2}>
-            Drag and drop files here, or click to select files.
+            Drag and drop a file here, or click to select a file.
           </Typography>
 
           <Box
@@ -181,14 +193,14 @@ export default function UploadMaterials() {
               }}
             />
             <Typography variant="h6" color={isDragActive ? "primary.main" : "text.secondary"}>
-              {isDragActive ? "Drop files here..." : "Click or drag files to upload"}
+              {isDragActive ? "Drop file here..." : "Click or drag file to upload"}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-              Support for multiple files
+              Only one file is allowed
             </Typography>
           </Box>
 
-          {files.length > 0 && (
+          {file && (
             <Paper
               variant="outlined"
               sx={{
@@ -208,68 +220,53 @@ export default function UploadMaterials() {
                 px={1}
               >
                 <Typography variant="subtitle1" fontWeight={600}>
-                  Files to be uploaded ({files.length})
+                  Selected File
                 </Typography>
-                {files.length > 0 && (
-                  <Button
-                    startIcon={<DeleteIcon />}
-                    color="error"
-                    size="small"
-                    onClick={() => setFiles([])}
-                  >
-                    Remove All
-                  </Button>
-                )}
               </Box>
               <Divider sx={{ mb: 2 }} />
-              <List>
-                {files.map((file, index) => (
-                  <ListItem
-                    key={index}
-                    sx={{
-                      py: 1,
-                      px: 2,
-                      borderRadius: 1,
-                      mb: 1,
-                      bgcolor: "grey.50",
-                      "&:hover": {
-                        bgcolor: "grey.100",
-                      },
-                    }}
-                    secondaryAction={
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => removeFile(index)}
-                        size="small"
-                        sx={{ color: "error.main" }}
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    }
+              <ListItem
+                sx={{
+                  py: 1,
+                  px: 2,
+                  borderRadius: 1,
+                  mb: 1,
+                  bgcolor: "grey.50",
+                  "&:hover": {
+                    bgcolor: "grey.100",
+                  },
+                }}
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={removeFile}
+                    size="small"
+                    sx={{ color: "error.main" }}
                   >
-                    <ListItemIcon>
-                      <FileIcon sx={{ color: getFileColor(file.name) }} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={file.name}
-                      secondary={
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Chip
-                            label={formatFileSize(file.size)}
-                            size="small"
-                            variant="outlined"
-                            sx={{ height: 20, fontSize: "0.7rem" }}
-                          />
-                          <Typography variant="caption" color="text.secondary">
-                            {new Date(file.lastModified).toLocaleDateString()}
-                          </Typography>
-                        </Stack>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
+                    <CloseIcon />
+                  </IconButton>
+                }
+              >
+                <ListItemIcon>
+                  <FileIcon sx={{ color: getFileColor(file.name) }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={file.name}
+                  secondary={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Chip
+                        label={formatFileSize(file.size)}
+                        size="small"
+                        variant="outlined"
+                        sx={{ height: 20, fontSize: "0.7rem" }}
+                      />
+                      <Typography variant="caption" color="text.secondary">
+                        {new Date(file.lastModified).toLocaleDateString()}
+                      </Typography>
+                    </Stack>
+                  }
+                />
+              </ListItem>
             </Paper>
           )}
 

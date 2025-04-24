@@ -34,10 +34,6 @@ export class BaiKiemTraService {
     }
 
     const test = await this.BaiKiemTraModel.find({ KhoaHocID })
-      .populate({
-        path: 'KhoaHocID',
-        model: 'KhoaHoc',
-      })
       .exec();
     return test;
   }

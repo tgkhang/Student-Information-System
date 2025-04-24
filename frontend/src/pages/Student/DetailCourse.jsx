@@ -19,6 +19,9 @@ export default function DetailCourse() {
     fetchCourse();
   }
   , [id]); // Fetch course data when component mounts or id changes
+    if (!course) {
+      return null;
+    }
     return (
       <Page title="Course Details">
         

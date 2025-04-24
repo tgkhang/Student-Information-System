@@ -29,6 +29,7 @@ import { UpdateDeadlineDto } from './dto/updateDeadline.dto';
 import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
 import { RemoveTeacherDto } from './dto/removeTeacher.dto';
 import { BaiKiemTraService } from 'src/BaiKiemTra/BaiKiemTra.service';
+import path from 'path';
 
 @Injectable()
 export class KhoaHocService {
@@ -122,12 +123,11 @@ export class KhoaHocService {
     return studentDetails;
   }
   async getCourse(MaKhoaHoc: string) {
-    console.log('Mã khóa học', MaKhoaHoc);
     const khoaHoc = await this.khoaHocModel
       .findOne({ MaKhoaHoc })
       .populate('GiangVienID', 'HoTen')
       .populate('KhoaID', 'TenKhoa')
-      .populate('TaiLieu')
+      .populate({path: 'TaiLieu', model: 'TaiLieu'})
       .exec();
     console.log(khoaHoc?.toObject());
     if (!khoaHoc) {
@@ -163,15 +163,12 @@ export class KhoaHocService {
       .populate('GiangVienID', 'HoTen')
       .exec();
 
-    // console.log(khoaHocs);
-
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const khoaHocIds = khoaHocs.map((kh) => (kh as any)._id.toString());
     const lichHocList = await this.lichHocModel
       .find({ KhoaHocID: { $in: khoaHocIds } })
       .populate('GiangVienID', 'HoTen')
       .exec();
-    console.log(lichHocList);
     const khoaHocsDetails = khoaHocs.map((khoahoc) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const khoaHocid = (khoahoc as any)._id as Types.ObjectId;
@@ -201,7 +198,6 @@ export class KhoaHocService {
 
   async updateCourse(MaKhoaHoc: string, updateCourseDto: UpdateCourseDto) {
     const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc });
-    console.log(MaKhoaHoc);
     if (!khoaHoc) {
       throw new NotFoundException('Khóa học không tồn tại');
     }
@@ -237,7 +233,6 @@ export class KhoaHocService {
   }
 
   async searchCourse(query: string) {
-    console.log('query', query);
     const khoaHoc = await this.khoaHocModel.find({
       $or: [
         { MaKhoaHoc: { $regex: query, $options: 'i' } },
@@ -251,14 +246,11 @@ export class KhoaHocService {
   }
 
   async registerStudentToCourse(MaKhoaHoc: string, username: string) {
-    // console.log('Mã khóa học: ', studentId);
     const khoaHoc = await this.khoaHocModel.findOne({ MaKhoaHoc }).exec();
     if (!khoaHoc) {
       throw new NotFoundException('Khóa học không tồn tại');
     }
     const sinhVien = await this.sinhVienService.getStudentByMSSV(username);
-    console.log('sinh vien id: ', sinhVien.KhoaID.toString());
-    console.log('khóa học id: ', khoaHoc.KhoaID.toString());
     if (sinhVien.KhoaID._id.toString() !== khoaHoc.KhoaID.toString())
       throw new BadRequestException(
         'Sinh viên không thể đăng kí khóa học này.',
@@ -291,7 +283,6 @@ export class KhoaHocService {
       throw new NotFoundException('Khóa học không tồn tại');
     }
     const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
-    console.log(sinhVien.KhoaID.toString());
     if (sinhVien.KhoaID._id.toString() !== khoaHoc.KhoaID.toString())
       throw new BadRequestException(
         'Sinh viên không thể đăng kí khóa học này.',
@@ -322,7 +313,6 @@ export class KhoaHocService {
     const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const sinhVienId = (sinhVien as any)._id as Types.ObjectId;
-    console.log(sinhVienId);
 
     const index = khoaHoc.SinhVienDangKy.indexOf(sinhVienId);
     if (index !== -1) {
@@ -347,7 +337,11 @@ export class KhoaHocService {
 
     const files = await this.khoaHocModel
       .findById(khoaHocId)
-      .populate('TaiLieu')
+      .populate({
+        path: 'TaiLieu',
+        model: 'TaiLieu'
+      })
+
       .exec();
     return files?.TaiLieu;
   }
@@ -687,5 +681,42 @@ export class KhoaHocService {
     }
 
     return updatedKhoaHoc;
+  }
+
+  async getDeadline(id: string){
+    const khoaHoc = await this.khoaHocModel.findOne({'Deadlines._id': new Types.ObjectId(id)})
+                                          .populate({
+                                            path: 'Deadlines.Submissions.TaiLieu',
+                                            select: 'TenTaiLieu LinkTaiLieu MoTa NguoiDang NgayTao',
+                                            model: 'TaiLieu'
+                                          }).exec();
+    if (!khoaHoc)
+      throw new NotFoundException('Không tìm thấy khóa học.');
+    const deadline = khoaHoc.Deadlines.find( 
+      (deadline) => (deadline as any)._id.toString() === id
+    );
+    
+    return deadline;
+  }
+  async hasStudentReviewed(MaKhoaHoc: string, mssv: string): Promise<boolean> {
+    const khoaHoc = await this.khoaHocModel
+      .findOne({ MaKhoaHoc })
+      .select('_id')
+      .lean()
+      .exec();
+
+    if (!khoaHoc) {
+      throw new NotFoundException('Không tìm thấy khóa học.');
+    }
+    const sinhVien = await this.sinhVienService.getStudentByMSSV(mssv);
+    const review = await this.danhGiaKhoaHocModel
+      .findOne({
+        KhoaHocID: khoaHoc._id,
+        mssv: (sinhVien as any)._id,
+      })
+      .lean()
+      .exec();
+
+    return !!review;
   }
 }

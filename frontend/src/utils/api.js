@@ -61,6 +61,7 @@ export const updateCalendar = (id, data) => {
   return axiosInstance.patch(`/Lich/update_calendar/${id}`, data);
 }
 //teacher
+
 export const getTeacherInfo = (id) =>
   axiosInstance.get(`/giangvien/getTeacher/${id}`);
 export const getListCourses = (id) =>
@@ -149,6 +150,12 @@ export const getCourseById = (id) => {
 export const createDeadline = (id, data) => {
   return axiosInstance.post(`/KhoaHoc/${id}/deadline`, data);
 };
-
+export const uploadFile = (formData) => {
+  return axiosInstance.post(`/upload`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
 export const createCourseApi = (data) =>
   axiosInstance.post("/KhoaHoc/addCourse", data);
