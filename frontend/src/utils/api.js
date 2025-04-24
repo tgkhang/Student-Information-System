@@ -175,9 +175,21 @@ export const createCourseApi = (data) =>
 export const getListScoreById = (id) =>
   axiosInstance.get(`/DiemSo/getListScorebyMSSV/${id}`);
 
+
+//COURSE
+export const studentRegister = (courseId) =>
+  axiosInstance.get(`/KhoaHoc/registerStudent/${courseId}`);
+
+export const studentCancelRegister= (data,username) =>
+  axiosInstance.get(`/KhoaHoc/registerStudent/${username}`,data);
+
+export const getListCourseRegister = (studentId)=> 
+   axiosInstance.get(`/KhoaHoc/getListCourseRegister/${studentId}`);
+
 export const HasRating = (MaKH, MaSV) => {
   return axiosInstance.get(`/KhoaHoc/hasRating/${MaKH}/${MaSV}`);
 }
 export const studentRating = (MaKH, data) => {
   return axiosInstance.post(`/KhoaHoc/rate/${MaKH}`, data);
 }
+
