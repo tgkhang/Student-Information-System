@@ -363,7 +363,6 @@ const CollapsibleSection = ({ title, isTeacherMode, sectionColor, sectionType, i
 };
 
 const CourseSection = ({isTeacherMode, course}) => {
-  console.log(course);
   const [item, setItem] = useState({ lectures: [], assignments: [], references: [] });
   useEffect(() => {
     const newAssignments = Array.isArray(course?.BaiKiemTra)
@@ -380,14 +379,24 @@ const CourseSection = ({isTeacherMode, course}) => {
         id: item._id,
         content: item?.MoTa,
         type: 'deadline',
-        dueDate: item?.NgayHetHan,
+        dueDate: item?.ThoiGianKetThuc,
       }))
     : [];
-
+  const materials = Array.isArray(course?.TaiLieu)
+  ? course.TaiLieu.map((item) => ({
+      id: item._id,
+      content: item.TenTaiLieu,
+      type: 'document',
+      dueDate: item?.NgayTao
+      ,
+    }))
+  : [];
   setItem((prev) => ({
     ...prev,
     assignments: [...prev.assignments, ...newAssignments, ...deadlines],
+    lectures: [...prev.lectures, ...materials],
   }));
+  console.log(item)
   }, [course?.BaiKiemTra]);
   return (
     <Paper elevation={0}
@@ -459,26 +468,9 @@ const CourseSection = ({isTeacherMode, course}) => {
                 variant="outlined" 
                 startIcon={<CloudUploadIcon />}
                 sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = `/teacher/upload/${course?.MaKhoaHoc}`}
+                onClick={() => window.location.href = `/teacher/upload/${course?._id}`}
               >
                 Upload Document
-              </Button>
-              
-              <Button 
-                variant="outlined" 
-                startIcon={<LinkIcon />}
-                sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = '/add-reference'}
-              >
-                Add Reference Link
-              </Button>
-              <Button 
-                variant="outlined" 
-                startIcon={<LinkIcon />}
-                sx={moodleStyles.actionButton}
-                onClick={() => window.location.href = `/teacher/create-notification/${course?.MaKhoaHoc}`}
-              >
-                Add Reference Link
               </Button>
             </Box>
           </CardContent>
@@ -490,7 +482,7 @@ const CourseSection = ({isTeacherMode, course}) => {
           title="Lectures and Materials" 
           isTeacherMode={isTeacherMode}
           sectionColor="#e8f5e9"
-          sectionType="lectures"
+          sectionType="document"
           items={item.lectures}
         />
         
@@ -502,13 +494,6 @@ const CourseSection = ({isTeacherMode, course}) => {
           items={item.assignments}
         />
         
-        <CollapsibleSection 
-          title="Reference Materials" 
-          isTeacherMode={isTeacherMode}
-          sectionColor="#f3e5f5"
-          sectionType="references" 
-          items={item.references}
-        />
       </Box>
     </Paper>
   );

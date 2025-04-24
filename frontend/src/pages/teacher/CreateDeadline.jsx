@@ -46,12 +46,14 @@ export default function CreateDeadline() {
   };
 
   const handleConfirm = async () => {
-    enqueueSnackbar("Deadline created successfully!", { variant: "success" });
-    console.log("Deadline Title:", title);
-    console.log("Start:", startTime.format());
-    console.log("End:", endTime.format());
     const response = await createDeadline(id, {MoTa: title, NgayBatDau: startTime, NgayHetHan: endTime} );
-    console.log("Response:", response.data);
+    console.log(response);
+    if (response.status === 201) {
+      enqueueSnackbar("Deadline created successfully!", { variant: "success" });
+      window.history.back();
+    } else {
+      enqueueSnackbar("Failed to create deadline.", { variant: "error" });
+    }
     setDialogOpen(false);
     setTitle("");
     setStartTime(dayjs());

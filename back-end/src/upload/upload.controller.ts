@@ -32,8 +32,6 @@ export class UploadController {
     @UploadedFile() file: Express.Multer.File,
     @Body() uploadFileDto: UploadFileDto,
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    console.log(req.user.role);
     if (!file) throw new BadRequestException('Thiếu trường "file".');
     const { khoaHocId, moTa } = uploadFileDto;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
