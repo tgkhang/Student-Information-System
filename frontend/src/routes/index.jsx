@@ -54,7 +54,7 @@ export default function Router() {
       path: "student",
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
-        { path: "", element: <Navigate to="/student/course" replace /> },
+        { path: "", element: <Navigate to="/student/dashboard" replace /> },
         { path: "dashboard", element: <StudentDashboardPage /> },
         {
           path: "*",
@@ -108,7 +108,7 @@ export default function Router() {
       element: <AuthGuard> <MainLayout /></AuthGuard>,
       children: [
         { path: "dashboard", element: <TeacherDashboardPage /> },
-        { path: "", element: <Navigate to="/teacher/course" replace /> },
+        { path: "", element: <Navigate to="/teacher/dashboard" replace /> },
         {
           path: "course",
           element: <TeacherCoursePage />,
