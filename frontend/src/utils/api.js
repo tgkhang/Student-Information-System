@@ -162,3 +162,8 @@ export const uploadFile = (formData) => {
 }
 export const createCourseApi = (data) =>
   axiosInstance.post("/KhoaHoc/addCourse", data);
+
+
+//SCORE
+export const getListScoreById = (id) =>
+  axiosInstance.get(`/DiemSo/getListScorebyMSSV/${id}`);
