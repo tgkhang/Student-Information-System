@@ -400,9 +400,6 @@ export default function CourseReviewPage() {
                                 <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}}>
                                   Comment
                                 </TableCell>
-                                <TableCell sx={{backgroundColor: "primary.main", color: "primary.lighter"}} align="center">
-                                  Helpful
-                                </TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>

@@ -28,7 +28,6 @@ import { AddTeacherintoCourseDto } from './dto/addTeacherDto';
 import { Types } from 'mongoose';
 import { JwtModule } from '@nestjs/jwt';
 
-
 @Controller('api/KhoaHoc')
 export class KhoaHocController {
   constructor(private readonly khoaHocService: KhoaHocService) {}
